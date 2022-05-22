@@ -27,4 +27,5 @@ I earned my M.Sc. degree from [Koç University](https://science.ku.edu.tr/en/dep
 **Projects**
 
 1) Formalization of 2LTT & Univalence Principle in Agda - Avaliable on [Github](https://github.com/ElifUskuplu/2LTT-Agda).
+ 
 2) Univalent mathematics in Agda by [Egbert Rijke](https://github.com/EgbertRijke) et. al. (as a contributor) - Avaliable on [Github](https://github.com/UniMath/agda-unimath).
