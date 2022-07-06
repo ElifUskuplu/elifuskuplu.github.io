@@ -23,7 +23,7 @@ I earned my M.Sc. degree from [Koç University](https://science.ku.edu.tr/en/dep
 **Talks**
 
 1) "A brief Introduction to Homotopy Type Theory" - USC Math Grad Colloquium - Feb 2022. 
-2) "Formalization of 2LTT in Agda" - MURI Meeting at CMU - July 2022. [Slide](https://github.com/elifuskuplu.github.io/files/elif-2ltt.pdf)
+2) "Formalization of 2LTT in Agda" - MURI Meeting at CMU - July 2022. [Slide](https://github.com/ElifUskuplu/elifuskuplu.github.io/blob/master/files/elif-2ltt.pdf)
 
 
 **Projects**
