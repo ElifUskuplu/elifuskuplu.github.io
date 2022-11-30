@@ -30,6 +30,9 @@ I earned my M.Sc. degree from [Koç University](https://science.ku.edu.tr/en/dep
 
 4) "Proof Assistants: Agda for Beginners" - [Sagedays Istanbul](https://wiki.sagemath.org/days113) - August 2022.
 
+**Notes**
+
+Documentation for the `two-level` flag in Agda Library [Link](https://agda.readthedocs.io/en/latest/language/two-level.html)
 
 **Projects**
 
