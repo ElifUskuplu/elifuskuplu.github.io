@@ -8,8 +8,7 @@ redirect_from:
   - /about.html
 ---
 
-I am a Ph.D. student in the Department of Mathematics at the [University of Southern California](https://dornsife.usc.edu/mathematics/). I am studying on [homotopy type theory](https://ncatlab.org/nlab/show/homotopy+type+theory), and my current advisors are [Prof. Aaron Lauda](https://sites.google.com/view/lauda-home/home) and [Assoc. Prof. Michael Shulman](https://home.sandiego.edu/~shulman/). My research interests also include mathematical logic, category theory, and combinatorics. Currently, I am partially supported by NSF grant DMS-1902092, the Army Research Office
-W911NF-20-1-0075, and Simons Foundation.  
+I am a Ph.D. student in the Department of Mathematics at the [University of Southern California](https://dornsife.usc.edu/mathematics/). I am studying on [homotopy type theory](https://ncatlab.org/nlab/show/homotopy+type+theory), and my current advisors are [Prof. Aaron Lauda](https://sites.google.com/view/lauda-home/home) and [Assoc. Prof. Michael Shulman](https://home.sandiego.edu/~shulman/). My research interests also include mathematical logic, category theory, and combinatorics. I am partially supported by NSF grant DMS-1902092, the Army Research Office W911NF-20-1-0075, and Simons Foundation. Some of my works are based upon work supported by the Air Force Office of Scientific Research under award number FA9550-21-1-0009.
 
 I earned my M.Sc. degree from [Koç University](https://science.ku.edu.tr/en/departments/mathematics/about/) in 2019, with the thesis "[LDPC codes from partially balanced incomplete block designs](https://tez.yok.gov.tr/UlusalTezMerkezi/TezGoster?key=npGs9H39x7G6401x51yqpNXM5uk3K2hJLEjxTCkRKdmxpBXGIA-yZyLf6Ca4yhy6)", under the supervision of [Prof. Emine Şule Yazıcı](http://home.ku.edu.tr/~eyazici/). I earned my B.Sc. degree from [Bilgi University](https://www.bilgi.edu.tr/en/academic/faculty-of-engineering-and-natural-sciences/mathematics/) in 2017 with the project "The Game Of Hex & The Brouwer Fixed Point Theorem", under the supervision of [Kemal Ilgar Eroğlu](https://www.bilgi.edu.tr/en/academic/staff/kemal-ilgar-eroglu/). 
 
@@ -17,7 +16,7 @@ I earned my M.Sc. degree from [Koç University](https://science.ku.edu.tr/en/dep
 
 1) [High-rate LDPC codes from partially balanced incomplete block designs](https://link.springer.com/article/10.1007/s10801-021-01111-0) - Diane Donovan, Aiden Price, Asha Rao, Elif Üsküplü, Emine Ş.Yazıcı - Journal of Algebraic Combinatorics - Jan 2022.
 
-2) [QC-LDPC Codes from Difference Matrices and Difference Covering Arrays](https://arxiv.org/abs/2205.00563) - Diane Donovan, Asha Rao, Elif Üsküplü, Emine Ş.Yazıcı - Available on the arXiv:2205.00563 - May 2022.
+2) [QC-LDPC Codes from Difference Matrices and Difference Covering Arrays](https://ieeexplore.ieee.org/document/10131907) - Diane Donovan, Asha Rao, Elif Üsküplü, Emine Ş.Yazıcı - in IEEE Access, vol. 11, pp. 52141-52157 - Jun 2023.
 
 
 **Talks**
@@ -31,6 +30,8 @@ I earned my M.Sc. degree from [Koç University](https://science.ku.edu.tr/en/dep
 4) "Proof Assistants: Agda for Beginners" - [Sagedays Istanbul](https://wiki.sagemath.org/days113) - August 2022.
 
 5) "Homotopy Type Theory vs Set Theory" - [GSU Research Seminars](http://math.gsu.edu.tr/seminar.html) - December 2022.
+
+6) "Cofibrancy of The Exo-type of Natural Numbers" - [The Second International Conference on Homotopy Type Theory](https://hott.github.io/HoTT-2023//) - May 2023.
 
 **Notes**
 
