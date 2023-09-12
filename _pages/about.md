@@ -12,7 +12,6 @@ I am a Ph.D. student in the Department of Mathematics at the [University of Sout
 
 I earned my M.Sc. degree from [Koç University](https://science.ku.edu.tr/en/departments/mathematics/about/) in 2019, with the thesis "[LDPC codes from partially balanced incomplete block designs](https://tez.yok.gov.tr/UlusalTezMerkezi/TezGoster?key=npGs9H39x7G6401x51yqpNXM5uk3K2hJLEjxTCkRKdmxpBXGIA-yZyLf6Ca4yhy6)", under the supervision of [Prof. Emine Şule Yazıcı](http://home.ku.edu.tr/~eyazici/). I earned my B.Sc. degree from [Bilgi University](https://www.bilgi.edu.tr/en/academic/faculty-of-engineering-and-natural-sciences/mathematics/) in 2017 with the project "The Game Of Hex & The Brouwer Fixed Point Theorem", under the supervision of [Kemal Ilgar Eroğlu](https://www.bilgi.edu.tr/en/academic/staff/kemal-ilgar-eroglu/). 
 
-My CV is [here](https://elifuskuplu.github.io/files/elifcv.pdf).
 
 **Publications**
 
