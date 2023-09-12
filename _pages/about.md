@@ -1,11 +1,8 @@
 ---
-permalink: /
+permalink: /archive
 title: 
 excerpt: "About me"
 author_profile: true
-redirect_from: 
-  - /about/
-  - /about.html
 ---
 
 I am a Ph.D. student in the Department of Mathematics at the [University of Southern California](https://dornsife.usc.edu/mathematics/). I am studying on [homotopy type theory](https://ncatlab.org/nlab/show/homotopy+type+theory), and my current advisors are [Prof. Aaron Lauda](https://sites.google.com/view/lauda-home/home) and [Assoc. Prof. Michael Shulman](https://home.sandiego.edu/~shulman/). My research interests also include mathematical logic, category theory, and combinatorics. I am partially supported by NSF grant DMS-1902092, the Army Research Office W911NF-20-1-0075, and Simons Foundation. Some of my works are based upon work supported by the Air Force Office of Scientific Research under award number FA9550-21-1-0009.
