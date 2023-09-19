@@ -12,24 +12,27 @@ I earned my M.Sc. degree from [Koç University](https://science.ku.edu.tr/en/dep
 
 **Publications**
 
-1) [High-rate LDPC codes from partially balanced incomplete block designs](https://link.springer.com/article/10.1007/s10801-021-01111-0) - Diane Donovan, Aiden Price, Asha Rao, Elif Üsküplü, Emine Ş.Yazıcı - Journal of Algebraic Combinatorics - Jan 2022.
+3) [Formalizing two-level type theory with cofibrant exo-nat](https://arxiv.org/abs/2309.09395) - Elif Uskuplu - Available on ArXiv: 2309.09395 - Sep 2023. 
 
 2) [QC-LDPC Codes from Difference Matrices and Difference Covering Arrays](https://ieeexplore.ieee.org/document/10131907) - Diane Donovan, Asha Rao, Elif Üsküplü, Emine Ş.Yazıcı - in IEEE Access, vol. 11, pp. 52141-52157 - Jun 2023.
+
+1) [High-rate LDPC codes from partially balanced incomplete block designs](https://link.springer.com/article/10.1007/s10801-021-01111-0) - Diane Donovan, Aiden Price, Asha Rao, Elif Üsküplü, Emine Ş.Yazıcı - Journal of Algebraic Combinatorics - Jan 2022.
 
 
 **Talks**
 
-1) "A brief Introduction to Homotopy Type Theory" - USC Math Grad Colloquium - February 2022. 
-
-2) "Formalization of 2LTT in Agda" - MURI Meeting at CMU - July 2022. [Slide](https://elifuskuplu.github.io/files/elif-2ltt.pdf)
-
-3) "An Experiment with 2LTT Features in Agda" - [Workshop on Homotopy Type Theory/ Univalent Foundations](https://hott-uf.github.io/2022/) - July 31 - August 1, 2022.
-
-4) "Proof Assistants: Agda for Beginners" - [Sagedays Istanbul](https://wiki.sagemath.org/days113) - August 2022.
+6) "Cofibrancy of The Exo-type of Natural Numbers" - [The Second International Conference on Homotopy Type Theory](https://hott.github.io/HoTT-2023//) - May 2023.
 
 5) "Homotopy Type Theory vs Set Theory" - [GSU Research Seminars](http://math.gsu.edu.tr/seminar.html) - December 2022.
 
-6) "Cofibrancy of The Exo-type of Natural Numbers" - [The Second International Conference on Homotopy Type Theory](https://hott.github.io/HoTT-2023//) - May 2023.
+4) "Proof Assistants: Agda for Beginners" - [Sagedays Istanbul](https://wiki.sagemath.org/days113) - August 2022.
+
+3) "An Experiment with 2LTT Features in Agda" - [Workshop on Homotopy Type Theory/ Univalent Foundations](https://hott-uf.github.io/2022/) - July 31 - August 1, 2022.
+
+2) "Formalization of 2LTT in Agda" - MURI Meeting at CMU - July 2022. [Slide](https://elifuskuplu.github.io/files/elif-2ltt.pdf)  
+
+1) "A brief Introduction to Homotopy Type Theory" - USC Math Grad Colloquium - February 2022. 
+
 
 **Notes**
 
