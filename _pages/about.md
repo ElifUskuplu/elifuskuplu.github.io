@@ -40,8 +40,8 @@ Documentation for the `two-level` flag in Agda Library [Link](https://agda.readt
 
 **Projects**
 
-1) Formalization of 2LTT & Univalence Principle in Agda - Avaliable on [Github](https://github.com/ElifUskuplu/2LTT-Agda).
+1) Formalization of 2LTT & Univalence Principle in Agda - Available on [Github](https://github.com/ElifUskuplu/2LTT-Agda).
  
-2) Univalent mathematics in Agda (as a contributor) - Avaliable on [Github](https://github.com/UniMath/agda-unimath).
+2) Univalent mathematics in Agda (as a contributor) - Available on [Github](https://github.com/UniMath/agda-unimath).
 
-3) Simply Typed Lambda Calculus with de Bruijn Indices in Lean4 - Avaliable on [Github](https://github.com/ElifUskuplu/Stlc_deBruijn).
+3) Simply Typed Lambda Calculus with de Bruijn Indices in Lean4 - Available on [Github](https://github.com/ElifUskuplu/Stlc_deBruijn).
