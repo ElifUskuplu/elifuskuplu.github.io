@@ -7,7 +7,7 @@ author_profile: true
 
 I am a lecturer in the Department of Mathematics at the [University of Southern California](https://dornsife.usc.edu/mathematics/). 
 
-I received my Ph.D from USC with the thesis named _Formalizing two-level type theory with cofibrant exo-nat_. I am studying on [homotopy type theory](https://ncatlab.org/nlab/show/homotopy+type+theory), and my thesis advisors are [Prof. Aaron Lauda](https://sites.google.com/view/lauda-home/home) and [Assoc. Prof. Michael Shulman](https://home.sandiego.edu/~shulman/). Recently, my research was awarded the Edward and Dolores Blum prize by the USC Graduate Committee.
+I received my Ph.D from USC with the thesis named _Formalizing two-level type theory with cofibrant exo-nat_. I am studying on [homotopy type theory](https://ncatlab.org/nlab/show/homotopy+type+theory), and my thesis advisors are [Prof. Aaron Lauda](https://sites.google.com/view/lauda-home/home) and [Assoc. Prof. Michael Shulman](https://home.sandiego.edu/~shulman/). Recently, I have been awarded the Edward and Dolores Blum Research prize by the USC Graduate Committee.
 
 My research interests span the areas of logic, foundations of mathematics, category theory, type theory, and computer science. My secondary research interests include combinatorial design theory and coding theory.
 
