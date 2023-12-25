@@ -7,7 +7,7 @@ author_profile: true
 
 ## Lecturer, University of Southern California.
 
-* Math 225A : [Linear Algebra and Differential Equations](https://elifuskuplu.github.io/_pages/math225.md) (Spring 2024).
+* Math 225A : [Linear Algebra and Differential Equations](https://elifuskuplu.github.io/math225) (Spring 2024).
 
 ## Teaching Assistant, University of Southern California.
 
