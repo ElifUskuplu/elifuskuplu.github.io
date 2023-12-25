@@ -5,6 +5,10 @@ permalink: /teaching/
 author_profile: true
 ---
 
+## Lecturer, University of Southern California.
+
+* Math 225A : [Linear Algebra and Differential Equations](_pages/math225.md) (Spring 2024).
+
 ## Teaching Assistant, University of Southern California.
 
 * Math 525A : Real Analysis (Fall 2023).
