@@ -1,7 +1,7 @@
 ---
 layout: archive
 title: "Math 225"
-permalink: /math225/
+permalink: /teaching/math225/
 ---
 
 * Math 225
