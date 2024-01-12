@@ -31,6 +31,8 @@ Final (39550) -- May 3 (11am -1pm)
 
 #### Lecture Notes
 
+[Week 1](https://elifuskuplu.github.io/files/Week1.pdf)
+
 #### Quizzes & Solutions
 
 [Quiz 1](https://elifuskuplu.github.io/files/Quiz1_afternoon_session.pdf)
