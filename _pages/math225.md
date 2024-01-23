@@ -43,7 +43,7 @@ Final (39550) -- May 3 (11am -1pm)
 
 #### Assignments & Solutions
 
-[HW 1](https://elifuskuplu.github.io/files/HW1_and_study_sheet.pdf)
+[HW 1](https://elifuskuplu.github.io/files/HW1_and_study_sheet.pdf) [Solutions](https://elifuskuplu.github.io/files/HW1_solutions.pdf)
 
 [HW 2](https://elifuskuplu.github.io/files/HW2_and_study_sheet.pdf)
 
