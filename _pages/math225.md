@@ -8,7 +8,7 @@ author_profile: false
 This course is offered by USC math department. For the official info about the course, see [here](https://dornsife.usc.edu/mathematics/math-225-linear-algebra-and-linear-differential-equations/).
 
 ##### Office Hours: 
-MWF 3-5pm, KAP 444B
+Every weekday 3-5pm, KAP 444B
 
 ##### Exam dates
 Midterm 1 -- Feb 9 (In class)
@@ -36,6 +36,8 @@ Final (39550) -- May 3 (11am -1pm)
 [Week 2](https://elifuskuplu.github.io/files/Week2.pdf)
 
 [Week 3](https://elifuskuplu.github.io/files/Week3.pdf)
+
+[Week 4 & 5](https://elifuskuplu.github.io/files/Week4.pdf)
 
 #### Quizzes & Solutions
 
