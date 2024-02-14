@@ -1,7 +1,6 @@
 ---
 permalink: /
 title: 
-excerpt: "About"
 author_profile: true
 ---
 
