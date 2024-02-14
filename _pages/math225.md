@@ -55,9 +55,13 @@ Final (39550) -- May 3 (11am -1pm)
 
 [HW 2](https://elifuskuplu.github.io/files/HW2_and_study_sheet.pdf) [Solutions](https://elifuskuplu.github.io/files/HW2_solutions.pdf)
 
-[HW 3](https://elifuskuplu.github.io/files/HW3_and_study_sheet.pdf)
+[HW 3](https://elifuskuplu.github.io/files/HW3_and_study_sheet.pdf) [Solutions](https://elifuskuplu.github.io/files/HW3_solutions.pdf)
 
-[HW 4](https://elifuskuplu.github.io/files/HW4_and_study_sheet.pdf)
+[HW 4](https://elifuskuplu.github.io/files/HW4_and_study_sheet.pdf) [Solutions](https://elifuskuplu.github.io/files/HW4_solutions.pdf)
 
 
 #### Exams & Solutions
+
+[Midterm 1 with solutions (Section 39530)](https://elifuskuplu.github.io/files/225Sp24m1-sol.pdf)
+
+[Midterm 1 with solutions (Section 39550)](https://elifuskuplu.github.io/files/225Sp24m1-version2-sol.pdf)
