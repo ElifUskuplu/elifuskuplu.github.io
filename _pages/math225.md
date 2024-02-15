@@ -49,6 +49,8 @@ Final (39550) -- May 3 (11am -1pm)
 
 [Quiz 4 with solutions](https://elifuskuplu.github.io/files/Quiz4_morning_session.pdf)
 
+[Quiz 5 with solutions](https://elifuskuplu.github.io/files/Quiz5_morning_session.pdf)
+
 #### Assignments & Solutions
 
 [HW 1](https://elifuskuplu.github.io/files/HW1_and_study_sheet.pdf) [Solutions](https://elifuskuplu.github.io/files/HW1_solutions.pdf)
