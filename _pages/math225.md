@@ -31,39 +31,15 @@ Final (39550) -- May 3 (11am -1pm)
 
 #### Lecture Notes
 
-[Week 1](https://elifuskuplu.github.io/files/Week1.pdf)
-
-[Week 2](https://elifuskuplu.github.io/files/Week2.pdf)
-
-[Week 3](https://elifuskuplu.github.io/files/Week3.pdf)
-
-[Week 4 & 5](https://elifuskuplu.github.io/files/Week4.pdf)
-
-[Week 6](https://elifuskuplu.github.io/files/Week6.pdf)
+[Week 1](https://elifuskuplu.github.io/files/Week1.pdf), [Week 2](https://elifuskuplu.github.io/files/Week2.pdf), [Week 3](https://elifuskuplu.github.io/files/Week3.pdf), [Week 4 & 5](https://elifuskuplu.github.io/files/Week4.pdf), [Week 6](https://elifuskuplu.github.io/files/Week6.pdf)
 
 #### Quizzes & Solutions
 
-[Quiz 1 with solutions](https://elifuskuplu.github.io/files/Quiz1_afternoon_session.pdf)
-
-[Quiz 2 with solutions](https://elifuskuplu.github.io/files/Quiz2_morning_session.pdf)
-
-[Quiz 3 with solutions](https://elifuskuplu.github.io/files/Quiz3_morning_session.pdf)
-
-[Quiz 4 with solutions](https://elifuskuplu.github.io/files/Quiz4_morning_session.pdf)
-
-[Quiz 5 with solutions](https://elifuskuplu.github.io/files/Quiz5_morning_session.pdf)
+[Quiz 1 with solutions](https://elifuskuplu.github.io/files/Quiz1_afternoon_session.pdf), [Quiz 2 with solutions](https://elifuskuplu.github.io/files/Quiz2_morning_session.pdf), [Quiz 3 with solutions](https://elifuskuplu.github.io/files/Quiz3_morning_session.pdf), [Quiz 4 with solutions](https://elifuskuplu.github.io/files/Quiz4_morning_session.pdf), [Quiz 5 with solutions](https://elifuskuplu.github.io/files/Quiz5_morning_session.pdf)
 
 #### Assignments & Solutions
 
-[HW 1](https://elifuskuplu.github.io/files/HW1_and_study_sheet.pdf) [Solutions](https://elifuskuplu.github.io/files/HW1_solutions.pdf)
-
-[HW 2](https://elifuskuplu.github.io/files/HW2_and_study_sheet.pdf) [Solutions](https://elifuskuplu.github.io/files/HW2_solutions.pdf)
-
-[HW 3](https://elifuskuplu.github.io/files/HW3_and_study_sheet.pdf) [Solutions](https://elifuskuplu.github.io/files/HW3_solutions.pdf)
-
-[HW 4](https://elifuskuplu.github.io/files/HW4_and_study_sheet.pdf) [Solutions](https://elifuskuplu.github.io/files/HW4_solutions.pdf)
-
-[HW 5](https://elifuskuplu.github.io/files/HW5_and_study_sheet.pdf) 
+[HW 1](https://elifuskuplu.github.io/files/HW1_and_study_sheet.pdf) [Solutions](https://elifuskuplu.github.io/files/HW1_solutions.pdf), [HW 2](https://elifuskuplu.github.io/files/HW2_and_study_sheet.pdf) [Solutions](https://elifuskuplu.github.io/files/HW2_solutions.pdf), [HW 3](https://elifuskuplu.github.io/files/HW3_and_study_sheet.pdf) [Solutions](https://elifuskuplu.github.io/files/HW3_solutions.pdf), [HW 4](https://elifuskuplu.github.io/files/HW4_and_study_sheet.pdf) [Solutions](https://elifuskuplu.github.io/files/HW4_solutions.pdf), [HW 5](https://elifuskuplu.github.io/files/HW5_and_study_sheet.pdf) 
 
 #### Exams & Solutions
 
