@@ -39,6 +39,8 @@ Final (39550) -- May 3 (11am -1pm)
 
 [Week 4 & 5](https://elifuskuplu.github.io/files/Week4.pdf)
 
+[Week 6](https://elifuskuplu.github.io/files/Week6.pdf)
+
 #### Quizzes & Solutions
 
 [Quiz 1 with solutions](https://elifuskuplu.github.io/files/Quiz1_afternoon_session.pdf)
@@ -61,6 +63,7 @@ Final (39550) -- May 3 (11am -1pm)
 
 [HW 4](https://elifuskuplu.github.io/files/HW4_and_study_sheet.pdf) [Solutions](https://elifuskuplu.github.io/files/HW4_solutions.pdf)
 
+[HW 5](https://elifuskuplu.github.io/files/HW5_and_study_sheet.pdf) 
 
 #### Exams & Solutions
 
