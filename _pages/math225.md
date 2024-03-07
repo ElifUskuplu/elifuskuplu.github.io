@@ -35,7 +35,7 @@ Final (39550) -- May 3 (11am -1pm)
 
 #### Quizzes & Solutions
 
-[Quiz 1 with solutions](https://elifuskuplu.github.io/files/Quiz1_afternoon_session.pdf), [Quiz 2 with solutions](https://elifuskuplu.github.io/files/Quiz2_morning_session.pdf), [Quiz 3 with solutions](https://elifuskuplu.github.io/files/Quiz3_morning_session.pdf), [Quiz 4 with solutions](https://elifuskuplu.github.io/files/Quiz4_morning_session.pdf), [Quiz 5 with solutions](https://elifuskuplu.github.io/files/Quiz5_morning_session.pdf), [Quiz 6 with solutions](https://elifuskuplu.github.io/files/Quiz6.pdf), [Quiz 7 with solutions](https://elifuskuplu.github.io/files/Quiz7.pdf)
+[Quiz 1 with solutions](https://elifuskuplu.github.io/files/Quiz1_afternoon_session.pdf), [Quiz 2 with solutions](https://elifuskuplu.github.io/files/Quiz2_morning_session.pdf), [Quiz 3 with solutions](https://elifuskuplu.github.io/files/Quiz3_morning_session.pdf), [Quiz 4 with solutions](https://elifuskuplu.github.io/files/Quiz4_morning_session.pdf), [Quiz 5 with solutions](https://elifuskuplu.github.io/files/Quiz5_morning_session.pdf), [Quiz 6 with solutions](https://elifuskuplu.github.io/files/Quiz6.pdf), [Quiz 7 with solutions](https://elifuskuplu.github.io/files/Quiz7.pdf), [Quiz 8 with solutions](https://elifuskuplu.github.io/files/Quiz8.pdf)
 
 #### Assignments & Solutions
 
