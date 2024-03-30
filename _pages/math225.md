@@ -31,7 +31,7 @@ Final (39550) -- May 3 (11am -1pm)
 
 #### Lecture Notes
 
-[Week 1](https://elifuskuplu.github.io/files/Week1.pdf), [Week 2](https://elifuskuplu.github.io/files/Week2.pdf), [Week 3](https://elifuskuplu.github.io/files/Week3.pdf), [Week 4 & 5](https://elifuskuplu.github.io/files/Week4.pdf), [Week 6](https://elifuskuplu.github.io/files/Week6.pdf),  [Week 7](https://elifuskuplu.github.io/files/Week7.pdf), [Week 8](https://elifuskuplu.github.io/files/Week8.pdf), [Week 9](https://elifuskuplu.github.io/files/Week9.pdf), [Week 10](https://elifuskuplu.github.io/files/Week10.pdf)
+[Week 1](https://elifuskuplu.github.io/files/Week1.pdf), [Week 2](https://elifuskuplu.github.io/files/Week2.pdf), [Week 3](https://elifuskuplu.github.io/files/Week3.pdf), [Week 4 & 5](https://elifuskuplu.github.io/files/Week4.pdf), [Week 6](https://elifuskuplu.github.io/files/Week6.pdf),  [Week 7](https://elifuskuplu.github.io/files/Week7.pdf), [Week 8](https://elifuskuplu.github.io/files/Week8.pdf), [Week 9](https://elifuskuplu.github.io/files/Week9.pdf), [Week 10](https://elifuskuplu.github.io/files/Week10.pdf), [Week 11](https://elifuskuplu.github.io/files/Week11.pdf)
 
 #### Quizzes & Solutions
 
