@@ -43,10 +43,7 @@ Final (39550) -- May 3 (11am -1pm)
 
 #### Exams & Solutions
 
-[Midterm 1 with solutions--Section 39530](https://elifuskuplu.github.io/files/225Sp24m1-sol.pdf)
+[Midterm 1 with solutions--Section 39530](https://elifuskuplu.github.io/files/225Sp24m1-sol.pdf), [Midterm 2 with solutions--Section 39530](https://elifuskuplu.github.io/files/F_midterm2_39530.pdf)
 
-[Midterm 1 with solutions--Section 39550](https://elifuskuplu.github.io/files/225Sp24m1-version2-sol.pdf)
 
-[Midterm 2 with solutions--Section 39530](https://elifuskuplu.github.io/files/F_midterm2_39530.pdf)
-
-[Midterm 2 with solutions--Section 39550](https://elifuskuplu.github.io/files/L_midterm2_39550.pdf)
+[Midterm 1 with solutions--Section 39550](https://elifuskuplu.github.io/files/225Sp24m1-version2-sol.pdf), [Midterm 2 with solutions--Section 39550](https://elifuskuplu.github.io/files/L_midterm2_39550.pdf)
