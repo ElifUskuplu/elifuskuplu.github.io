@@ -4,7 +4,7 @@ title:
 author_profile: true
 ---
 
-I am a lecturer in the Department of Mathematics at the [University of Southern California](https://dornsife.usc.edu/mathematics/). 
+I recently became a [Zorn's Postdoctoral Fellow](https://math.indiana.edu/about/zorn-postdoctoral-archive.html) at Indiana University, Bloomington, starting in August 2024, under the supervision of [Prof. Larry Moss](https://iulg.sitehost.iu.edu/moss/). I was a lecturer in the Department of Mathematics at the [University of Southern California](https://dornsife.usc.edu/mathematics/) in the Spring 24 semester. 
 
 I received my Ph.D from USC with the thesis named _Formalizing two-level type theory with cofibrant exo-nat_. I am studying on [homotopy type theory](https://ncatlab.org/nlab/show/homotopy+type+theory), and my thesis advisors are [Prof. Aaron Lauda](https://sites.google.com/view/lauda-home/home) and [Assoc. Prof. Michael Shulman](https://home.sandiego.edu/~shulman/). Recently, I have been awarded the Edward and Dolores Blum Research prize by the USC Graduate Committee.
 
