@@ -24,6 +24,8 @@ I earned my M.Sc. degree from [Koç University](https://science.ku.edu.tr/en/dep
 
 **Talks**
 
+7) "Navigating the New Frontier: Formalized Mathematics" - [WiMSoCal 2024](https://sites.google.com/view/wimsocal2024/) - Feb 2024.
+  
 6) "Cofibrancy of The Exo-type of Natural Numbers" - [The Second International Conference on Homotopy Type Theory](https://hott.github.io/HoTT-2023//) - May 2023.
 
 5) "Homotopy Type Theory vs Set Theory" - [GSU Research Seminars](http://math.gsu.edu.tr/seminar.html) - December 2022.
