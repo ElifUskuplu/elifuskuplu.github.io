@@ -8,7 +8,7 @@ author_profile: false
 This course is offered by IUB math department. For the official info about the course, see [here](https://academics.iu.edu/courses/bloomington/math-m-211-calculus-i.html).
 
 ##### Office Hours: 
-Every weekday 3-5pm, KAP 444B
+Mon 12-2pm, Wed 2-3pm, Fri 2-4pm, RH 449
 
 ##### Exam dates:
 In-class: Sep 20, Oct 18, Nov 15 
