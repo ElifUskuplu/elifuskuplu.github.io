@@ -12,7 +12,6 @@ My research interests span the areas of logic, foundations of mathematics, categ
 
 I earned my M.Sc. degree from [Koç University](https://science.ku.edu.tr/en/departments/mathematics/about/) in 2019, with the thesis "[LDPC codes from partially balanced incomplete block designs](https://tez.yok.gov.tr/UlusalTezMerkezi/TezGoster?key=npGs9H39x7G6401x51yqpNXM5uk3K2hJLEjxTCkRKdmxpBXGIA-yZyLf6Ca4yhy6)", under the supervision of [Prof. Emine Şule Yazıcı](https://mysite.ku.edu.tr/eyazici/). I earned my B.Sc. degree from [Bilgi University](https://www.bilgi.edu.tr/en/academic/faculty-of-engineering-and-natural-sciences/mathematics/) in 2017 with the project "The Game Of Hex & The Brouwer Fixed Point Theorem", under the supervision of [Kemal Ilgar Eroğlu](https://www.bilgi.edu.tr/en/academic/staff/kemal-ilgar-eroglu/). 
 
-
 **Publications**
 
 3) [Formalizing two-level type theory with cofibrant exo-nat](https://arxiv.org/abs/2309.09395) - Elif Uskuplu - Available on ArXiv: 2309.09395 - Sep 2023. 
@@ -21,8 +20,9 @@ I earned my M.Sc. degree from [Koç University](https://science.ku.edu.tr/en/dep
 
 1) [High-rate LDPC codes from partially balanced incomplete block designs](https://link.springer.com/article/10.1007/s10801-021-01111-0) - Diane Donovan, Aiden Price, Asha Rao, Elif Üsküplü, Emine Ş.Yazıcı - Journal of Algebraic Combinatorics - Jan 2022.
 
-
 **Talks**
+
+8) "From Propositions to Proof Assistants: A Journey through Type Theory" - [IUB Logic Seminars](https://math.indiana.edu/seminars/) - Sep 25 & Oct 2, 2024
 
 7) "Navigating the New Frontier: Formalized Mathematics" - [WiMSoCal 2024](https://sites.google.com/view/wimsocal2024/) - Feb 2024.
   
@@ -36,8 +36,7 @@ I earned my M.Sc. degree from [Koç University](https://science.ku.edu.tr/en/dep
 
 2) "Formalization of 2LTT in Agda" - MURI Meeting at CMU - July 2022. [Slide](https://elifuskuplu.github.io/files/elif-2ltt.pdf)  
 
-1) "A brief Introduction to Homotopy Type Theory" - USC Math Grad Colloquium - February 2022. 
-
+1) "A brief Introduction to Homotopy Type Theory" - USC Math Grad Colloquium - February 2022.
 
 **Notes**
 
