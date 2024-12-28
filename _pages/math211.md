@@ -25,7 +25,12 @@ FA24-BL-MATH-M211-5585 Entry code: DK6652
 
 #### Lecture Notes
 
-#### Assignments & Solutions
+[File](https://elifuskuplu.github.io/files/Lecture-notes.pdf)
 
 #### Exams & Solutions
+
+[In-class exam I](https://elifuskuplu.github.io/files/exam_1.pdf)
+[In-class exam II](https://elifuskuplu.github.io/files/exam_2.pdf)
+[In-class exam III](https://elifuskuplu.github.io/files/exam_3.pdf)
+
 
