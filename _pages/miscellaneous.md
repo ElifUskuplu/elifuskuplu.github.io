@@ -5,6 +5,9 @@ permalink: /miscellaneous/
 author_profile: true
 ---
 
+{% include base_path %}
+
+------
 The following are the writings and notes about various stuff other than math.
 
 * A study about philosophy of sciences, presented at 13th Turkish Postgraduate Studies Congress by coauthor Hilal Ugur (in Turkish)
