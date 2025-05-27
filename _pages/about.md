@@ -22,6 +22,8 @@ I earned my M.Sc. degree from [Koç University](https://science.ku.edu.tr/en/dep
 
 **Talks**
 
+10) "Monotonicity and Natural Logic: Tracking Meaning with Arrows" - [AWM Research Symposium, Logic Across Mathematics Session](https://awm-math.org/abstract/monotonicity-and-natural-logic-tracking-meaning-with-arrows/) - May 17 2025
+
 9) "Formalizing locally nameless syntax with cofinite quantification" - [WITS' 25](https://popl25.sigplan.org/home/wits-2025#About) - Jan 25 2025
 
 8) "From Propositions to Proof Assistants: A Journey through Type Theory" - [IUB Logic Seminars](https://math.indiana.edu/seminars/) - Sep 25 & Oct 2, 2024
