@@ -14,13 +14,15 @@ I earned my M.Sc. degree from [Koç University](https://science.ku.edu.tr/en/dep
 
 **Publications**
 
-3) [Formalizing two-level type theory with cofibrant exo-nat](https://arxiv.org/abs/2309.09395) - Elif Uskuplu - Available on ArXiv: 2309.09395 - Sep 2023. 
+3) [Formalizing two-level type theory with cofibrant exo-nat](https://arxiv.org/abs/2309.09395) - Elif Uskuplu - accepted to Mathematical Structures in Computer Science - Available on ArXiv: 2309.09395 - Sep 2023. 
 
 2) [QC-LDPC Codes from Difference Matrices and Difference Covering Arrays](https://ieeexplore.ieee.org/document/10131907) - Diane Donovan, Asha Rao, Elif Üsküplü, Emine Ş.Yazıcı - in IEEE Access, vol. 11, pp. 52141-52157 - Jun 2023.
 
 1) [High-rate LDPC codes from partially balanced incomplete block designs](https://link.springer.com/article/10.1007/s10801-021-01111-0) - Diane Donovan, Aiden Price, Asha Rao, Elif Üsküplü, Emine Ş.Yazıcı - Journal of Algebraic Combinatorics - Jan 2022.
 
 **Talks**
+
+11) "Enhancing Dependency Graphs for Research and Alignment in Math" - [The Workshop on Math Datasets: Alignments and Comparisons (Align 2025)](https://sites.google.com/view/align2025/welcome) - Oct 10 2025
 
 10) "Monotonicity and Natural Logic: Tracking Meaning with Arrows" - [AWM Research Symposium, Logic Across Mathematics Session](https://awm-math.org/abstract/monotonicity-and-natural-logic-tracking-meaning-with-arrows/) - May 17 2025
 
@@ -48,8 +50,14 @@ Documentation for the `two-level` flag in Agda Library [Link](https://agda.readt
 
 **Projects**
 
-1) Formalization of 2LTT & Univalence Principle in Agda - Available on [Github](https://github.com/ElifUskuplu/2LTT-Agda).
+6) Narya: A proof assistant for higher-dimensional type theory (as a contributor), Avaliable on [Github](https://github.com/gwaithimirdain/narya).
+
+5) PrimeNumberTheoremAnd: Formalization of the Prime Number Theorem in Lean4 (as a contributor)}, Avaliable on [Github](https://github.com/AlexKontorovich/PrimeNumberTheoremAnd).
+
+4) Combinatorial Designs Formalization in Lean4, with Eric Jonathan Wang.
+
+3) Formalization of 2LTT & Univalence Principle in Agda - Available on [Github](https://github.com/ElifUskuplu/2LTT-Agda).
  
 2) Univalent mathematics in Agda (as a contributor) - Available on [Github](https://github.com/UniMath/agda-unimath).
 
-3) Simply Typed Lambda Calculus with de Bruijn Indices in Lean4 - Available on [Github](https://github.com/ElifUskuplu/Stlc_deBruijn).
+1) Simply Typed Lambda Calculus with de Bruijn Indices in Lean4 - Available on [Github](https://github.com/ElifUskuplu/Stlc_deBruijn).
