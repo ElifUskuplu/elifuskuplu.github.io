@@ -7,6 +7,9 @@ author_profile: true
 
 ## Postdoc, Indiana University, Bloomington.
 
+* Math 782 : Selected Topics in Mathematical Logic: The Introduction to Type Theory and Proof Assistants (Spring 2026)
+* Math 106 : The Mathematics of Decision and Beauty (Fall 2025)
+* Math 384 : Logic (Fall 2025)
 * Math 303 : Linear Algebra for Undergraduates (Spring 2025)
 * Math 391 : Introduction to Mathematical Reasoning (Spring 2025)
 * Math 211 : [Calculus I](https://elifuskuplu.github.io/teaching/math211) (Fall 2024).
