@@ -14,7 +14,7 @@ I earned my M.Sc. degree from [Koç University](https://science.ku.edu.tr/en/dep
 
 **Publications**
 
-3) [Formalizing two-level type theory with cofibrant exo-nat](https://arxiv.org/abs/2309.09395) - Elif Uskuplu - accepted to Mathematical Structures in Computer Science - Available on ArXiv: 2309.09395 - Sep 2023. 
+3) [Formalizing two-level type theory with cofibrant exo-nat](https://www.cambridge.org/core/journals/mathematical-structures-in-computer-science/article/formalizing-twolevel-type-theory-with-cofibrant-exonat/79627E24D3654F9BB1669E8726E44ECD) - Elif Uskuplu - Mathematical Structures in Computer Science - vol. 35, p. e30 - Nov 2025.
 
 2) [QC-LDPC Codes from Difference Matrices and Difference Covering Arrays](https://ieeexplore.ieee.org/document/10131907) - Diane Donovan, Asha Rao, Elif Üsküplü, Emine Ş.Yazıcı - in IEEE Access, vol. 11, pp. 52141-52157 - Jun 2023.
 
