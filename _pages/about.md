@@ -14,7 +14,7 @@ I earned my M.Sc. degree from [Koç University](https://science.ku.edu.tr/en/dep
 
 **Service**
 
-1) Program Committee Member - LSFA 2026: Logical and Semantic Frameworks with Applications
+1) Program Committee Member - [LSFA 2026](https://lsfa-workshop.github.io/2026/): Logical and Semantic Frameworks with Applications
 
 **Publications**
 
