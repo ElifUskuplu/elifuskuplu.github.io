@@ -8,7 +8,7 @@ I am a [Zorn's Postdoctoral Fellow](https://math.indiana.edu/about/zorn-postdoct
 
 My research interests span logic, foundations of mathematics, category theory, homotopy type theory, and natural logic. I am also interested in formalization of mathematics and the ethical use of AI in mathematics and education. My secondary research interests include combinatorial design theory and coding theory.
 
-I received my Ph.D from USC with the thesis named _Formalizing two-level type theory with cofibrant exo-nat_. I am studying on [homotopy type theory](https://ncatlab.org/nlab/show/homotopy+type+theory), and my thesis advisors are [Prof. Aaron Lauda](https://sites.google.com/view/lauda-home/home) and [Assoc. Prof. Michael Shulman](https://home.sandiego.edu/~shulman/). 
+I received my Ph.D from USC with the thesis named _Formalizing two-level type theory with cofibrant exo-nat_. I am studying on [homotopy type theory](https://ncatlab.org/nlab/show/homotopy+type+theory), and my thesis advisors are [Prof. Aaron Lauda](https://sites.google.com/view/lauda-home/home) and [Prof. Michael Shulman](https://home.sandiego.edu/~shulman/). 
 
 I have been awarded the Edward and Dolores Blum Research Prize by the USC Graduate Committee. More recently, I received the Max Zorn Teaching Award from the Department of Mathematics at Indiana University in recognition of excellence in teaching.
 
