@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polarity Tagger — build a CCG derivation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@800&display=swap">
+<style>
+  :root {
+    --bg: #ffffff;            /* white background */
+    --panel: #f3f5fa;
+    --panel-2: #e7ecf6;
+    --ink: #131a2e;          /* deep navy text (was the old background) */
+    --ink-dim: #5a6378;
+    --line: #c9d2e4;
+    --accent: #a8801f;        /* brass, darkened for light bg: rules, lines */
+    --up: #2b7fa8;            /* polarity up */
+    --down: #c25a36;         /* polarity down */
+    --eq: #5a6378;           /* polarity equals */
+    --pick: #d6e0f5;
+    --pick-edge: #4a6aa0;
+    --mono: "SFMono-Regular", "JetBrains Mono", "Menlo", "Consolas", monospace;
+    --sans: "Inter", system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: var(--sans); line-height: 1.5;
+  }
+  .topbar {
+    padding: 24px 28px 20px; border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 64px; flex-wrap: wrap;
+  }
+  /* arrow-P wordmark: capital P whose stem is two arrows (polarity up/down) */
+  .brand {
+    flex: 0 0 auto; display: inline-block; white-space: nowrap;
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif; font-weight: 800;
+    font-size: 35.4px; letter-spacing: -0.02em; line-height: 1; color: var(--ink);
+  }
+  .brand .brand-p {
+    display: inline-block; overflow: visible;
+    vertical-align: 9.2px; transform: translateY(18px); margin-right: -3.1px;
+  }
+  .flowstrip { flex: 0 1 580px; min-width: 340px; }
+  .flowstrip svg { width: 100%; max-width: 580px; height: auto; display: block; }
+  main { padding: 24px 28px 80px; max-width: 1200px; margin: 0 auto; }
+
+  .inputrow { display: flex; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+  .inputrow input {
+    flex: 1; min-width: 280px; background: var(--panel); color: var(--ink);
+    border: 1px solid var(--line); border-radius: 8px; padding: 11px 14px;
+    font-family: var(--mono); font-size: 14px;
+  }
+  .inputrow input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  button {
+    background: var(--panel-2); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 8px; padding: 11px 16px; font-size: 13px; cursor: pointer;
+    font-family: var(--sans); transition: background .12s, border-color .12s;
+  }
+  button:hover { background: var(--pick); border-color: var(--pick-edge); }
+  button.primary { background: #d6ab4a; color: #3a2c08; border-color: #c79a35; font-weight: 600; }
+  button.primary:hover { background: #c79a35; }
+  #loadBtn.primary, #applyEditorsBtn.primary { background: #f3d49a; color: #633806; border-color: #854f0b; }
+  #loadBtn.primary:hover, #applyEditorsBtn.primary:hover { background: #edc77f; }
+  #tagBtn.primary { background: #a8e0cb; color: #085041; border-color: #0f6e56; }
+  #tagBtn.primary:hover { background: #93d8bb; }
+  button:disabled { opacity: .4; cursor: not-allowed; }
+
+  .hint { color: var(--ink-dim); font-size: 12.5px; margin: 6px 2px 18px; }
+  footer.ai-note {
+    margin-top: 28px; padding: 14px 28px 18px;
+    border-top: 1px solid var(--line);
+    color: var(--ink-dim); font-size: 12.5px; line-height: 1.55;
+  }
+  .lexnote b { color: var(--ink); font-weight: 600; }
+
+  /* derivation workspace */
+  .workspace {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 20px; min-height: 140px; margin-bottom: 16px; overflow-x: auto;
+  }
+  .nodes { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
+  .node {
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 9px;
+    padding: 9px 12px 8px; cursor: pointer; user-select: none;
+    text-align: center; min-width: 64px; transition: border-color .12s, background .12s, transform .08s;
+  }
+  .node:hover { border-color: var(--pick-edge); transform: translateY(-1px); }
+  .node.sel { border-color: var(--accent); background: var(--pick); }
+  .node .word { font-family: var(--sans); font-size: 12px; color: var(--ink-dim); margin-bottom: 3px; }
+  .node .cat  { font-family: var(--mono); font-size: 13.5px; color: var(--ink); }
+  .node .cat.catswitch { cursor: pointer; border-bottom: 1px dashed var(--pick-edge); }
+  .node .cat.catswitch:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  .node .switchhint { font-size: 11px; color: var(--accent); opacity: .8; }
+  .mono { font-family: var(--mono); }
+  .node .built { font-family: var(--mono); font-size: 11px; color: var(--accent); margin-top: 3px; }
+
+  .rulebar { display: flex; gap: 16px; margin: 16px 0 6px; align-items: flex-start; flex-wrap: nowrap; }
+  .rule-group { display: flex; flex-direction: column; gap: 8px; flex: 1 1 auto; min-width: 0; }
+  .rule-line { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .action-group { display: flex; gap: 8px; align-items: center; flex: 0 0 auto; }
+  .rule-line .lab { color: var(--ink-dim); font-size: 12px; min-width: 78px; text-align: right; }
+  .rulebar button.rule { padding: 6px 11px; font-family: var(--mono); font-size: 11px; }
+  .rulebar #undoBtn, .rulebar #tagBtn { padding: 8px 13px; font-size: 13px; }
+  @media (max-width: 640px) {
+    .rulebar { flex-wrap: wrap; }
+    .action-group { margin-left: auto; }
+  }
+
+  .status { font-size: 12.5px; color: var(--ink-dim); margin: 10px 2px; min-height: 18px; }
+  .status.err { color: var(--down); }
+  .status.ok { color: var(--up); }
+
+  /* polarities summary (shown prominently at the top of the output) */
+  .summary {
+    font-family: var(--mono); font-size: 19px; line-height: 1.45;
+    color: var(--ink); margin: 14px 0 6px; font-weight: 600;
+  }
+  .summary .summary-label { color: var(--ink-dim); font-weight: 600; margin-right: 4px; }
+  .summary .trees-note {
+    display: block; font-family: var(--sans); font-size: 13px;
+    font-weight: 400; color: var(--ink-dim); margin-top: 8px;
+  }
+
+  /* output derivations */
+  .out { margin-top: 26px; }
+  .out h2 {
+    font-size: 13px; font-weight: 600; color: var(--ink-dim);
+    letter-spacing: .4px; margin: 26px 0 10px; padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+  }
+  /* tree variables T, T-hat, T-bar drawn with an overlaid accent so the hat
+     and bar sit directly above the T in any font */
+  .treevar { position: relative; display: inline-block; font-style: normal; font-weight: 700; padding: 0 2px; }
+  .treevar.hat::before {
+    content: "\005E"; position: absolute; top: -0.34em; left: 50%;
+    transform: translateX(-50%) scaleX(1.5); font-weight: 400;
+    font-size: 0.85em; line-height: 1;
+  }
+  .treevar.bar::before {
+    content: ""; position: absolute; top: -0.12em; left: 1px; right: 1px;
+    height: 1.5px; background: currentColor;
+  }
+  pre.deriv {
+    font-family: var(--mono); font-size: 13px; line-height: 1.5; color: var(--ink);
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 18px; overflow-x: auto; margin: 0; white-space: pre;
+  }
+
+  /* editor panels */
+  .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 18px 0; }
+  @media (max-width: 880px){ .panels { grid-template-columns: 1fr; } }
+  .panel-box { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .panel-box h3 { font-size: 13px; font-weight: 600; margin: 0 0 4px; color: var(--ink); letter-spacing:.2px; }
+  .panel-box .desc { font-size: 12px; color: var(--ink-dim); margin: 0 0 12px; line-height:1.5; }
+  .lexrow { display: grid; grid-template-columns: 190px 1fr; gap: 8px; align-items: center; margin-bottom: 6px; }
+  .lexrow label { font-family: var(--mono); font-size: 12px; color: var(--ink-dim); text-align: right; line-height:1.3; white-space: nowrap; }
+  .lexrow input { background: var(--panel-2); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 6px; padding: 6px 9px; font-family: var(--mono); font-size: 12.5px; }
+  .lexrow input:focus { outline: 1.5px solid var(--accent); outline-offset:-1px; }
+  .lexrow input.bad { border-color: var(--down); }
+  .lexrow input.param { opacity: 0.7; font-style: italic; cursor: default; }
+  .lexnote-sm { grid-column: 1 / -1; font-size: 11px; color: var(--ink-dim); margin: 2px 0 4px;
+    line-height: 1.5; }
+  .lexnote-sm b { color: var(--ink); font-family: var(--mono); }
+  .lexgroup { font-size:11px; color:var(--accent); text-transform:uppercase; letter-spacing:.5px;
+    margin:12px 0 6px; opacity:.85; }
+  .lexgroup:first-child { margin-top:0; }
+  textarea#repair { width:100%; min-height: 220px; background: var(--panel-2); color: var(--ink);
+    border:1px solid var(--line); border-radius:8px; padding:11px 13px; font-family: var(--mono);
+    font-size:12.5px; line-height:1.55; resize:vertical; }
+  textarea#repair:focus { outline:1.5px solid var(--accent); outline-offset:-1px; }
+  .minierr { color: var(--down); font-size:12px; margin-top:8px; min-height:16px; }
+  .editor-actions { margin-top:10px; display:flex; gap:8px; }
+  details.help { margin: 6px 0 14px; }
+  details.help summary { cursor:pointer; color: var(--ink-dim); font-size:12.5px; }
+  details.help .body { font-size:12.5px; color: var(--ink-dim); line-height:1.6; margin-top:8px;
+    border-left:2px solid var(--line); padding-left:12px; }
+  details.help code { font-family: var(--mono); color: var(--ink); background: var(--panel-2);
+    padding:1px 5px; border-radius:4px; }
+  .pol-up { color: #c41e1e; font-weight: 600; }
+  .pol-down { color: #c41e1e; font-weight: 600; }
+  .pol-eq { color: #c41e1e; font-weight: 600; }
+  .ty-mark  { color: #1e7fb0; }                      /* markings: light blue */
+  .rule-name { color: #2f8f3f; font-weight: 600; }   /* rule names: green */
+  .rulebar button.rule { color: #2f8f3f; font-weight: 600; }  /* rule buttons green */
+  .node .built { color: #2f8f3f !important; }                 /* card rule label green */
+  .exlink { cursor: pointer; color: #1e7fb0; border-bottom: 1px dotted #1e7fb0; }
+  .exlink:hover { color: #9a7616; border-bottom-color: #9a7616; }
+  /* structured info block */
+  .lexnote { font-size: 12.5px; margin: 8px 0 4px; }
+  .lx-row { display: grid; grid-template-columns: 86px 1fr; gap: 12px; padding: 6px 0;
+    border-top: 0.5px solid var(--line); align-items: start; }
+  .lx-row:first-child { border-top: none; }
+  .lx-key { color: var(--accent); font-weight: 600; font-size: 11px; text-transform: uppercase;
+    letter-spacing: .5px; padding-top: 2px; }
+  .lx-val { color: var(--ink-dim); line-height: 1.7; }
+  .lx-val b { color: var(--ink); font-weight: 600; }
+  .lx-cat { color: var(--ink); font-weight: 600; }
+  .lx-cat-line { padding: 2px 0; }
+  .lx-cat-line .lx-cat { display: inline-block; min-width: 150px; }
+  .lx-examples { display: flex; flex-wrap: wrap; gap: 6px; }
+  .lx-examples .exlink { border: 0.5px solid var(--line); border-radius: 6px; padding: 3px 9px;
+    color: #1e7fb0; border-bottom: 0.5px solid var(--line); background: var(--panel);
+    white-space: nowrap; }
+  .lx-examples .exlink:hover { border-color: #9a7616; color: #9a7616; }
+
+  /* slide-guide banner above the input */
+  .prebanner { font-size: 13px; color: var(--ink-dim); margin: 0 0 14px;
+    padding: 10px 14px; background: var(--panel); border: 0.5px solid var(--line);
+    border-radius: 8px; }
+  .prebanner a { color: #1e7fb0; font-weight: 600; }
+  .prebanner a:hover { color: #9a7616; }
+
+  /* two-column words / examples layout */
+  .lx-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px;
+    align-items: stretch; }
+  .lx-col { display: flex; flex-direction: column; }
+  .lx-col .lx-key { color: var(--accent); font-weight: 600; font-size: 11px;
+    text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+  .lx-col .lx-val { color: var(--ink-dim); line-height: 1.7; }
+  .lx-col .lx-examples { align-content: flex-start; }
+  @media (max-width: 760px) {
+    .lx-cols { grid-template-columns: 1fr; gap: 18px; }
+  }
+
+
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand" aria-label="Polarity Tagger">
+    <svg class="brand-p" width="42.8" height="60.5" viewBox="0 -22 102 144" aria-hidden="true">
+      <path d="M42,1 C 84,-3 98,17 98,35 C 98,55 80,60 42,57" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"></path>
+      <g fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="14" y1="100" x2="14" y2="-8"></line>
+        <path d="M3,4 L14,-13 L25,4"></path>
+        <line x1="42" y1="1" x2="42" y2="108"></line>
+        <path d="M31,95 L42,113 L53,95"></path>
+      </g>
+    </svg><span>olarity&nbsp;Tagger</span>
+  </div>
+  <div class="flowstrip">
+    <svg viewBox="0 0 680 96" role="img" aria-label="Workflow: type a sentence, load words, build the CCG derivation, then tag to read off polarities">
+    <defs>
+      <marker id="flowarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="#73726c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+    </defs>
+    <g>
+      <rect x="8" y="22" width="132" height="50" rx="8" fill="#f1efe8" stroke="#5f5e5a" stroke-width="0.5"/>
+      <text x="74" y="42" text-anchor="middle" fill="#444441" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600">Type a sentence</text>
+      <text x="74" y="59" text-anchor="middle" fill="#5f5e5a" font-family="Inter, system-ui, sans-serif" font-size="11">e.g. Fido runs</text>
+    </g>
+    <line x1="144" y1="47" x2="174" y2="47" stroke="#73726c" stroke-width="1.5" marker-end="url(#flowarrow)"/>
+    <g>
+      <rect x="178" y="22" width="120" height="50" rx="8" fill="#faeeda" stroke="#854f0b" stroke-width="0.5"/>
+      <text x="238" y="42" text-anchor="middle" fill="#633806" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600">Load</text>
+      <text x="238" y="59" text-anchor="middle" fill="#854f0b" font-family="Inter, system-ui, sans-serif" font-size="11">get the cards</text>
+    </g>
+    <line x1="302" y1="47" x2="332" y2="47" stroke="#73726c" stroke-width="1.5" marker-end="url(#flowarrow)"/>
+    <g>
+      <rect x="336" y="22" width="156" height="50" rx="8" fill="#eeedfe" stroke="#534ab7" stroke-width="0.5"/>
+      <text x="414" y="42" text-anchor="middle" fill="#3c3489" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600">Build derivation</text>
+      <text x="414" y="59" text-anchor="middle" fill="#534ab7" font-family="Inter, system-ui, sans-serif" font-size="11">combine to one S</text>
+    </g>
+    <line x1="496" y1="47" x2="526" y2="47" stroke="#73726c" stroke-width="1.5" marker-end="url(#flowarrow)"/>
+    <g>
+      <rect x="530" y="22" width="142" height="50" rx="8" fill="#e1f5ee" stroke="#0f6e56" stroke-width="0.5"/>
+      <text x="601" y="42" text-anchor="middle" fill="#085041" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600">Tag</text>
+      <text x="601" y="59" text-anchor="middle" fill="#0f6e56" font-family="Inter, system-ui, sans-serif" font-size="11">read off polarities</text>
+    </g>
+    </svg>
+  </div>
+</div>
+<main>
+  <div class="prebanner">
+    New here? <a href="YOUR_SLIDE_URL_HERE" target="_blank" rel="noopener">Please see this short guide</a> before using the app.
+  </div>
+  <div class="inputrow">
+    <input id="sentence" type="text" placeholder="type your sentence"
+           autocomplete="off" spellcheck="false">
+    <button id="loadBtn" class="primary">Load</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+  <div id="lexnote" class="lexnote"></div>
+
+  <div class="workspace">
+    <div id="nodes" class="nodes"></div>
+  </div>
+
+  <div class="rulebar">
+    <div class="rule-group">
+      <div class="rule-line">
+        <span class="lab">apply rule:</span>
+        <button data-rule=">"   class="rule">&gt; forward app</button>
+        <button data-rule="<"   class="rule">&lt; backward app</button>
+        <button data-rule="Tf"  class="rule">&gt;T forward raise</button>
+        <button data-rule="Tb"  class="rule">&lt;T backward raise</button>
+        <button data-rule="Phi" class="rule">&Phi; coordinate</button>
+      </div>
+      <div class="rule-line">
+        <span class="lab"></span>
+        <button data-rule="Bf"  class="rule">&gt;B forward comp</button>
+        <button data-rule="Bb"  class="rule">&lt;B backward comp</button>
+        <button data-rule="Bfx" class="rule">&gt;B&#215; forward crossed comp</button>
+        <button data-rule="Bbx" class="rule">&lt;B&#215; backward crossed comp</button>
+      </div>
+    </div>
+    <div class="action-group">
+      <button id="undoBtn">Undo</button>
+      <button id="tagBtn" class="primary">Tag</button>
+    </div>
+  </div>
+  <div id="status" class="status"></div>
+
+  <div id="output" class="out"></div>
+
+  <div class="panels">
+    <div class="panel-box">
+      <h3>Semantic lexicon</h3>
+      <p class="desc">The marking-enriched type of each word. Defaults are the author's lexicon; edit any
+        of them. Types are built from base <code>e</code>, <code>t</code>, <code>num</code> and marked
+        arrows (<code>-&gt;+</code>, <code>-&gt;-</code>, <code>-&gt;</code> for the dot).</p>
+      <div id="lexEditor"></div>
+      <div id="lexErr" class="minierr"></div>
+    </div>
+    <div class="panel-box">
+      <h3>Adapt function</h3>
+      <p class="desc">The Adapt function is a list of fix-up lines. When two types
+        do not fit during tagging, the tool tries these lines from top to bottom and
+        uses the first one that matches. If none matches, nothing changes and tagging
+        fails at that spot.</p>
+      <p class="desc">One line looks like this:</p>
+      <p class="desc"><code>RULE : inLeft , inRight =&gt; outLeft , outRight :: polLeft , polRight :: LABEL</code></p>
+      <p class="desc"><b>RULE</b> says where the line may fire: <code>app</code> (application),
+        <code>comp</code> (composition), or <code>coord</code> (coordination).</p>
+      <p class="desc"><b>inLeft , inRight</b> are the two types coming in, and
+  	<b>outLeft , outRight</b> are the two types you want instead. The two slots
+  	are fixed by role, not by word order: <b>inLeft</b> is the functor (app),
+  	the premise that supplies the result codomain (comp), or the left conjunct
+  	(coord); <b>inRight</b> is the other one. In a backward rule the functor
+  	sits on the right in the sentence but still matches <b>inLeft</b>. In these
+  	patterns, an Uppercase letter (like <code>T</code>) stands for any type, and
+  	a lowercase letter (like <code>m</code>) stands for any marking. The tool
+  	matches the incoming types, then rewrites them to the output.</p>
+      <p class="desc">The last two parts are optional.</p>
+      <p class="desc"><b>polLeft , polRight</b> tell each rewritten side how to pass its
+        polarity down to its child. You can write <code>d</code> (keep the polarity as it
+        is), <code>up</code>, <code>down</code>, <code>eq</code>, <code>flip(...)</code>
+        (turn up into down and back), or <code>md(..., dom)</code> (combine the polarity
+        with a marking taken from the new type; use <code>dom</code> or <code>cod</code>
+        to point at which arrow). If you leave this out, both sides keep their polarity
+        (<code>d , d</code>).</p>
+      <p class="desc"><b>LABEL</b> is just the name shown on the node in the tree. If you
+        leave it out, it shows <code>ADAPT</code>.</p>
+      <textarea id="repair" spellcheck="false" placeholder="# empty = identity adapt (raw algorithm)"></textarea>
+      <div class="editor-actions">
+        <button id="applyEditorsBtn" class="primary">Apply</button>
+        <button id="loadHBtn">Insert H</button>
+        <button id="loadWBtn">Insert W</button>
+      </div>
+      <div id="repairErr" class="minierr"></div>
+      <details class="help">
+        <summary>What does the H example do?</summary>
+        <div class="body">The verb-lifting rule H. When application meets a verb
+          <code>e -&gt; T</code> and a quantifier argument <code>(e-&gt;t) -&gt;m t</code>, it enlarges
+          the verb's argument slot so it can take the quantifier:
+          <code>app : e -&gt; T , (e-&gt;t) -&gt;m t =&gt; ((e-&gt;t) -&gt;m t) -&gt;+ T , (e-&gt;t) -&gt;m t</code>.
+          With an empty adapt box you see the raw algorithm, which fails exactly where a fix is needed.</div>
+      </details>
+      <details class="help">
+        <summary>What does the W example do?</summary>
+        <div class="body">The weakening rule W, for coordination. Coordination first lifts any bare
+          individual <code>e</code> to <code>np+ = (e-&gt;t) -&gt;+ t</code> on its own (the Montague
+          lift), so the two conjuncts arrive as quantifiers. If their types still differ, W sends
+          both to their <b>join</b> <code>&#8744;</code>, the least upper bound of the two types in a
+          preorder on types: <code>coord : A , B =&gt; Join(A, B) , Join(A, B)</code>. For example
+          <code>np+ &#8744; np- = np&#8226;</code>. For the details, see [Reference].</div>
+      </details>
+    </div>
+  </div>
+</main>
+
+<script>
+"use strict";
+"use strict";
+/* =====================================================================
+   CORE LOGIC — to be embedded in the tagger HTML after validation here.
+   Pieces: type DSL (parse/show/unify/subst), repair engine, Enrich
+   (marking-enrichment, bottom-up), polarize (top-down).
+   ===================================================================== */
+
+/* ---------------- type AST + DSL ---------------- */
+const BASE = new Set(['e','t','num']);
+const isUpper = s => /^[A-Z][A-Za-z0-9_]*$/.test(s);
+const isLower = s => /^[a-z][A-Za-z0-9_]*$/.test(s);
+
+function tokenize(src){
+  const toks=[]; let i=0; const n=src.length;
+  while(i<n){
+    const c=src[i];
+    if(/\s/.test(c)){i++;continue;}
+    if(c==='('){toks.push({t:'('});i++;continue;}
+    if(c===')'){toks.push({t:')'});i++;continue;}
+    if(c==='-'&&src[i+1]==='>'){
+      i+=2;
+      if(i<n&&(src[i]==='+'||src[i]==='-'||src[i]==='.')){toks.push({t:'arr',mark:src[i]});i++;continue;}
+      let j=i; while(j<n&&/[A-Za-z0-9_]/.test(src[j]))j++;
+      if(j>i){
+        const name=src.slice(i,j);
+        if(isLower(name)&&!BASE.has(name)){toks.push({t:'arr',mark:{mvar:name}});i=j;continue;}
+        toks.push({t:'arr',mark:'.'});continue;
+      }
+      toks.push({t:'arr',mark:'.'});continue;
+    }
+    let j=i; while(j<n&&/[A-Za-z0-9_]/.test(src[j]))j++;
+    if(j>i){toks.push({t:'id',v:src.slice(i,j)});i=j;continue;}
+    throw new Error("unexpected character '"+c+"'");
+  }
+  return toks;
+}
+function parseType(src){
+  const toks=tokenize(src); let p=0;
+  const peek=()=>toks[p], next=()=>toks[p++];
+  function atom(){
+    const tk=peek();
+    if(!tk) throw new Error('unexpected end of type');
+    if(tk.t==='('){next(); const inner=expr(); const cl=next();
+      if(!cl||cl.t!==')') throw new Error('missing )'); return inner;}
+    if(tk.t==='id'){next();
+      if(BASE.has(tk.v)) return {k:'base',name:tk.v};
+      if(isUpper(tk.v)) return {k:'tvar',name:tk.v};
+      throw new Error("unknown token '"+tk.v+"' (base: e,t,num; type vars: Uppercase)");}
+    throw new Error("expected a type");
+  }
+  function expr(){
+    const left=atom(); const tk=peek();
+    if(tk&&tk.t==='arr'){next(); const right=expr(); return {k:'arr',dom:left,cod:right,mark:tk.mark};}
+    return left;
+  }
+  const ty=expr();
+  if(p!==toks.length) throw new Error('trailing tokens in type');
+  return ty;
+}
+function markSym(m){
+  if(m==='+')return '+'; if(m==='-')return '\u2212'; if(m==='.')return '\u2022';
+  if(m&&m.mvar)return m.mvar; return '?';
+}
+function showType(ty){
+  if(ty.k==='base')return ty.name;
+  if(ty.k==='tvar')return ty.name;
+  return '('+showType(ty.dom)+' \u2192'+markSym(ty.mark)+' '+showType(ty.cod)+')';
+}
+function eqType(a,b){
+  if(a.k!==b.k)return false;
+  if(a.k==='base')return a.name===b.name;
+  if(a.k==='tvar')return a.name===b.name;
+  return a.mark===b.mark&&eqType(a.dom,b.dom)&&eqType(a.cod,b.cod);
+}
+function emptySubst(){return {tv:{},mv:{}};}
+function applySubst(ty,s){
+  if(ty.k==='base')return ty;
+  if(ty.k==='tvar')return s.tv[ty.name]?applySubst(s.tv[ty.name],s):ty;
+  return {k:'arr',dom:applySubst(ty.dom,s),cod:applySubst(ty.cod,s),mark:applyMark(ty.mark,s)};
+}
+function applyMark(m,s){ if(m&&m.mvar)return s.mv[m.mvar]!==undefined?s.mv[m.mvar]:m; return m; }
+function unify(pat,tgt,s){
+  s=s||emptySubst(); pat=applySubst(pat,s);
+  if(pat.k==='tvar'){
+    const prior=s.tv[pat.name];
+    if(prior)return eqType(applySubst(prior,s),tgt)?s:null;
+    s.tv[pat.name]=tgt; return s;
+  }
+  if(pat.k==='base')return (tgt.k==='base'&&tgt.name===pat.name)?s:null;
+  if(tgt.k!=='arr')return null;
+  if(!unifyMark(pat.mark,tgt.mark,s))return null;
+  if(!unify(pat.dom,tgt.dom,s))return null;
+  if(!unify(pat.cod,tgt.cod,s))return null;
+  return s;
+}
+function unifyMark(pm,tm,s){
+  if(pm&&pm.mvar){const prior=s.mv[pm.mvar];
+    if(prior!==undefined)return prior===tm; s.mv[pm.mvar]=tm; return true;}
+  return pm===tm;
+}
+
+/* ---------------- repair DSL ---------------- */
+const REPAIR_RULES=new Set(['app','comp','coord']);
+function splitTopComma(s){
+  const out=[]; let d=0,cur='';
+  for(const c of s){
+    if(c==='('){d++;cur+=c;} else if(c===')'){d--;cur+=c;}
+    else if(c===','&&d===0){out.push(cur);cur='';} else cur+=c;
+  }
+  out.push(cur); return out.map(x=>x.trim());
+}
+// A line has three parts separated by '::' :
+//   RULE : leftPat, rightPat => leftOut, rightOut  ::  leftPol, rightPol  ::  LABEL
+// The last two parts are optional. Defaults: polarity rules = (d, d) i.e. the
+// child keeps the incoming polarity (monotone); label = ADAPT. The polarity
+// rules and label are inputs the user supplies per line; the core never names
+// any particular adaptation.
+function parseRepairProgram(text){
+  const rules=[];
+  text.split('\n').forEach((raw,idx)=>{
+    const line=raw.replace(/#.*$/,'').trim();
+    if(!line)return;
+    const parts=line.split('::').map(s=>s.trim());
+    const core=parts[0];
+    const colon=core.indexOf(':');
+    if(colon<0)throw new Error('line '+(idx+1)+': expected RULE : pat,pat => out,out');
+    const ruleName=core.slice(0,colon).trim().toLowerCase();
+    if(!REPAIR_RULES.has(ruleName))throw new Error('line '+(idx+1)+": rule must be app, comp, or coord");
+    const rest=core.slice(colon+1); const ap=rest.indexOf('=>');
+    if(ap<0)throw new Error('line '+(idx+1)+": expected '=>'");
+    const lp=splitTopComma(rest.slice(0,ap)), rp=splitTopComma(rest.slice(ap+2));
+    if(lp.length!==2)throw new Error('line '+(idx+1)+': left of => needs two patterns');
+    if(rp.length!==2)throw new Error('line '+(idx+1)+': right of => needs two templates');
+    // polarity rules (optional)
+    let leftPol={kind:'d'}, rightPol={kind:'d'};
+    if(parts.length>1 && parts[1]!==''){
+      const pl=splitTopComma(parts[1]);
+      if(pl.length!==2)throw new Error('line '+(idx+1)+': polarity part needs two rules: leftPol, rightPol');
+      try{ leftPol=parsePol(pl[0]); rightPol=parsePol(pl[1]); }
+      catch(e){ throw new Error('line '+(idx+1)+': '+e.message); }
+    }
+    // label (optional)
+    let label='ADAPT';
+    if(parts.length>2 && parts[2]!=='') label=parts[2];
+    if(parts.length>3) throw new Error('line '+(idx+1)+': too many :: sections');
+    rules.push({rule:ruleName, leftPat:parseType(lp[0]), rightPat:parseType(lp[1]),
+                leftOut:parseOut(rp[0]), rightOut:parseOut(rp[1]),
+                leftPol, rightPol, label, lineno:idx+1});
+  });
+  return rules;
+}
+// A polarity rule maps the incoming polarity d (and, via md, the marks of this
+// side's rewritten type) to the polarity its child receives. Grammar:
+//   pol  := d | up | down | eq | flip( pol ) | md( pol , path )
+//   path := (empty = top arrow) | step ('.' step)*   where step in {dom, cod}
+// Evaluated by evalPol against the node's new type.
+function parsePol(src){
+  const s=src.trim();
+  if(s==='d') return {kind:'d'};
+  if(s==='up'||s==='down'||s==='eq') return {kind:'const', v:s};
+  let m=s.match(/^flip\s*\(([\s\S]*)\)$/);
+  if(m) return {kind:'flip', e:parsePol(m[1])};
+  m=s.match(/^md\s*\(([\s\S]*)\)$/);
+  if(m){
+    const args=splitTopComma(m[1]);
+    if(args.length!==2) throw new Error("md expects two arguments: md(pol, path)");
+    return {kind:'md', e:parsePol(args[0]), path:parsePath(args[1])};
+  }
+  throw new Error("bad polarity rule '"+s+"' (use d, up, down, eq, flip(...), md(...))");
+}
+function parsePath(src){
+  const s=src.trim();
+  if(s===''||s==='.'||s==='top') return [];
+  return s.split('.').map(step=>{
+    const t=step.trim();
+    if(t!=='dom'&&t!=='cod') throw new Error("path step must be dom or cod, got '"+t+"'");
+    return t;
+  });
+}
+// An output template is either an ordinary type, or Join(A, B) — a structural
+// join of two type patterns, evaluated under the substitution at apply time.
+function parseOut(src){
+  const s=src.trim();
+  const mj=s.match(/^Join\s*\(([\s\S]*)\)$/);
+  if(mj){
+    const args=splitTopComma(mj[1]);
+    if(args.length!==2) throw new Error('Join expects two arguments: Join(A, B)');
+    return {join:true, a:parseType(args[0]), b:parseType(args[1])};
+  }
+  return {join:false, ty:parseType(s)};
+}
+// instantiate an output template under a substitution; returns a type or null
+// (null = the join does not exist, so the rule must not fire).
+function instantiate(out, s){
+  if(!out.join) return applySubst(out.ty, s);
+  const a=applySubst(out.a, s), b=applySubst(out.b, s);
+  return joinTy(a, b);   // may be null
+}
+function makeRepair(rules){
+  return function(lty,rty,ruleName){
+    for(const r of rules){
+      if(r.rule!==ruleName)continue;
+      let s=emptySubst();
+      s=unify(r.leftPat,lty,s); if(!s)continue;
+      s=unify(r.rightPat,rty,s); if(!s)continue;
+      const lo=instantiate(r.leftOut,s), ro=instantiate(r.rightOut,s);
+      if(lo===null||ro===null) continue;   // join failed: rule does not fire
+      return {left:lo, right:ro, fired:true, lineno:r.lineno,
+              leftPol:r.leftPol, rightPol:r.rightPol, label:r.label};
+    }
+    return {left:lty, right:rty, fired:false};
+  };
+}
+
+/* ---------------- Enrich ---------------- */
+const isArr=t=>t.k==='arr';
+const markMul=(a,b)=>(a==='.'||b==='.')?'.':(a===b?'+':'-');
+// ---- Join: a structural property of types,
+// not part of the algorithm. Called only by the W repair via Join(A,B).
+function markJoin(a,b){ return a===b ? a : '.'; }
+function eraseTy(t){
+  if(t.k==='base'||t.k==='tvar') return t;
+  return {k:'arr',dom:eraseTy(t.dom),cod:eraseTy(t.cod),mark:'.'};
+}
+// join at a given polarity: pos=true means a spine position (join the markings),
+// pos=false means a domain position: the two types must be EQUAL as marked
+// types (the whole subtree, all markings), else no join exists. Only the spine
+// markings are joined; see Lemma (join) in the paper.
+function joinPol(a,b,pos){
+  if(!pos) return eqType(a,b)?a:null;
+  if(a.k==='base'||b.k==='base'||a.k==='tvar'||b.k==='tvar')
+    return eqType(a,b)?a:null;
+  if(a.k!=='arr'||b.k!=='arr') return null;
+  const mk=markJoin(a.mark,b.mark);
+  const dom=joinPol(a.dom,b.dom,false); if(dom===null) return null;
+  const cod=joinPol(a.cod,b.cod,true);  if(cod===null) return null;
+  return {k:'arr',dom,cod,mark:mk};
+}
+function joinTy(a,b){
+  if(eqType(a,b)) return a;
+  // must share an underlying unmarked type
+  if(!eqType(eraseTy(a),eraseTy(b))) return null;
+  // top-level position is positive
+  return joinPol(a,b,true);
+}
+// wrap a node in an 'adapt' node only if the new type differs from the node's
+// own type; an identity rewrite leaves the node untouched (no adapt node in the
+// tree). The node carries the label (shown in the tree) and the polarity rule
+// (used by Phase 2); both come from the Adapt line that fired.
+function wrapRepair(node, newTy, label, polRule){
+  return eqType(node.ty, newTy) ? node
+    : {kind:'repair', ty:newTy, children:[node], repairLabel:label||'ADAPT', polRule:polRule||{kind:'d'}};
+}
+
+function Enrich(N, repair){
+  if(N.rule==='leaf') return {kind:'leaf', ty:N.lty, word:N.word, children:[]};
+
+  if(N.rule==='Bf'||N.rule==='Bb'||N.rule==='Bfx'||N.rule==='Bbx'){
+    const fwd=(N.rule==='Bf'||N.rule==='Bfx');
+    // u supplies rho (result codomain), v supplies sigma.
+    // forward: u=left child, v=right child; backward: u=right, v=left.
+    const uRaw=fwd?N.children[0]:N.children[1];
+    const vRaw=fwd?N.children[1]:N.children[0];
+
+    // The raise check for a T child uses the OTHER premise as functor.
+    function raiseAgainst(innerEnr, functorTy){
+      if(!isArr(functorTy)) throw new Error('raise: neighbour '+showType(functorTy)+' is not a function');
+      const cod=functorTy.cod;
+      // check 1: real raise — arg == domain(codomain(functor))
+      if(isArr(cod)&&eqType(innerEnr.ty,cod.dom)){
+        return {kind:'T', ty:{k:'arr',dom:cod,cod:cod.cod,mark:'+'}, raiseKind:'raised',
+                children:[innerEnr]};
+      }
+      // check 2: identity — domain(arg) == codomain(functor)
+      if(isArr(innerEnr.ty)&&eqType(innerEnr.ty.dom,cod)){
+        return {kind:'T', ty:innerEnr.ty, raiseKind:'identity', children:[innerEnr]};
+      }
+      throw new Error('raise: cannot raise '+showType(innerEnr.ty)+' against '+showType(functorTy));
+    }
+
+    const uIsT=uRaw.rule==='T', vIsT=vRaw.rule==='T';
+    let uEnr, vEnr;
+    if(uIsT && !vIsT){
+      vEnr=Enrich(vRaw,repair);
+      uEnr=raiseAgainst(Enrich(uRaw.children[0],repair), vEnr.ty);
+    } else if(vIsT && !uIsT){
+      uEnr=Enrich(uRaw,repair);
+      vEnr=raiseAgainst(Enrich(vRaw.children[0],repair), uEnr.ty);
+    } else if(!uIsT && !vIsT){
+      uEnr=Enrich(uRaw,repair); vEnr=Enrich(vRaw,repair);
+    } else {
+      throw new Error('composition with both premises type-raised is not supported');
+    }
+
+    let u=uEnr.ty, v=vEnr.ty;
+    if(!isArr(u)||!isArr(v)) throw new Error('composition: both premises must be functions ('+showType(u)+' , '+showType(v)+')');
+    // condition: dom(u) == cod(v)   (tau)
+    if(!eqType(u.dom, v.cod)){
+      const r=repair(u, v, 'comp');
+      if(r.fired){ u=r.left; v=r.right;
+        uEnr=wrapRepair(uEnr, u, r.label, r.leftPol); vEnr=wrapRepair(vEnr, v, r.label, r.rightPol); }
+      if(!isArr(u)||!isArr(v)||!eqType(u.dom, v.cod))
+        throw new Error('composition does not fit'+(r.fired?' even after repair':'')+': '+showType(u)+' , '+showType(v));
+    }
+    const rho=u.cod, n=u.mark, sigma=v.dom, m=v.mark;
+    return {kind:'B', ty:{k:'arr',dom:sigma,cod:rho,mark:markMul(m,n)},
+            children: fwd?[uEnr,vEnr]:[vEnr,uEnr], uIdx: fwd?0:1};
+  }
+
+  if(N.rule==='App>'||N.rule==='App<'){
+    const fwd=(N.rule==='App>');
+    const fRaw=fwd?N.children[0]:N.children[1];
+    const aRaw=fwd?N.children[1]:N.children[0];
+    let f=Enrich(fRaw,repair), a=Enrich(aRaw,repair);
+    if(isArr(f.ty)&&eqType(a.ty,f.ty.dom))
+      return {kind:N.rule, ty:f.ty.cod, children:fwd?[f,a]:[a,f], fIdx:fwd?0:1};
+    const r=repair(f.ty, a.ty, 'app');
+    if(r.fired){
+      const f2=r.left, a2=r.right;
+      if(isArr(f2)&&eqType(a2,f2.dom)){
+        const fN=wrapRepair(f,f2,r.label,r.leftPol), aN=wrapRepair(a,a2,r.label,r.rightPol);
+        return {kind:N.rule, ty:f2.cod, children:fwd?[fN,aN]:[aN,fN], fIdx:fwd?0:1};
+      }
+    }
+    throw new Error('application does not fit'+(r.fired?' even after repair':'')+': '+showType(f.ty)+' \u00b7 '+showType(a.ty));
+  }
+
+  if(N.rule==='Phi'){
+    // three children: left conjunct, connector (and/or/but), right conjunct.
+    let x=Enrich(N.children[0],repair);
+    const conn=N.children[1];                 // the connector leaf (word kept)
+    let y=Enrich(N.children[2],repair);
+    // ML (structural): coordination expects np-typed conjuncts, so a bare
+    // individual e is lifted to np+ = (e->t)->+t.
+    const NPplus={k:'arr',dom:{k:'arr',dom:{k:'base',name:'e'},cod:{k:'base',name:'t'},mark:'.'},cod:{k:'base',name:'t'},mark:'+'};
+    const isE=t=>t.k==='base'&&t.name==='e';
+    if(isE(x.ty)) x={kind:'ML', ty:NPplus, children:[x]};
+    if(isE(y.ty)) y={kind:'ML', ty:NPplus, children:[y]};
+    // Adapt (e.g. a weakening line): if the conjuncts differ, rewrite both.
+    if(!eqType(x.ty,y.ty)){
+      const r=repair(x.ty, y.ty, 'coord');
+      if(!(r.fired && eqType(r.left,r.right)))
+        throw new Error('coordination needs equal conjuncts'+(r.fired?' even after repair':'')+': '+showType(x.ty)+' vs '+showType(y.ty));
+      x=wrapRepair(x, r.left, r.label, r.leftPol); y=wrapRepair(y, r.right, r.label, r.rightPol);
+    }
+    // both conjuncts now share type sigma; instantiate the connector at
+    // sigma ->+ (sigma ->+ sigma) and build a three-child Coord node.
+    const sigma=x.ty;
+    const connTy={k:'arr',dom:sigma,cod:{k:'arr',dom:sigma,cod:sigma,mark:'+'},mark:'+'};
+    const connEnr={kind:'leaf', ty:connTy, word:conn.word, isConnector:true, children:[]};
+    return {kind:'Coord', ty:sigma, children:[x, connEnr, y]};
+  }
+
+  if(N.rule==='T') throw new Error('a type raising must feed a composition');
+  throw new Error('cannot enrich '+N.rule);
+}
+
+/* ---------------- polarize (top-down) ---------------- */
+function md(d,m){ if(d==='eq'||m==='.')return 'eq'; if(m==='+')return d; return d==='up'?'down':'up'; }
+function flipPol(d){ return d==='up'?'down':(d==='down'?'up':'eq'); }
+// follow a dom/cod path into a type and return the marking of the arrow reached.
+function markAtPath(ty, path){
+  let t=ty;
+  for(const step of path){
+    if(t.k!=='arr') throw new Error('polarity rule: path leaves the function type');
+    t = step==='dom' ? t.dom : t.cod;
+  }
+  if(t.k!=='arr') throw new Error('polarity rule: path does not end on an arrow');
+  return t.mark;
+}
+// evaluate a polarity rule: incoming polarity d, this node's (rewritten) type ty.
+function evalPol(p, d, ty){
+  if(p.kind==='d') return d;
+  if(p.kind==='const') return p.v;
+  if(p.kind==='flip') return flipPol(evalPol(p.e,d,ty));
+  if(p.kind==='md') return md(evalPol(p.e,d,ty), markAtPath(ty, p.path));
+  throw new Error('polarity rule: unknown form');
+}
+function polarize(en,d){
+  en.pol=d;
+  const k=en.kind;
+  if(k==='leaf') return;
+  if(k==='App>'||k==='App<'){
+    const fIdx=en.fIdx, f=en.children[fIdx], a=en.children[1-fIdx];
+    polarize(f,d); polarize(a, md(d, f.ty.mark));
+    return;
+  }
+  if(k==='B'){
+    // rule:  u^d , v^(nd) ; u carries result codomain, v the rest.
+    const uIdx=en.uIdx, u=en.children[uIdx], v=en.children[1-uIdx];
+    polarize(u,d); polarize(v, md(d, u.ty.mark));
+    return;
+  }
+  if(k==='T'){
+    // paper: premise gets md, where m is the marking of the INNER arrow of the
+    // raise target (dom of the raised type), not the outer + . In this fragment
+    // that inner arrow is always dot, so the premise receives = .
+    if(en.raiseKind==='identity') polarize(en.children[0], d);
+    else polarize(en.children[0], md(d, en.ty.dom.mark));
+    return;
+  }
+  if(k==='repair'){
+    // The Adapt line that fired here attached its own polarity rule. It maps the
+    // incoming polarity d to the child's polarity, and may read the marks of this
+    // node's rewritten type. The default rule is monotone (the child keeps d).
+    // The core does not know which adaptation this is; H, W, and any user line are
+    // all handled the same way, through their declared polarity rule.
+    polarize(en.children[0], evalPol(en.polRule||{kind:'d'}, d, en.ty));
+    return;
+  }
+  if(k==='ML'){
+    // ML is a special case of type raising: e is lifted to np+ = (e ->. t) ->+ t.
+    // As in T, the premise receives md(d, m) where m is the marking of the inner
+    // arrow of the raised type (the dom of np+). That inner arrow is e ->. t,
+    // whose mark is dot, so the premise always receives = .
+    polarize(en.children[0], md(d, en.ty.dom.mark));
+    return;
+  }
+  if(k==='Coord'){
+    // children: [left a, connector conj, right b]; conj : x ->m (x ->n x).
+    // rule:  a gets nd, conj gets d, b gets md.
+    const a=en.children[0], conn=en.children[1], b=en.children[2];
+    const m=conn.ty.mark;                 // outer marking of conj
+    const n=conn.ty.cod.mark;             // inner marking of conj
+    polarize(a, md(d,n));
+    polarize(conn, d);
+    polarize(b, md(d,m));
+    return;
+  }
+  throw new Error('polarize: unknown kind '+k);
+}
+
+
+
+
+/* ===================================================================
+   CATEGORICAL LEXICON (syntactic categories) and DEFAULT SEMANTIC TYPES.
+   Semantic types are editable by the user; these are the defaults.
+   =================================================================== */
+const CAT = {
+  'Felix':'NP','Fido':'NP',
+  'dog':'N','cat':'N','mouse':'N','animal':'N',
+  'swim':'S\\NP','run':'S\\NP','move':'S\\NP',
+  'follow':'(S\\NP)/NP','chase':'(S\\NP)/NP','see':'(S\\NP)/NP',
+  'every':'NP/N','some':'NP/N','no':'NP/N','most':'NP/N','a':'NP/N','an':'NP/N',
+  'who':'(N\\N)/(S/NP)','whom':'(N\\N)/(S/NP)','that':'(N\\N)/(S/NP)',
+  "didn't":'(S\\NP)/(S\\NP)',
+  'if':'(S\\S)/S',
+  'one':'NUM','two':'NUM','three':'NUM',
+  'morethan':'(NP/N)/NUM','lessthan':'(NP/N)/NUM','exactly':'(NP/N)/NUM',
+  'and':'CONJ','or':'CONJ','but':'CONJ',
+};
+const CONNECTORS = new Set(['and','or','but']);
+
+/* default semantic (marking-enriched) types, as DSL strings.  n = e->t. */
+const DEFAULT_SEM = {
+  'Felix':'e','Fido':'e',
+  'dog':'e->t','cat':'e->t','mouse':'e->t','animal':'e->t',
+  'swim':'e->t','run':'e->t','move':'e->t',
+  'follow':'e->(e->t)','chase':'e->(e->t)','see':'e->(e->t)',
+  'every':'(e->t) ->- ((e->t) ->+ t)',
+  'some':'(e->t) ->+ ((e->t) ->+ t)',
+  'a':'(e->t) ->+ ((e->t) ->+ t)',
+  'an':'(e->t) ->+ ((e->t) ->+ t)',
+  'no':'(e->t) ->- ((e->t) ->- t)',
+  'most':'(e->t) -> ((e->t) ->+ t)',
+  'who':'(e->t) ->+ ((e->t) ->+ (e->t))',
+  'whom':'(e->t) ->+ ((e->t) ->+ (e->t))',
+  'that':'(e->t) ->+ ((e->t) ->+ (e->t))',
+  "didn't":'(e->t) ->- (e->t)',
+  'if':'t ->- (t ->+ t)',
+  'one':'num','two':'num','three':'num',
+  'morethan':'num ->- ((e->t) ->+ ((e->t) ->+ t))',
+  'lessthan':'num ->+ ((e->t) ->- ((e->t) ->- t))',
+  'exactly':'num -> ((e->t) -> ((e->t) -> t))',
+  'and':'x ->+ (x ->+ x)',
+  'or':'x ->+ (x ->+ x)',
+  'but':'x ->+ (x ->+ x)',
+};
+
+/* live semantic lexicon (parsed types), rebuilt from the editor */
+let SEM = {};
+
+const LEX_GROUPS = [
+  ['proper names', ['Felix','Fido']],
+  ['common nouns', ['dog','cat','mouse','animal']],
+  ['intransitive verbs', ['swim','run','move']],
+  ['transitive verbs', ['follow','chase','see']],
+  // determiners are a mixed group: a/an/some share one type, the rest differ.
+  // A nested array marks a shared subgroup (one editor row for all its members).
+  ['determiners', [['a','an','some'],'every','no','most']],
+  ['relative pronouns', ['who','whom','that']],
+  ['negation', ["didn't"]],
+  ['conditional', ['if']],
+  ['numerals', ['one','two','three']],
+  ['numeral determiners', ['morethan','lessthan','exactly']],
+  ['coordinators', ['and','or','but']],
+];
+/* Groups whose members always share one type: the editor shows a single row
+   for the whole group, and editing it sets the type for every member. */
+const SHARED_GROUPS = new Set(['proper names','common nouns','intransitive verbs',
+  'transitive verbs','relative pronouns','numerals']);
+/* Groups whose types are parametric (use the variable x) and fixed at parse
+   time, not editable: shown read-only with a note. */
+const PARAM_GROUPS = new Set(['coordinators']);
+const DISPLAY = { 'morethan':'more than', 'lessthan':'less than' };
+function disp(w){ return DISPLAY[w] || w; }
+
+const LEMMA = {
+  'swims':'swim','swam':'swim','runs':'run','ran':'run','moves':'move','moved':'move',
+  'follows':'follow','followed':'follow','chases':'chase','chased':'chase','sees':'see','saw':'see',
+  'dogs':'dog','cats':'cat','mice':'mouse','animals':'animal',
+};
+function lemma(w){ return LEMMA[w] || w; }
+
+/* relative pronouns: two readings, object (default) and subject extraction */
+const CAT_ALTS = {
+  'who':  ['(N\\N)/(S/NP)','(N\\N)/(S\\NP)'],
+  'whom': ['(N\\N)/(S/NP)','(N\\N)/(S\\NP)'],
+  'that': ['(N\\N)/(S/NP)','(N\\N)/(S\\NP)'],
+  'if':   ['(S\\S)/S','(S/S)/S'],
+};
+
+/* ===================================================================
+   CCG category parsing and the syntax-only building phase.
+   A CCG node: {rule, cat, children, word, lemma, span, kind}.
+   Rules: leaf, App>, App<, B (forward), Bx(backward), Bcx(fwd crossed),
+   Bbcx(bwd crossed), T, Phi.  We keep distinct kinds so the enricher knows
+   the slash direction (u/v assignment).
+   =================================================================== */
+function parseCat(s){
+  s=s.trim();
+  while(s[0]==='('&&matchParen(s)) s=s.slice(1,-1).trim();
+  let depth=0;
+  for(let i=s.length-1;i>=0;i--){
+    const c=s[i];
+    if(c===')')depth++; else if(c==='(')depth--;
+    else if(depth===0&&(c==='/'||c==='\\')) return {res:parseCat(s.slice(0,i)),arg:parseCat(s.slice(i+1)),dir:c};
+  }
+  return {atom:s};
+}
+function matchParen(s){
+  if(s[0]!=='('||s[s.length-1]!==')')return false;
+  let d=0;
+  for(let i=0;i<s.length;i++){if(s[i]==='(')d++;else if(s[i]===')'){d--;if(d===0)return i===s.length-1;}}
+  return false;
+}
+function catToStr(cat){ return cat.atom!==undefined?cat.atom:'('+catToStr(cat.res)+cat.dir+catToStr(cat.arg)+')'; }
+function catEq(a,b){
+  if(a==null||b==null)return false;
+  const pa=(typeof a==='string')?parseCat(a):a, pb=(typeof b==='string')?parseCat(b):b;
+  if(pa.atom!==undefined||pb.atom!==undefined)return pa.atom===pb.atom;
+  return pa.dir===pb.dir&&catEq(pa.res,pb.res)&&catEq(pa.arg,pb.arg);
+}
+
+const RULE_NAME = {'App>':'>','App<':'<','B':'>B','Bx':'<B','Bcx':'>B\u00d7','Bbcx':'<B\u00d7',
+                   'T':'T','Coord':'\u0026','Phi':'\u0026','repair':'rep','leaf':''};
+
+function ccgLeaf(word){
+  let key=lemma(word);
+  if(CAT[key]===undefined && CAT[lemma(word.toLowerCase())]!==undefined) key=lemma(word.toLowerCase());
+  if(CAT[key]===undefined) throw new Error("'"+word+"' is not in the lexicon");
+  return {rule:'leaf', cat:CAT[key], word, lemma:key, span:null, kind:'leaf'};
+}
+
+function ccgStep(rule, picks){
+  if(rule==='Tf' || rule==='Tb'){
+    const x=picks[0];
+    const xcat=x.cat||'NP';
+    // forward raise:  X => T/(T\X) ; backward raise: X => T\(T/X). We use S as T.
+    const cat = (rule==='Tf') ? 'S/(S\\'+xcat+')' : 'S\\(S/'+xcat+')';
+    return {rule:'T', cat, children:[x], span:x.span, kind:'T', raiseDir:(rule==='Tf'?'f':'b')};
+  }
+  const [left,right]=picks;
+  const span=[left.span[0], right.span[1]];
+  const lp=parseCat(left.cat), rp=parseCat(right.cat);
+
+  if(rule==='>'){
+    if(lp.atom!==undefined||lp.dir!=='/') throw new Error('> needs a left card X/Y; got '+left.cat);
+    if(!catEq(lp.arg,right.cat)) throw new Error('> does not fit: '+left.cat+' wants '+catToStr(lp.arg)+' on its right, got '+right.cat);
+    return {rule:'App>', cat:catToStr(lp.res), children:[left,right], span, kind:'App>'};
+  }
+  if(rule==='<'){
+    if(rp.atom!==undefined||rp.dir!=='\\') throw new Error('< needs a right card X\\Y; got '+right.cat);
+    if(!catEq(rp.arg,left.cat)) throw new Error('< does not fit: '+right.cat+' wants '+catToStr(rp.arg)+' on its left, got '+left.cat);
+    return {rule:'App<', cat:catToStr(rp.res), children:[left,right], span, kind:'App<'};
+  }
+  if(rule==='Bf'){
+    // X/Y  Y/Z => X/Z
+    if(lp.atom!==undefined||lp.dir!=='/'||rp.atom!==undefined||rp.dir!=='/')
+      throw new Error('>B needs X/Y and Y/Z; got '+left.cat+' and '+right.cat);
+    if(!catEq(lp.arg,rp.res)) throw new Error('>B middle category does not match: '+left.cat+' , '+right.cat);
+    return {rule:'B', cat:catToStr({res:lp.res,arg:rp.arg,dir:'/'}), children:[left,right], span, kind:'B'};
+  }
+  if(rule==='Bb'){
+    // Y\Z  X\Y => X\Z
+    if(lp.atom!==undefined||lp.dir!=='\\'||rp.atom!==undefined||rp.dir!=='\\')
+      throw new Error('<B needs Y\\Z and X\\Y; got '+left.cat+' and '+right.cat);
+    if(!catEq(rp.arg,lp.res)) throw new Error('<B middle category does not match: '+left.cat+' , '+right.cat);
+    return {rule:'Bx', cat:catToStr({res:rp.res,arg:lp.arg,dir:'\\'}), children:[left,right], span, kind:'Bx'};
+  }
+  if(rule==='Bfx'){
+    // forward crossed: X/Y  Y\Z => X\Z
+    if(lp.atom!==undefined||lp.dir!=='/'||rp.atom!==undefined||rp.dir!=='\\')
+      throw new Error('>B\u00d7 needs X/Y and Y\\Z; got '+left.cat+' and '+right.cat);
+    if(!catEq(lp.arg,rp.res)) throw new Error('>B\u00d7 middle category does not match: '+left.cat+' , '+right.cat);
+    return {rule:'Bcx', cat:catToStr({res:lp.res,arg:rp.arg,dir:'\\'}), children:[left,right], span, kind:'Bcx'};
+  }
+  if(rule==='Bbx'){
+    // backward crossed: Y/Z  X\Y => X/Z
+    if(lp.atom!==undefined||lp.dir!=='/'||rp.atom!==undefined||rp.dir!=='\\')
+      throw new Error('<B\u00d7 needs Y/Z and X\\Y; got '+left.cat+' and '+right.cat);
+    if(!catEq(rp.arg,lp.res)) throw new Error('<B\u00d7 middle category does not match: '+left.cat+' , '+right.cat);
+    return {rule:'Bbcx', cat:catToStr({res:rp.res,arg:lp.arg,dir:'/'}), children:[left,right], span, kind:'Bbcx'};
+  }
+  throw new Error('unknown rule '+rule);
+}
+
+/* coordination is a ternary step: left conjunct, connector, right conjunct */
+function ccgCoord(picks){
+  const [left, conn, right]=picks;
+  if(!conn || !CONNECTORS.has(conn.lemma))
+    throw new Error('the middle card must be a connector (and, or, but)');
+  if(!catEq(left.cat,right.cat))
+    throw new Error('coordination needs equal conjunct categories; got '+left.cat+' and '+right.cat);
+  const span=[left.span[0], right.span[1]];
+  return {rule:'Phi', cat:left.cat, children:[left,conn,right], span, kind:'Phi'};
+}
+
+/* map the CCG kind to the enricher's rule names (slash-aware) */
+function toEnrichRule(kind){
+  return ({'B':'Bf','Bx':'Bb','Bcx':'Bfx','Bbcx':'Bbx'})[kind] || kind;
+}
+/* Build the enricher input tree from the CCG tree. Leaves carry lty (from SEM). */
+function toEnrichTree(N){
+  if(N.rule==='leaf'){
+    if(CONNECTORS.has(N.lemma))
+      return {rule:'leaf', word:disp(N.word), connector:true};   // type set in Enrich
+    const ty = SEM[N.lemma];
+    if(!ty) throw new Error("no semantic type for '"+N.word+"'");
+    return {rule:'leaf', word:disp(N.word), lty:ty};
+  }
+  if(N.rule==='T') return {rule:'T', children:[toEnrichTree(N.children[0])], raiseDir:N.raiseDir};
+  const kids = N.children.map(toEnrichTree);
+  const rule = ({'App>':'App>','App<':'App<','B':'Bf','Bx':'Bb','Bcx':'Bfx','Bbcx':'Bbx','Phi':'Phi'})[N.rule];
+  return {rule, children:kids};
+}
+
+/* ===================================================================
+   RENDER (ASCII).  Two views: the CCG tree, and the enriched+polarized
+   tree.  The enriched node kinds come from core.js: leaf, App>, App<, B,
+   T (with raiseKind), repair, Coord.
+   =================================================================== */
+function center(s,w){ if(s.length>=w)return s; const l=Math.floor((w-s.length)/2); return ' '.repeat(l)+s+' '.repeat(w-s.length-l); }
+function hline(w,name){ return '-'.repeat(w)+' '+name; }
+
+function renderTree(node, label, ruleNameFn){
+  const kids = node.children || [];
+  if(!kids.length){
+    const lab=label(node), word=node.word||'';
+    const w=Math.max(word.length, lab.length);
+    return {lines:[center(word,w), center(lab,w)], width:w};
+  }
+  if(kids.length===1){
+    const child=renderTree(kids[0],label,ruleNameFn);
+    const lab=label(node), w=Math.max(child.width, lab.length);
+    const lines=child.lines.map(l=>l.padEnd(w));
+    lines.push(hline(w, ruleNameFn(node)));
+    lines.push(center(lab,w));
+    return {lines,width:w};
+  }
+  const parts=kids.map(c=>renderTree(c,label,ruleNameFn));
+  const gap=2, h=Math.max(...parts.map(p=>p.lines.length));
+  parts.forEach(p=>{ while(p.lines.length<h) p.lines.unshift(' '.repeat(p.width)); });
+  const combined=[];
+  for(let i=0;i<h;i++) combined.push(parts.map(p=>p.lines[i]).join(' '.repeat(gap)));
+  let totalW=combined.length?combined[0].length:0;
+  const lab=label(node);
+  if(lab.length>totalW){ for(let i=0;i<combined.length;i++)combined[i]=combined[i].padEnd(lab.length); totalW=lab.length; }
+  combined.push(hline(totalW, ruleNameFn(node)));
+  combined.push(center(lab,totalW));
+  return {lines:combined,width:totalW};
+}
+
+/* labels */
+function rawLabelCat(rn){ if(rn.cat)return rn.cat; if(rn.children&&rn.children.length)return rawLabelCat(rn.children[0]); return '?'; }
+function rawRuleName(rn){ return RULE_NAME[rn.kind]!==undefined?RULE_NAME[rn.kind]:(rn.kind||''); }
+const POLSYM={up:'\u2191',down:'\u2193',eq:'='};
+function enLabel(en){ return POLSYM[en.pol]+' '+showType(en.ty); }
+function enRuleName(en){
+  if(en.kind==='T') return en.raiseKind==='identity' ? 'T(id)' : 'T';
+  if(en.kind==='repair') return en.repairLabel || 'ADAPT';
+  if(en.kind==='ML') return 'ML';
+  if(en.kind==='B') return 'B';
+  return RULE_NAME[en.kind]!==undefined?RULE_NAME[en.kind]:(en.kind||'');
+}
+
+/* ===================================================================
+   UI STATE
+   =================================================================== */
+let forest=[], selected=[], history=[];
+let repairFn = makeRepair([]);          // identity by default
+const $=id=>document.getElementById(id);
+const nodesEl=$('nodes'), statusEl=$('status'), outputEl=$('output');
+
+function snapshot(){ history.push(JSON.parse(JSON.stringify(forest))); }
+function setStatus(msg,cls){ statusEl.textContent=msg||''; statusEl.className='status'+(cls?' '+cls:''); }
+
+/* ---- build the semantic lexicon editor ---- */
+function lexRow(keys){
+  // keys: array of lexicon keys sharing one type → one editable row
+  const row=document.createElement('div'); row.className='lexrow';
+  const lab=document.createElement('label'); lab.textContent=keys.map(disp).join(', ');
+  const inp=document.createElement('input'); inp.value=DEFAULT_SEM[keys[0]]||'';
+  inp.dataset.keys=keys.join(','); inp.spellcheck=false;
+  row.appendChild(lab); row.appendChild(inp); return row;
+}
+function paramRow(keys){
+  // a read-only row for a parametric type (uses the variable x), fixed at parse time.
+  // keys may be a single key or an array of keys that share one type → one row.
+  if(!Array.isArray(keys)) keys=[keys];
+  const row=document.createElement('div'); row.className='lexrow';
+  const lab=document.createElement('label'); lab.textContent=keys.map(disp).join(', ');
+  const inp=document.createElement('input'); inp.value=DEFAULT_SEM[keys[0]]||'';
+  inp.readOnly=true; inp.spellcheck=false; inp.classList.add('param');
+  row.appendChild(lab); row.appendChild(inp); return row;
+}
+function buildLexEditor(){
+  const host=$('lexEditor'); host.innerHTML='';
+  LEX_GROUPS.forEach(([label,words])=>{
+    const g=document.createElement('div'); g.className='lexgroup'; g.textContent=label; host.appendChild(g);
+    if(PARAM_GROUPS.has(label)){
+      host.appendChild(paramRow(words));
+      const note=document.createElement('div'); note.className='lexnote-sm';
+      note.innerHTML='The variable <b>x</b> is the conjunct type; it is fixed at parse time, '
+        +'when coordination instantiates the connector at the type of its conjuncts.';
+      host.appendChild(note);
+    } else if(SHARED_GROUPS.has(label)){
+      host.appendChild(lexRow(words));
+    } else {
+      words.forEach(item=>{
+        const keys = Array.isArray(item) ? item : [item];
+        host.appendChild(lexRow(keys));
+      });
+    }
+  });
+}
+function readLexEditor(){
+  const inputs=$('lexEditor').querySelectorAll('input[data-keys]');
+  const next={}; let err='';
+  inputs.forEach(inp=>{
+    inp.classList.remove('bad');
+    let ty;
+    try{ ty=parseType(inp.value); }
+    catch(e){ inp.classList.add('bad'); if(!err) err=inp.value+': '+e.message; return; }
+    inp.dataset.keys.split(',').forEach(k=>{ next[k]=ty; });
+  });
+  if(err){ $('lexErr').textContent=err; return null; }
+  $('lexErr').textContent='';
+  return next;
+}
+
+/* ---- read the repair editor ---- */
+function readRepair(){
+  try{ const rules=parseRepairProgram($('repair').value); repairFn=makeRepair(rules); $('repairErr').textContent=''; return true; }
+  catch(e){ $('repairErr').textContent=e.message; return false; }
+}
+
+function applyEditors(){
+  const lex=readLexEditor();
+  const okR=readRepair();
+  if(lex) SEM=lex;
+  if(lex&&okR){ setStatus('Lexicon and adapt applied.','ok'); outputEl.innerHTML=''; }
+}
+
+/* ---- words / forest ---- */
+function loadWords(){
+  const raw=$('sentence').value.trim();
+  if(!raw){ setStatus('Type a sentence first.','err'); return; }
+  const words=raw.replace(/[.?!]+$/,'').split(/\s+/);
+  forest=[]; selected=[]; history=[]; outputEl.innerHTML='';
+  try{
+    let i=0;
+    for(const w of words){
+      const leaf=ccgLeaf(w); leaf.span=[i,i+1]; forest.push(leaf); i++;
+    }
+  }catch(e){ setStatus(e.message,'err'); renderForest(); return; }
+  setStatus('Loaded '+forest.length+' words.','ok'); renderForest();
+}
+
+function renderForest(){
+  nodesEl.innerHTML='';
+  forest.forEach((node,idx)=>{
+    const div=document.createElement('div');
+    div.className='node'+(selected.includes(idx)?' sel':'');
+    const built = node.kind!=='leaf' ? '<div class="built">'+rawRuleName(node)+'</div>' : '';
+    const top = node.kind==='leaf' ? '<div class="word">'+disp(node.word)+'</div>'
+                                   : '<div class="word">'+spanWords(node)+'</div>';
+    const alts=(node.kind==='leaf'&&node.lemma&&CAT_ALTS[node.lemma])||null;
+    const catCls=alts?'cat catswitch':'cat';
+    const catHtml='<div class="'+catCls+'">'+rawLabelCat(node)
+      +(alts?' <span class="switchhint" title="tap to switch reading">\u21c4</span>':'')+'</div>';
+    div.innerHTML=top+catHtml+built;
+    div.onclick=()=>toggleSelect(idx);
+    if(alts){ const catEl=div.querySelector('.cat'); catEl.onclick=ev=>{ev.stopPropagation();cycleCategory(idx);}; }
+    nodesEl.appendChild(div);
+  });
+}
+function cycleCategory(idx){
+  const node=forest[idx];
+  if(node.kind!=='leaf'||!node.lemma)return;
+  const alts=CAT_ALTS[node.lemma]; if(!alts)return;
+  let pos=alts.indexOf(node.cat); if(pos<0)pos=0;
+  const next=alts[(pos+1)%alts.length];
+  snapshot(); node.cat=next; outputEl.innerHTML='';
+  let reading;
+  if(node.lemma==='if'){
+    reading = next==='(S/S)/S' ? 'clause-initial (If A, B)' : 'clause-final (B if A)';
+  } else {
+    reading = next.indexOf('S\\NP')>=0 ? 'subject extraction' : 'object extraction';
+  }
+  setStatus("'"+disp(node.word)+"' is now "+next+' \u2014 '+reading+'.','ok'); renderForest();
+}
+function spanWords(node){
+  const acc=[];
+  (function walk(n){ if(n.kind==='leaf')acc.push([n.span[0],n.word]); else (n.children||[]).forEach(walk); })(node);
+  acc.sort((a,b)=>a[0]-b[0]); return acc.map(x=>disp(x[1])).join(' ');
+}
+function toggleSelect(idx){
+  const at=selected.indexOf(idx);
+  if(at>=0)selected.splice(at,1); else { selected.push(idx); if(selected.length>3)selected.shift(); }
+  renderForest();
+}
+function doRule(rule){
+  if(rule==='Tf'||rule==='Tb'){
+    if(selected.length!==1){ setStatus('Select exactly one card for a raising.','err'); return; }
+    const i=selected[0];
+    try{ snapshot(); forest[i]=ccgStep(rule,[forest[i]]); selected=[]; setStatus('Applied '+(rule==='Tf'?'>T':'<T')+'.','ok'); renderForest(); }
+    catch(e){ history.pop(); setStatus(e.message,'err'); }
+    return;
+  }
+  if(rule==='Phi'){
+    if(selected.length!==3){ setStatus('Select three adjacent cards: left conjunct, connector, right conjunct.','err'); return; }
+    let idx=selected.slice().sort((a,b)=>a-b);
+    if(idx[1]!==idx[0]+1 || idx[2]!==idx[1]+1){ setStatus('The three cards must be adjacent.','err'); return; }
+    try{
+      snapshot();
+      const out=ccgCoord([forest[idx[0]],forest[idx[1]],forest[idx[2]]]);
+      forest.splice(idx[0],3,out); selected=[];
+      setStatus('Applied coordination.','ok'); renderForest();
+    }catch(e){ history.pop(); setStatus(e.message,'err'); }
+    return;
+  }
+  if(selected.length!==2){ setStatus('Select two adjacent cards.','err'); return; }
+  let [i,j]=selected.slice().sort((a,b)=>a-b);
+  if(j!==i+1){ setStatus('The two cards must be adjacent.','err'); return; }
+  try{
+    snapshot(); const out=ccgStep(rule,[forest[i],forest[j]]); forest.splice(i,2,out); selected=[];
+    setStatus('Applied '+(RULE_NAME[out.kind]||rule)+'.','ok'); renderForest();
+  }catch(e){ history.pop(); setStatus(e.message,'err'); }
+}
+function undo(){ if(!history.length){ setStatus('Nothing to undo.'); return; } forest=history.pop(); selected=[]; outputEl.innerHTML=''; setStatus('Undid.'); renderForest(); }
+
+/* ---- tag ---- */
+function tag(){
+  if(forest.length!==1){ setStatus('Build the whole sentence into one node first.','err'); return; }
+  const ccg=forest[0];
+  if(!catEq(ccg.cat,'S')){
+    setStatus('Incomplete: the derivation must reduce to a single S; its root is '+(ccg.cat||'?')+'.','err'); return;
+  }
+  if(!readRepair()) { setStatus('Fix the adapt function first.','err'); return; }
+  const lex=readLexEditor(); if(!lex){ setStatus('Fix the semantic lexicon first.','err'); return; } SEM=lex;
+  let enriched;
+  try{
+    const inTree=toEnrichTree(ccg);
+    enriched=Enrich(inTree, repairFn);
+    if(!eqType(enriched.ty, parseType('t')))
+      throw new Error('root type is '+showType(enriched.ty)+', not t');
+    polarize(enriched,'up');
+  }catch(e){
+    statusEl.className='status err';
+    statusEl.innerHTML = escapeHtml(e.message)
+      + '<br><span style="color:var(--ink-dim)">This is where the raw algorithm needs help &mdash; '
+      + 'try adding a rule to the <b>Adapt function</b> below (e.g. the <b>Insert H</b> or '
+      + '<b>Insert W</b> examples), then Tag again.</span>';
+    return;
+  }
+  renderOutput(ccg, enriched);
+  setStatus('Tagged.','ok');
+}
+
+function colorPol(text){
+  // operate line by line to color rule names (after '--- ') without touching types
+  return text.split('\n').map(line=>{
+    // 1) rule-name: the single token right after a run of dashes + a space.
+    //    A line may carry several (siblings' rule lines sit side by side), so this
+    //    is global and stops at the next whitespace (rule names have no spaces).
+    line = line.replace(/(-{2,} )(\S+)/g, function(_,dashes,name){
+      return dashes+'<span class="rule-name">'+name+'</span>';
+    });
+    // 2) marking glyph after a type arrow:  color the + - bullet or var, NOT the arrow
+    line = line.replace(/\u2192([+\u2212\u2022A-Za-z])/g, function(_,mk){
+      return '\u2192<span class="ty-mark">'+mk+'</span>';
+    });
+    // 3) polarity arrows at label positions (leading, after spaces)
+    line = line.replace(/\u2191/g,'<span class="pol-up">\u2191</span>')
+               .replace(/\u2193/g,'<span class="pol-down">\u2193</span>')
+               .replace(/(^|\s)=(?=\s|$)/g,'$1<span class="pol-eq">=</span>');
+    return line;
+  }).join('\n');
+}
+function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderOutput(ccg, enriched){
+  outputEl.innerHTML='';
+
+  // Polarities summary first, shown prominently right under "Tagged."
+  const sum=document.createElement('div'); sum.className='summary';
+  const acc=[];
+  (function walk(n){ if(n.kind==='leaf')acc.push([n.word,n.pol]); else (n.children||[]).forEach(walk); })(enriched);
+  sum.innerHTML='<span class="summary-label">Polarities:</span>'
+    +acc.map(([w,p])=>w+'<span class="pol-'+(p==='eq'?'eq':p)+'">'+POLSYM[p]+'</span>').join('&nbsp;&nbsp;')
+    +'<span class="trees-note">CCG tree and marking-enriched + polarized tree are shown below.</span>';
+  outputEl.appendChild(sum);
+
+  const views=[
+    ['1. CCG Tree', ccg, rawLabelCat, rawRuleName],
+    ['2. Marking-Enriched + Polarized Tree', enriched, enLabel, enRuleName],
+  ];
+  for(const [title,node,lab,rn] of views){
+    const h=document.createElement('h2'); h.innerHTML=title; outputEl.appendChild(h);
+    const pre=document.createElement('pre'); pre.className='deriv';
+    const r=renderTree(node,lab,rn);
+    const text=r.lines.map(l=>l.replace(/\s+$/,'')).join('\n');
+    pre.innerHTML=colorPol(escapeHtml(text)); outputEl.appendChild(pre);
+  }
+}
+
+/* ---- lexicon note ---- */
+/* Pre-defined derivation scripts for the example sentences. A step is a binary
+   rule {rule, at} combining cards at, at+1; a unary raise {rule:'Tf'|'Tb', at};
+   or a category switch {switch:i, to:cat}. 'at' indexes the current forest. */
+const DERIVATIONS = {
+  'Fido runs': [
+    {rule:'<',at:0}],
+  'every dog chased some cat': [
+    {rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}],
+  'no dogs ran': [
+    {rule:'>',at:0},{rule:'<',at:0}],
+  'most dogs swam': [
+    {rule:'>',at:0},{rule:'<',at:0}],
+  'exactly three cats swam': [
+    {rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0}],
+  'morethan two dogs swam': [
+    {rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0}],
+  "Fido didn't chase Felix": [
+    {rule:'Bf',at:1},{rule:'>',at:1},{rule:'<',at:0}],
+  'Felix ran if Fido swam': [
+    {rule:'<',at:0},{rule:'<',at:2},{rule:'>',at:1},{rule:'<',at:0}],
+  'every cat who Fido chased ran': [
+    {rule:'Tf',at:3},{rule:'Bf',at:3},{rule:'>',at:2},{rule:'<',at:1},
+    {rule:'>',at:0},{rule:'<',at:0}],
+  'every cat who no dog chased ran': [
+    {rule:'>',at:3},{rule:'Tf',at:3},{rule:'Bf',at:3},{rule:'>',at:2},
+    {rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}],
+  'every dog who swam ran': [
+    {switch:2,to:'(N\\N)/(S\\NP)'},
+    {rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}],
+  'Fido swam and Felix ran': [
+    {rule:'<',at:0},{rule:'<',at:2},{rule:'Phi',at:0}],
+  'Fido chased and Felix saw a cat': [
+    {rule:'Tf',at:0},{rule:'Bf',at:0},
+    {rule:'Tf',at:2},{rule:'Bf',at:2},
+    {rule:'Phi',at:0},
+    {rule:'>',at:1},{rule:'>',at:0}],
+  'some dog and no cat swam': [
+    {rule:'>',at:0},{rule:'>',at:2},{rule:'Phi',at:0},{rule:'<',at:0}],
+};
+// Load a sentence and replay its derivation script onto the forest.
+function loadExample(sentence){
+  $('sentence').value=sentence;
+  loadWords();                 // resets forest to leaves and clears history
+  const steps=DERIVATIONS[sentence];
+  if(!steps){ return; }
+  try{
+    for(const st of steps){
+      snapshot();              // record state before each step so Undo can peel it back
+      if(st.switch!==undefined){ forest[st.switch].cat=st.to; continue; }
+      if(st.rule==='Tf'||st.rule==='Tb'){ forest[st.at]=ccgStep(st.rule,[forest[st.at]]); continue; }
+      if(st.rule==='Phi'){
+        const out=ccgCoord([forest[st.at],forest[st.at+1],forest[st.at+2]]);
+        forest.splice(st.at,3,out); continue;
+      }
+      const out=ccgStep(st.rule,[forest[st.at],forest[st.at+1]]);
+      forest.splice(st.at,2,out);
+    }
+    selected=[]; renderForest();
+    setStatus('Example loaded. Tap Tag to see the polarities, or Undo to step through it.','ok');
+  }catch(e){ setStatus('Could not build the example: '+e.message,'err'); renderForest(); }
+}
+
+function showLexNote(){
+  const parts=LEX_GROUPS.map(([label,ws])=>'<div class="lx-cat-line"><span class="lx-cat">'+label+'</span> '+ws.flat().map(disp).join(', ')+'</div>');
+  const examples=Object.keys(DERIVATIONS);
+  const wordsCol='<div class="lx-col"><div class="lx-key">Words</div><div class="lx-val">'
+    + parts.join('') + '</div></div>';
+  const exCol='<div class="lx-col"><div class="lx-key">Examples</div><div class="lx-val lx-examples">'
+    + examples.map(e=>'<span class="exlink" data-ex="'+e.replace(/"/g,'&quot;')+'">'+e+'</span>').join('')
+    + '</div></div>';
+  $('lexnote').innerHTML = '<div class="lx-cols">' + wordsCol + exCol + '</div>';
+  $('lexnote').querySelectorAll('.exlink').forEach(sp=>{
+    sp.onclick=()=>loadExample(sp.dataset.ex);
+  });
+}
+
+/* ---- events ---- */
+$('loadBtn').onclick=loadWords;
+$('resetBtn').onclick=()=>{ forest=[];selected=[];history=[];outputEl.innerHTML='';setStatus('');renderForest();$('sentence').value=''; };
+$('undoBtn').onclick=undo;
+$('tagBtn').onclick=tag;
+$('applyEditorsBtn').onclick=applyEditors;
+function appendRepair(text){
+  const cur=$('repair').value;
+  $('repair').value = (cur && !cur.endsWith('\n') ? cur+'\n' : cur) + text + '\n';
+  readRepair();
+}
+$('loadHBtn').onclick=()=>appendRepair(
+  '# H: enlarge a verb argument slot from e to a quantifier np^m\n'+
+  '# left side (the verb) gets md(d, m); m is the mark of the new argument arrow.\n'+
+  'app : e -> T , (e->t) ->m t => ((e->t) ->m t) ->+ T , (e->t) ->m t :: md(d, dom), d :: H');
+$('loadWBtn').onclick=()=>appendRepair(
+  '# W: weaken two conjuncts to their join (restricted join); both sides monotone.\n'+
+  'coord : A , B => Join(A, B) , Join(A, B) :: d, d :: W');
+document.querySelectorAll('.rule').forEach(b=>b.onclick=()=>doRule(b.dataset.rule));
+$('sentence').addEventListener('keydown',e=>{ if(e.key==='Enter')loadWords(); });
+
+/* ---- init ---- */
+buildLexEditor();
+SEM={}; for(const k in DEFAULT_SEM){ if(CONNECTORS.has(k)) continue; SEM[k]=parseType(DEFAULT_SEM[k]); }
+showLexNote();
+renderForest();
+
+</script>
+<footer class="ai-note">
+  <strong>AI disclosure.</strong> This program was developed with the help of an AI assistant
+  (Claude, Anthropic). The author takes full responsibility for the content.
+</footer>
+</body>
+</html>
