@@ -1,5 +1,8 @@
 # main links links
 main:
+  - title: "Polarity Tagger"
+    url: /files/polarity_tagger.html
+    
   - title: "Teaching"
     url: /teaching/
 
@@ -8,6 +11,3 @@ main:
 
   - title: "Misc"
     url: /misc/
-
-  - title: "Polarity Tagger"
-    url: /files/polarity_tagger.html
