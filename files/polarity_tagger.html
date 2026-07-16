@@ -631,6 +631,14 @@ function joinTy(a,b){
   // top-level position is positive
   return joinPol(a,b,true);
 }
+// lattice types: t, or any marked function type whose final result is t.
+// The connective schema has instances only at these types, so coordination
+// is defined only here (mirrors the lattice check in the paper's Phase 1).
+function isLatticeTy(t){
+  if(t.k==='base') return t.name==='t';
+  if(t.k==='arr')  return isLatticeTy(t.cod);
+  return false;   // type variables never reach a concrete coordination
+}
 // wrap a node in an 'adapt' node only if the new type differs from the node's
 // own type; an identity rewrite leaves the node untouched (no adapt node in the
 // tree). The node carries the label (shown in the tree) and the polarity rule
@@ -734,6 +742,12 @@ function Enrich(N, repair){
     // both conjuncts now share type sigma; instantiate the connector at
     // sigma ->+ (sigma ->+ sigma) and build a three-child Coord node.
     const sigma=x.ty;
+    if(!isLatticeTy(sigma)){
+      const err=new Error('coordination at '+showType(sigma)
+        +' fails: the connective schema has instances only at lattice types '
+        +'(t, or a function type whose final result is t)');
+      err.noAdaptHint=true; throw err;
+    }
     const connTy={k:'arr',dom:sigma,cod:{k:'arr',dom:sigma,cod:sigma,mark:'+'},mark:'+'};
     const connEnr={kind:'leaf', ty:connTy, word:conn.word, isConnector:true, children:[]};
     return {kind:'Coord', ty:sigma, children:[x, connEnr, y]};
@@ -1120,8 +1134,9 @@ function buildLexEditor(){
     if(PARAM_GROUPS.has(label)){
       host.appendChild(paramRow(words));
       const note=document.createElement('div'); note.className='lexnote-sm';
-      note.innerHTML='The variable <b>x</b> is the conjunct type; it is fixed at parse time, '
-        +'when coordination instantiates the connector at the type of its conjuncts.';
+      note.innerHTML='The variable <b>x</b> ranges over lattice types (t, or a function type '
+        +'whose final result is t); it is fixed at parse time, when coordination instantiates '
+        +'the connector at the shared conjunct type.';
       host.appendChild(note);
     } else if(SHARED_GROUPS.has(label)){
       host.appendChild(lexRow(words));
@@ -1268,9 +1283,10 @@ function tag(){
   }catch(e){
     statusEl.className='status err';
     statusEl.innerHTML = escapeHtml(e.message)
-      + '<br><span style="color:var(--ink-dim)">This is where the raw algorithm needs help &mdash; '
-      + 'try adding a rule to the <b>Adapt function</b> below (e.g. the <b>Insert H</b> or '
-      + '<b>Insert W</b> examples), then Tag again.</span>';
+      + (e.noAdaptHint ? ''
+        : '<br><span style="color:var(--ink-dim)">This is where the raw algorithm needs help &mdash; '
+        + 'try adding a rule to the <b>Adapt function</b> below (e.g. the <b>Insert H</b> or '
+        + '<b>Insert W</b> examples), then Tag again.</span>');
     return;
   }
   renderOutput(ccg, enriched);
