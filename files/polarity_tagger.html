@@ -1331,8 +1331,6 @@ function renderOutput(ccg, enriched){
 const DERIVATIONS = {
   'Fido runs': [
     {rule:'<',at:0}],
-  'every dog chased some cat': [
-    {rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}],
   'no dogs ran': [
     {rule:'>',at:0},{rule:'<',at:0}],
   'most dogs swam': [
@@ -1343,6 +1341,12 @@ const DERIVATIONS = {
     {rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0}],
   "Fido didn't chase Felix": [
     {rule:'Bf',at:1},{rule:'>',at:1},{rule:'<',at:0}],
+  "Fido didn't chase a cat": [
+    {rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}],
+  'every dog chased some cat': [
+    {rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}],
+  'every dog chased no cat': [
+    {rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}],
   'Felix ran if Fido swam': [
     {rule:'<',at:0},{rule:'<',at:2},{rule:'>',at:1},{rule:'<',at:0}],
   'every cat who Fido chased ran': [
@@ -1363,10 +1367,6 @@ const DERIVATIONS = {
     {rule:'>',at:1},{rule:'>',at:0}],
   'some dog and no cat swam': [
     {rule:'>',at:0},{rule:'>',at:2},{rule:'Phi',at:0},{rule:'<',at:0}],
-  'every dog chased no cat': [
-    {rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}],
-  "Fido didn't chase a cat": [
-    {rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}],
 };
 // Load a sentence and replay its derivation script onto the forest.
 function loadExample(sentence){
