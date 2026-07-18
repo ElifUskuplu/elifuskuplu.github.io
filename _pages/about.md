@@ -20,6 +20,8 @@ I earned my M.Sc. degree from [Koç University](https://science.ku.edu.tr/en/dep
 
 **Publications**
 
+6) [Formalizing the Bruck–Ryser–Chowla Theorem: Combinatorial Design Theory in Lean](https://doi.org/10.4230/LIPIcs.ITP.2026.19) - Eric Jonathan Wang, Elif Uskuplu - 17th International Conference on Interactive Theorem Proving (ITP 2026) - Leibniz International Proceedings in Informatics (LIPIcs), vol. 382 , July 2026.
+
 5) [FormalProofBench: Can Models Write Graduate Level Math Proofs That Are Formally Verified?](https://openreview.net/forum?id=1LdnVndCEG) - Nikil Ravi, Kexing Ying, Vasilii Nesterov, Rayan Krishnan, Elif Uskuplu, Bingyu Xia, Janitha Aswedige, Langston Nashold - ICLR 2026 Workshop VerifAI-2 - Mar 2026.
 
 4) [KnowTeX: Visualizing Mathematical Dependencies](https://arxiv.org/abs/2601.15294) - Elif Uskuplu, Lawrence S. Moss, Valeria de Paiva - arXiv preprint - Dec 2025.
