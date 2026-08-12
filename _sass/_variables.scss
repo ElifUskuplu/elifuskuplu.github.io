@@ -27,10 +27,11 @@ $times                      : Times, serif;
 $bodoni                     : "Bodoni MT", serif;
 $calisto                    : "Calisto MT", serif;
 $garamond                   : Garamond, serif;
+$spectral                   : "Spectral", Georgia, serif;
 
-$global-font-family         : $sans-serif;
-$header-font-family         : $sans-serif;
-$caption-font-family        : $serif;
+$global-font-family         : $spectral;
+$header-font-family         : $spectral;
+$caption-font-family        : $spectral;
 
 /* type scale */
 $type-size-1                : 2.441em;  // ~39.056px
