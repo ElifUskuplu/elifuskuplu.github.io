@@ -39,3 +39,20 @@
 @import "vendor/font-awesome/brands";
 @import "vendor/magnific-popup/magnific-popup";
 @import "print";
+
+.author__avatar img {
+  border-radius: 0;
+}
+
+.author__avatar img {
+  border-radius: 0;
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+}
+
+.author__avatar img {
+  border-radius: 0;
+  border: 1px solid $border-color;
+  padding: 4px;
+}
