@@ -88,15 +88,14 @@ $vimeo-color                : #1ab7ea;
 $vine-color                 : #00bf8f;
 $youtube-color              : #bb0000;
 $xing-color                 : #006567;
-
+$navy                       : #1b3a5f;
 
 /* links */
 $link-color                 : $info-color;
 $link-color-hover           : mix(#000, $link-color, 25%);
 $link-color-visited         : mix(#fff, $link-color, 25%);
-$masthead-link-color        : $primary-color;
-$masthead-link-color-hover  : mix(#000, $primary-color, 25%);
-
+$masthead-link-color        : $navy;
+$masthead-link-color-hover  : mix(#000, $navy, 25%);
 
 /*
    Breakpoints
