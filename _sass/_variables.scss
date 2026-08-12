@@ -17,6 +17,8 @@ $serif                      : Georgia, Times, serif;
 $sans-serif                 : -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", Arial, sans-serif;
 $monospace                  : Monaco, Consolas, "Lucida Console", monospace;
 
+$spectral                   : "Spectral", Georgia, serif;
+
 /* sans serif typefaces */
 $sans-serif-narrow          : $spectral;
 $helvetica                  : Helvetica, "Helvetica Neue", Arial, sans-serif;
@@ -27,7 +29,6 @@ $times                      : Times, serif;
 $bodoni                     : "Bodoni MT", serif;
 $calisto                    : "Calisto MT", serif;
 $garamond                   : Garamond, serif;
-$spectral                   : "Spectral", Georgia, serif;
 
 $global-font-family         : $spectral;
 $header-font-family         : $spectral;
