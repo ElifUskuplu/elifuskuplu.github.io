@@ -72,3 +72,7 @@
 .masthead__menu-item--lg a {
   color: mix(#000, $navy, 40%);
 }
+
+.masthead {
+  border-bottom: 2px solid $navy;
+}
