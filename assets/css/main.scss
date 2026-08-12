@@ -56,3 +56,19 @@
   border: 1px solid $border-color;
   padding: 4px;
 }
+
+.author__urls a {
+  color: $navy;
+}
+.author__urls a:hover {
+  color: mix(#000, $navy, 25%);
+}
+
+.author__name,
+.author__bio {
+  color: $navy;
+}
+
+.masthead__menu-item--lg a {
+  color: mix(#000, $navy, 40%);
+}
