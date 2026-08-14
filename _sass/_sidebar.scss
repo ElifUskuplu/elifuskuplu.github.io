@@ -237,6 +237,7 @@
 }
 
 .author__quote {
+  font-family: $global-font-family;
   margin: 0.5em 0 1em;
   padding-left: 0.7em;
   border-left: 3px solid $navy;
@@ -248,5 +249,5 @@
 .author__quote-source {
   display: block;
   margin-top: 0.3em;
-  font-style: normal;
+  font-style: $spectral;
 }
