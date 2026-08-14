@@ -235,3 +235,18 @@
     }
   }
 }
+
+.author__quote {
+  margin: 0.5em 0 1em;
+  padding-left: 0.7em;
+  border-left: 3px solid $navy;
+  font-size: $type-size-6;
+  line-height: 1.5;
+  color: $muted-text-color;
+}
+
+.author__quote-source {
+  display: block;
+  margin-top: 0.3em;
+  font-style: normal;
+}
