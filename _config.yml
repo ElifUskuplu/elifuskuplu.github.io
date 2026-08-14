@@ -82,7 +82,9 @@ analytics:
 author:
   name             : "Elif Üsküplü"
   avatar           : "profile3.png"
-  bio              : "Received Ph.D from USC Math Dept."
+  bio              : 
+  quote            : "The collective wisdom of ordinary people is better than one genius."
+  quote_source     : "Yang Wen-li"
   location         : 
   employer         : "Zorn's Postdoctoral Fellow."
   pubmed           : 
