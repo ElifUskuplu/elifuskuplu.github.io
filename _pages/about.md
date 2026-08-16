@@ -58,7 +58,9 @@ I earned my M.Sc. degree from [Koç University](https://science.ku.edu.tr/en/dep
 
 **Notes**
 
-Documentation for the `two-level` flag in Agda Library [Link](https://agda.readthedocs.io/en/latest/language/two-level.html)
+2) Simplicial Sets & Complete Segal Spaces: A Visual and Interactive Library [Link](https://elifuskuplu.github.io/files/sHoTT_visual_library.html)
+
+1) Documentation for the `two-level` flag in Agda Library [Link](https://agda.readthedocs.io/en/latest/language/two-level.html)
 
 **Projects**
 
@@ -68,7 +70,7 @@ Documentation for the `two-level` flag in Agda Library [Link](https://agda.readt
 
 5) PrimeNumberTheoremAnd: Formalization of the Prime Number Theorem in Lean4 (as a contributor)}, Avaliable on [Github](https://github.com/AlexKontorovich/PrimeNumberTheoremAnd).
 
-4) Combinatorial Designs Formalization in Lean4, with Eric Jonathan Wang.
+4) Combinatorial Designs Formalization in Lean4, with Eric Jonathan Wang, Avaliable on [Github](https://github.com/ericwang2004/combinatorial-designs-formalization).
 
 3) Formalization of 2LTT & Univalence Principle in Agda - Available on [Github](https://github.com/ElifUskuplu/2LTT-Agda).
  
