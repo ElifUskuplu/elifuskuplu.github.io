@@ -17,5 +17,5 @@ Final -- Dec 14 (10:20 am - 12:20 pm)
 
 #### Lecture Notes
 
-[Week 1](https://elifuskuplu.github.io/files/Week1.pdf)
+[Week 1](https://elifuskuplu.github.io/files/linalg-week-01.html)
 
