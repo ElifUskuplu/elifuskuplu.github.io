@@ -7,6 +7,8 @@ author_profile: true
 
 ## Postdoc, Indiana University, Bloomington.
 
+* Math 301 : [Linear Algebra And Applications](https://elifuskuplu.github.io/teaching/math301) (Fall 2026)
+* Math 384 : [Logic](https://elifuskuplu.github.io/teaching/math384) (Fall 2026)
 * Math 782 : Selected Topics in Mathematical Logic: The Introduction to Type Theory and Proof Assistants (Spring 2026)
 * Math 106 : The Mathematics of Decision and Beauty (Fall 2025)
 * Math 384 : Logic (Fall 2025)
