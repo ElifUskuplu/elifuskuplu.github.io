@@ -12,7 +12,7 @@ Midterm 1 -- Oct 2 (In class)
 
 Midterm 2 -- Nov 13 (In class)
 
-Final -- Dec 12 (In class)
+Final -- Dec 11 (In class)
 
 
 #### Lecture Notes
