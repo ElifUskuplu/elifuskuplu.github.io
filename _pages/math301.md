@@ -19,3 +19,5 @@ Final -- Dec 14 (10:20 am - 12:20 pm)
 
 [Week 1](https://elifuskuplu.github.io/files/linalg-week-01.html)
 
+[Week 1 Recap](https://elifuskuplu.github.io/files/linalg-week-01-recap.html)
+
