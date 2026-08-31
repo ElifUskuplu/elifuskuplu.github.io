@@ -18,3 +18,5 @@ Final -- Dec 11 (In class)
 #### Lecture Notes
 
 [Week 1](https://elifuskuplu.github.io/files/logic-week-01.html)
+
+[Week 2](https://elifuskuplu.github.io/files/logic-week-02.html)
