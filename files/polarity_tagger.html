@@ -676,14 +676,23 @@ function Enrich(N, repair){
       throw new Error('raise: cannot raise '+showType(innerEnr.ty)+' against '+showType(functorTy));
     }
 
-    const uIsT=uRaw.rule==='T', vIsT=vRaw.rule==='T';
+    // A coordination of two type-raised conjuncts counts as a raised premise:
+    // each conjunct is raised against the neighbour, then the two are coordinated.
+    const isRaisedCoord=R=>R.rule==='Phi'&&R.children[0].rule==='T'&&R.children[2].rule==='T';
+    function resolveRaised(R, functorTy){
+      if(R.rule==='T') return raiseAgainst(Enrich(R.children[0],repair), functorTy);
+      const x=raiseAgainst(Enrich(R.children[0].children[0],repair), functorTy);
+      const y=raiseAgainst(Enrich(R.children[2].children[0],repair), functorTy);
+      return coordinate(x, R.children[1], y, repair);
+    }
+    const uIsT=uRaw.rule==='T'||isRaisedCoord(uRaw), vIsT=vRaw.rule==='T'||isRaisedCoord(vRaw);
     let uEnr, vEnr;
     if(uIsT && !vIsT){
       vEnr=Enrich(vRaw,repair);
-      uEnr=raiseAgainst(Enrich(uRaw.children[0],repair), vEnr.ty);
+      uEnr=resolveRaised(uRaw, vEnr.ty);
     } else if(vIsT && !uIsT){
       uEnr=Enrich(uRaw,repair);
-      vEnr=raiseAgainst(Enrich(vRaw.children[0],repair), uEnr.ty);
+      vEnr=resolveRaised(vRaw, uEnr.ty);
     } else if(!uIsT && !vIsT){
       uEnr=Enrich(uRaw,repair); vEnr=Enrich(vRaw,repair);
     } else {
@@ -730,9 +739,20 @@ function Enrich(N, repair){
 
   if(N.rule==='Phi'){
     // three children: left conjunct, connector (and/or/but), right conjunct.
-    let x=Enrich(N.children[0],repair);
-    const conn=N.children[1];                 // the connector leaf (word kept)
-    let y=Enrich(N.children[2],repair);
+    return coordinate(Enrich(N.children[0],repair), N.children[1], Enrich(N.children[2],repair), repair);
+  }
+
+  if(N.rule==='T'){
+    const err=new Error('a type raising must feed a composition');
+    err.hint='Compose the raised card with its neighbour, or use application without raising, then Tag again.';
+    throw err;
+  }
+  throw new Error('cannot enrich '+N.rule);
+}
+
+// Coordinate two enriched conjuncts x, y with the connector leaf conn.
+// Used by the Phi case and by a coordination of raised premises inside a composition.
+function coordinate(x, conn, y, repair){
     // ML (structural): coordination expects np-typed conjuncts, so a bare
     // individual e is lifted to np+ = (e->t)->+t.
     const NPplus={k:'arr',dom:{k:'arr',dom:{k:'base',name:'e'},cod:{k:'base',name:'t'},mark:'.'},cod:{k:'base',name:'t'},mark:'+'};
@@ -758,14 +778,6 @@ function Enrich(N, repair){
     const connTy={k:'arr',dom:sigma,cod:{k:'arr',dom:sigma,cod:sigma,mark:'+'},mark:'+'};
     const connEnr={kind:'leaf', ty:connTy, word:conn.word, isConnector:true, children:[]};
     return {kind:'Coord', ty:sigma, children:[x, connEnr, y]};
-  }
-
-  if(N.rule==='T'){
-    const err=new Error('a type raising must feed a composition');
-    err.hint='Compose the raised card with its neighbour, or use application without raising, then Tag again.';
-    throw err;
-  }
-  throw new Error('cannot enrich '+N.rule);
 }
 
 /* ---------------- polarize (top-down) ---------------- */
@@ -1397,6 +1409,9 @@ const DERIVATIONS = {
     {rule:'>',at:1},{rule:'>',at:0}],
   'some dog and no cat swam': [
     {rule:'>',at:0},{rule:'>',at:2},{rule:'Phi',at:0},{rule:'<',at:0}],
+  'every cat who Fido and Felix chased ran': [
+    {rule:'Tf',at:3},{rule:'Tf',at:5},{rule:'Phi',at:3},{rule:'Bf',at:3},
+    {rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}],
 };
 // Load a sentence and replay its derivation script onto the forest.
 function loadExample(sentence){
