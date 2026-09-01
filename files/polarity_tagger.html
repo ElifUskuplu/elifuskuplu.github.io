@@ -366,11 +366,13 @@
       <details class="help">
         <summary>What does the H example do?</summary>
         <div class="body">The verb-lifting rule H. When application meets a verb
-          <code>e -&gt; T</code> and a quantifier argument <code>(e-&gt;t) -&gt;m t</code>, it enlarges
-          the verb's argument slot so it can take the quantifier:
-          <code>app : e -&gt; T , (e-&gt;t) -&gt;m t =&gt; ((e-&gt;t) -&gt;m t) -&gt;+ T , (e-&gt;t) -&gt;m t</code>.
+          <code>e -&gt; t</code> or <code>e -&gt; (e-&gt;t)</code> and a quantifier argument
+          <code>(e-&gt;t) -&gt;m t</code>, it enlarges the verb's argument slot so it can take the
+          quantifier: <code>app : e -&gt; t , (e-&gt;t) -&gt;m t =&gt; ((e-&gt;t) -&gt;m t) -&gt;+ t , (e-&gt;t) -&gt;m t</code>,
+          and the same with <code>e-&gt;t</code> as the result. The lift is valid only for these two
+          results, so there is one line for each.
           With an empty adapt box you see the raw algorithm, which fails exactly where a fix is needed.</div>
-      </details>
+      </details>      
       <details class="help">
         <summary>What does the W example do?</summary>
         <div class="body">The weakening rule W, for coordination. Coordination first lifts any bare
@@ -718,7 +720,10 @@ function Enrich(N, repair){
         return {kind:N.rule, ty:f2.cod, children:fwd?[fN,aN]:[aN,fN], fIdx:fwd?0:1};
       }
     }
-    throw new Error('application does not fit'+(r.fired?' even after repair':'')+': '+showType(f.ty)+' \u00b7 '+showType(a.ty));
+    const err=new Error('application does not fit'+(r.fired?' even after repair':'')+': '+showType(f.ty)+' \u00b7 '+showType(a.ty));
+    if(f.kind==='B') err.hint='The functor here was built by composition, and no Adapt line fits it. '
+      +'Where the syntax allows, use application instead of composition, then Tag again.';
+    throw err;
   }
 
   if(N.rule==='Phi'){
@@ -1284,9 +1289,12 @@ function tag(){
     statusEl.className='status err';
     statusEl.innerHTML = escapeHtml(e.message)
       + (e.noAdaptHint ? ''
-        : '<br><span style="color:var(--ink-dim)">This is where the raw algorithm needs help &mdash; '
-        + 'try adding a rule to the <b>Adapt function</b> below (e.g. the <b>Insert H</b> or '
-        + '<b>Insert W</b> examples), then Tag again.</span>');
+        : '<br><span style="color:var(--ink-dim)">'
+        + (e.hint ? escapeHtml(e.hint)
+          : 'This is where the raw algorithm needs help &mdash; '
+          + 'try adding a rule to the <b>Adapt function</b> below (e.g. the <b>Insert H</b> or '
+          + '<b>Insert W</b> examples), then Tag again.')
+        + '</span>');
     return;
   }
   renderOutput(ccg, enriched);
@@ -1433,9 +1441,11 @@ function appendRepair(text){
   readRepair();
 }
 $('loadHBtn').onclick=()=>appendRepair(
-  '# H: enlarge a verb argument slot from e to a quantifier np^m\n'+
+  '# H: enlarge a verb argument slot from e to a quantifier np^m.\n'+
+  '# One line per result type (t and e->t); the lift is not valid for other results.\n'+
   '# left side (the verb) gets md(d, m); m is the mark of the new argument arrow.\n'+
-  'app : e -> T , (e->t) ->m t => ((e->t) ->m t) ->+ T , (e->t) ->m t :: md(d, dom), d :: H');
+  'app : e -> t      , (e->t) ->m t => ((e->t) ->m t) ->+ t      , (e->t) ->m t :: md(d, dom), d :: H\n'+
+  'app : e -> (e->t) , (e->t) ->m t => ((e->t) ->m t) ->+ (e->t) , (e->t) ->m t :: md(d, dom), d :: H');
 $('loadWBtn').onclick=()=>appendRepair(
   '# W: weaken two conjuncts to their join (restricted join); both sides monotone.\n'+
   'coord : A , B => Join(A, B) , Join(A, B) :: d, d :: W');
