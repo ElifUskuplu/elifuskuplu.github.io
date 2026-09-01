@@ -687,7 +687,9 @@ function Enrich(N, repair){
     } else if(!uIsT && !vIsT){
       uEnr=Enrich(uRaw,repair); vEnr=Enrich(vRaw,repair);
     } else {
-      throw new Error('composition with both premises type-raised is not supported');
+      const err=new Error('composition with both premises type-raised is not supported');
+      err.hint='Raise only one of the two premises, then Tag again.';
+      throw err;
     }
 
     let u=uEnr.ty, v=vEnr.ty;
@@ -758,7 +760,11 @@ function Enrich(N, repair){
     return {kind:'Coord', ty:sigma, children:[x, connEnr, y]};
   }
 
-  if(N.rule==='T') throw new Error('a type raising must feed a composition');
+  if(N.rule==='T'){
+    const err=new Error('a type raising must feed a composition');
+    err.hint='Compose the raised card with its neighbour, or use application without raising, then Tag again.';
+    throw err;
+  }
   throw new Error('cannot enrich '+N.rule);
 }
 
