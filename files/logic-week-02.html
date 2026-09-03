@@ -143,6 +143,33 @@ figcaption b { color: var(--accent-dark); }
 .print-mirror { display: none; white-space: pre-wrap; border: 1px solid #999; padding: 0.4rem 0.5rem; min-height: 2.5rem; font-family: inherit; }
 .print-only { display: none; }
 
+
+/* ---------- Answer mode switch + handwriting area (homework) ---------- */
+.hw-mode{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:2px 0 10px;}
+.hw-mode .hw-mode-label{font-size:0.85em;font-weight:600;color:#555;margin-right:4px;}
+.hw-mode button{font-size:0.85em;padding:6px 12px;margin:0;}
+.hw-mode button.active{background:var(--secondary);color:#fff;border-color:var(--secondary);}
+.hw-q.hand-mode textarea, .hw-q.hand-mode input[type=text], .hw-q.hand-mode .tree-editor{display:none;}
+.hw-hand{margin-top:10px;}
+.hw-hand .hand-panel{display:none;border:1px solid #D8C6C0;border-radius:8px;padding:8px;background:#FFFDFC;}
+.hw-q.hand-mode .hand-panel{display:block;}
+.hw-hand .hand-tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px;}
+.hw-hand .hand-tools button{font-size:0.85em;padding:6px 10px;margin:0;}
+.hw-hand .hand-tools button.active{background:var(--secondary);color:#fff;border-color:var(--secondary);}
+.hw-hand .hand-hint{font-size:0.8em;color:#555;margin-left:auto;}
+.hw-hand canvas{
+  display:block;width:100%;touch-action:none;user-select:none;-webkit-user-select:none;
+  border:1px solid #bbb;border-radius:6px;background-color:#fff;
+  background-image:linear-gradient(to bottom,rgba(38,97,156,0.14) 1px,transparent 1px);
+  background-size:100% 28px;cursor:crosshair;
+}
+.hw-hand canvas.eraser{cursor:cell;}
+.hand-mirror{display:none;}
+.hand-mirror .hand-mirror-label{font-size:0.85em;font-weight:600;margin:8px 0 4px;}
+.hand-mirror img{display:block;width:100%;height:auto;border:1px solid #444;border-radius:6px;}
+.hand-mirror.has-ink .hand-empty{display:none;}
+.hand-mirror:not(.has-ink) img{display:none;}
+
 @media print {
   @page { margin: 18mm 16mm; }
   body { background: #fff; color: #000; font-size: 11pt; }
@@ -155,6 +182,10 @@ figcaption b { color: var(--accent-dark); }
   .hw-q textarea, .hw-q input[type=text], .name-row input[type=text] { display: none !important; }
   .print-mirror { display: block; }
   h1, h2, h3, h4 { color: #000; }
+  .hw-mode, .hw-hand .hand-panel{display:none !important;}
+  .hw-q.hand-mode .print-mirror:not(.hand-mirror){display:none !important;}
+  .hw-q:not(.hand-mode) .hand-mirror{display:none !important;}
+  .hw-q.hand-mode .hand-mirror{display:block !important;}
   .hw-q .pts { color: #000; }
 }
 </style>
@@ -1009,6 +1040,7 @@ figcaption b { color: var(--accent-dark); }
   <ul>
     <li>Fill in your name in the field below before you start.</li>
     <li>Show your work. A bare answer without reasoning receives no credit. Write full sentences where a proof or an explanation is asked.</li>
+    <li>Each question has two answer modes: <strong>Type</strong> and <strong>Write by hand</strong>. In "Write by hand" the text boxes are replaced by a drawing area where you can write with a pen, your finger, or the mouse. Only the answers of the mode selected for each question go into the PDF; switching modes does not delete what you entered in the other mode.</li>
     <li>When you are done, click "Save homework as PDF" and upload the PDF to Canvas.</li>
     <li>Your answers are saved automatically in this browser. If you open this file on a different computer or in a different browser, they will not be there.</li>
     <li>Total: 100 points. Questions 2 and 3 are taken from Section 0.5 of the textbook; the others are based on the material of Days 1 and 3.</li>
@@ -1039,6 +1071,7 @@ figcaption b { color: var(--accent-dark); }
     <textarea id="hw-q1-c" data-save="hw-q1-c" style="min-height:4rem"></textarea>
     <div class="print-mirror" data-mirror="hw-q1-c"></div>
   </div>
+  <div class="hw-hand" data-hand="hw-q1-hand"></div>
 </div>
 
 <div class="hw-q" id="hw-q2">
@@ -1084,6 +1117,7 @@ figcaption b { color: var(--accent-dark); }
     <textarea id="hw-q2-c" data-save="hw-q2-c" style="min-height:5rem"></textarea>
     <div class="print-mirror" data-mirror="hw-q2-c"></div>
   </div>
+  <div class="hw-hand" data-hand="hw-q2-hand"></div>
 </div>
 
 <div class="hw-q" id="hw-q3">
@@ -1104,6 +1138,7 @@ figcaption b { color: var(--accent-dark); }
     <textarea id="hw-q3-c" data-save="hw-q3-c" style="min-height:5rem"></textarea>
     <div class="print-mirror" data-mirror="hw-q3-c"></div>
   </div>
+  <div class="hw-hand" data-hand="hw-q3-hand"></div>
 </div>
 
 <div class="hw-q" id="hw-q4">
@@ -1124,6 +1159,7 @@ figcaption b { color: var(--accent-dark); }
     <textarea id="hw-q4-c" data-save="hw-q4-c" style="min-height:5rem"></textarea>
     <div class="print-mirror" data-mirror="hw-q4-c"></div>
   </div>
+  <div class="hw-hand" data-hand="hw-q4-hand"></div>
 </div>
 
 <div class="hw-q" id="hw-q5">
@@ -1143,6 +1179,7 @@ figcaption b { color: var(--accent-dark); }
     <textarea id="hw-q5-c" data-save="hw-q5-c" style="min-height:6rem"></textarea>
     <div class="print-mirror" data-mirror="hw-q5-c"></div>
   </div>
+  <div class="hw-hand" data-hand="hw-q5-hand"></div>
 </div>
 
 <div class="btnrow no-print">
@@ -1644,6 +1681,330 @@ figcaption b { color: var(--accent-dark); }
     });
     wireSolution('w8');
   }
+  /* ---------------- handwritten solution (canvas) ---------------- */
+  var HAND_W = 1000;        /* logical width of every canvas, in drawing units */
+  var HAND_H0 = 500;        /* initial logical height */
+  var HAND_STEP = 250;      /* "Add space" adds this much */
+  var HAND_HMAX = 1400;     /* keeps the printed image within one page */
+  var HAND_PEN_W = 2.4;
+  var HAND_ERASER_W = 28;
+  var HAND_INK = "#1A1A1A";
+  var HAND = {};            /* id -> state */
+  var handPenSeen = false;  /* once a pen is used, finger touches are ignored (palm rejection) */
+
+  function handKey(id){ return PREFIX + id; }
+
+  function handMk(tag, cls, text){
+    var el = document.createElement(tag);
+    if (cls) el.className = cls;
+    if (text !== undefined) el.textContent = text;
+    return el;
+  }
+
+  function handPoint(st, ev){
+    var r = st.canvas.getBoundingClientRect();
+    if (!r.width) return [0, 0];
+    var k = HAND_W / r.width;
+    return [Math.round((ev.clientX - r.left) * k * 10) / 10, Math.round((ev.clientY - r.top) * k * 10) / 10];
+  }
+
+  function handSetupStroke(ctx, tool, k){
+    ctx.setTransform(k, 0, 0, k, 0, 0);
+    ctx.lineCap = "round"; ctx.lineJoin = "round";
+    if (tool === "e"){
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.lineWidth = HAND_ERASER_W; ctx.strokeStyle = "#000"; ctx.fillStyle = "#000";
+    } else {
+      ctx.globalCompositeOperation = "source-over";
+      ctx.lineWidth = HAND_PEN_W; ctx.strokeStyle = HAND_INK; ctx.fillStyle = HAND_INK;
+    }
+  }
+
+  function handDrawStroke(ctx, stroke, k){
+    var p = stroke.p;
+    if (!p || p.length < 2) return;
+    ctx.save();
+    handSetupStroke(ctx, stroke.t, k);
+    if (p.length === 2){
+      ctx.beginPath(); ctx.arc(p[0], p[1], ctx.lineWidth / 2, 0, Math.PI * 2); ctx.fill();
+    } else {
+      ctx.beginPath(); ctx.moveTo(p[0], p[1]);
+      for (var i = 2; i < p.length; i += 2) ctx.lineTo(p[i], p[i + 1]);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function handRenderAll(ctx, st, k){
+    for (var i = 0; i < st.strokes.length; i++) handDrawStroke(ctx, st.strokes[i], k);
+  }
+
+  function handRedraw(st){
+    var ctx = st.ctx; if (!ctx) return;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, st.canvas.width, st.canvas.height);
+    handRenderAll(ctx, st, st.scale);
+  }
+
+  function handResize(st){
+    var cssW = st.canvas.clientWidth;
+    if (!cssW || !st.ctx) return;
+    var cssH = cssW * st.h / HAND_W;
+    var dpr = window.devicePixelRatio || 1;
+    st.canvas.style.height = cssH + "px";
+    st.canvas.width = Math.round(cssW * dpr);
+    st.canvas.height = Math.round(cssH * dpr);
+    st.scale = st.canvas.width / HAND_W;
+    handRedraw(st);
+  }
+
+  function handSave(st){
+    try{
+      var data = { v: 1, h: st.h, s: st.strokes };
+      if (st.strokes.length === 0 && st.h === HAND_H0) localStorage.removeItem(handKey(st.id));
+      else localStorage.setItem(handKey(st.id), JSON.stringify(data));
+      st.hint.textContent = st.hintDefault;
+    }catch(e){
+      st.hint.textContent = "Could not save the drawing (browser storage is full or unavailable).";
+    }
+  }
+
+  function handRestore(st){
+    try{
+      var raw = localStorage.getItem(handKey(st.id));
+      if (!raw) return;
+      var d = JSON.parse(raw);
+      if (d && Array.isArray(d.s)){
+        st.strokes = d.s.filter(function(x){ return x && (x.t === "p" || x.t === "e") && Array.isArray(x.p); });
+      }
+      if (d && typeof d.h === "number" && d.h >= HAND_H0 && d.h <= HAND_HMAX) st.h = d.h;
+    }catch(e){ /* ignore corrupt data */ }
+  }
+
+  /* Renders the strokes on a white background and stores the PNG in the print mirror. */
+  function handUpdateMirror(st){
+    if (st.mirrorTimer){ clearTimeout(st.mirrorTimer); st.mirrorTimer = null; }
+    try{
+      if (st.strokes.length === 0){
+        st.mirror.classList.remove("has-ink");
+        st.img.removeAttribute("src");
+        return;
+      }
+      var W = 1600, H = Math.round(W * st.h / HAND_W);
+      var ink = document.createElement("canvas"); ink.width = W; ink.height = H;
+      var ictx = ink.getContext("2d"); if (!ictx) return;
+      handRenderAll(ictx, st, W / HAND_W);
+      var out = document.createElement("canvas"); out.width = W; out.height = H;
+      var octx = out.getContext("2d");
+      octx.fillStyle = "#fff"; octx.fillRect(0, 0, W, H);
+      octx.drawImage(ink, 0, 0);
+      st.img.src = out.toDataURL("image/png");
+      st.mirror.classList.add("has-ink");
+    }catch(e){ console.error(e); }
+  }
+  function handScheduleMirror(st){
+    if (st.mirrorTimer) clearTimeout(st.mirrorTimer);
+    st.mirrorTimer = setTimeout(function(){ handUpdateMirror(st); }, 400);
+  }
+
+  function handSetTool(st, tool){
+    st.tool = tool;
+    st.btnPen.classList.toggle("active", tool === "p");
+    st.btnEraser.classList.toggle("active", tool === "e");
+    st.canvas.classList.toggle("eraser", tool === "e");
+  }
+
+  function handUpdateButtons(st){
+    st.btnUndo.disabled = st.strokes.length === 0;
+    st.btnRedo.disabled = st.redo.length === 0;
+    st.btnClear.disabled = st.strokes.length === 0;
+    st.btnSpace.disabled = st.h >= HAND_HMAX;
+  }
+
+  function handAfterChange(st){
+    handSave(st);
+    handUpdateButtons(st);
+    handScheduleMirror(st);
+  }
+
+  function handModeKey(st){ return PREFIX + st.id.replace(/-hand$/, "-mode"); }
+
+  function handIsHand(st){ return st.q.classList.contains("hand-mode"); }
+
+  /* mode: "type" | "hand". Nothing is deleted when switching; only what is shown and printed changes. */
+  function handSetMode(st, mode, persist){
+    var hand = mode === "hand";
+    st.q.classList.toggle("hand-mode", hand);
+    st.btnType.classList.toggle("active", !hand);
+    st.btnHand.classList.toggle("active", hand);
+    st.btnType.setAttribute("aria-pressed", hand ? "false" : "true");
+    st.btnHand.setAttribute("aria-pressed", hand ? "true" : "false");
+    if (hand) handResize(st);
+    if (persist){
+      try{
+        if (hand) localStorage.setItem(handModeKey(st), "hand");
+        else localStorage.removeItem(handModeKey(st));
+      }catch(e){}
+    }
+  }
+
+  function buildHand(container){
+    var id = container.getAttribute("data-hand");
+    if (!id) return;
+    container.innerHTML = "";
+
+    var st = HAND[id] = {
+      id: id, container: container, strokes: [], redo: [], h: HAND_H0, tool: "p",
+      scale: 1, drawing: null, mirrorTimer: null,
+      hintDefault: "Pen, finger or mouse. Use the eraser or Undo to correct."
+    };
+    handRestore(st);
+
+    st.q = container.closest ? container.closest(".hw-q") : container.parentNode;
+    if (!st.q) st.q = container.parentNode;
+
+    /* answer-mode switch, placed right under the question heading */
+    var sw = handMk("div", "hw-mode");
+    sw.setAttribute("role", "group");
+    sw.setAttribute("aria-label", "Answer mode");
+    sw.appendChild(handMk("span", "hw-mode-label", "Answer:"));
+    st.btnType = handMk("button", "btn secondary", "Type");
+    st.btnHand = handMk("button", "btn secondary", "Write by hand");
+    st.btnType.type = "button"; st.btnHand.type = "button";
+    sw.appendChild(st.btnType); sw.appendChild(st.btnHand);
+    var h3 = st.q.querySelector("h3");
+    if (h3 && h3.parentNode === st.q) st.q.insertBefore(sw, h3.nextSibling); else st.q.insertBefore(sw, st.q.firstChild);
+
+    st.panel = handMk("div", "hand-panel");
+    var tools = handMk("div", "hand-tools");
+    st.btnPen = handMk("button", "btn secondary", "Pen");
+    st.btnEraser = handMk("button", "btn secondary", "Eraser");
+    st.btnUndo = handMk("button", "btn secondary", "Undo");
+    st.btnRedo = handMk("button", "btn secondary", "Redo");
+    st.btnClear = handMk("button", "btn secondary", "Clear");
+    st.btnSpace = handMk("button", "btn secondary", "Add space");
+    st.hint = handMk("span", "hand-hint", st.hintDefault);
+    [st.btnPen, st.btnEraser, st.btnUndo, st.btnRedo, st.btnClear, st.btnSpace].forEach(function(b){
+      b.type = "button"; tools.appendChild(b);
+    });
+    tools.appendChild(st.hint);
+    st.panel.appendChild(tools);
+
+    st.canvas = document.createElement("canvas");
+    st.canvas.setAttribute("aria-label", "Handwriting area for " + id.replace("hw-", "").replace("-hand", ""));
+    st.panel.appendChild(st.canvas);
+    container.appendChild(st.panel);
+    st.ctx = st.canvas.getContext("2d");
+
+    st.mirror = handMk("div", "print-mirror hand-mirror");
+    st.mirror.appendChild(handMk("div", "hand-mirror-label", "Answer (handwritten):"));
+    st.img = document.createElement("img");
+    st.img.alt = "Handwritten answer";
+    st.mirror.appendChild(st.img);
+    st.mirror.appendChild(handMk("div", "hand-empty", "(no answer)"));
+    container.appendChild(st.mirror);
+
+    /* ---- tool buttons ---- */
+    st.btnType.addEventListener("click", function(){ handSetMode(st, "type", true); });
+    st.btnHand.addEventListener("click", function(){ handSetMode(st, "hand", true); });
+    st.btnPen.addEventListener("click", function(){ handSetTool(st, "p"); });
+    st.btnEraser.addEventListener("click", function(){ handSetTool(st, "e"); });
+    st.btnUndo.addEventListener("click", function(){
+      if (!st.strokes.length) return;
+      st.redo.push(st.strokes.pop()); handRedraw(st); handAfterChange(st);
+    });
+    st.btnRedo.addEventListener("click", function(){
+      if (!st.redo.length) return;
+      st.strokes.push(st.redo.pop()); handRedraw(st); handAfterChange(st);
+    });
+    st.btnClear.addEventListener("click", function(){
+      if (!st.strokes.length) return;
+      if (!window.confirm("Erase the whole handwritten solution for this question?")) return;
+      st.strokes = []; st.redo = []; handRedraw(st); handAfterChange(st);
+    });
+    st.btnSpace.addEventListener("click", function(){
+      if (st.h >= HAND_HMAX) return;
+      st.h = Math.min(HAND_HMAX, st.h + HAND_STEP); handResize(st); handAfterChange(st);
+    });
+
+    /* ---- drawing ---- */
+    function segment(from, to, tool){
+      var ctx = st.ctx; if (!ctx) return;
+      ctx.save(); handSetupStroke(ctx, tool, st.scale);
+      ctx.beginPath(); ctx.moveTo(from[0], from[1]); ctx.lineTo(to[0], to[1]); ctx.stroke();
+      ctx.restore();
+    }
+    function finish(ev){
+      var d = st.drawing; if (!d || ev.pointerId !== d.pointerId) return;
+      st.drawing = null;
+      try{ st.canvas.releasePointerCapture(ev.pointerId); }catch(e){}
+      if (d.p.length >= 2){
+        st.strokes.push({ t: d.t, p: d.p }); st.redo = [];
+        if (d.p.length === 2) handRedraw(st); /* single tap: draw the dot */
+        handAfterChange(st);
+      }
+    }
+    st.canvas.addEventListener("pointerdown", function(ev){
+      if (ev.pointerType === "mouse" && ev.button !== 0) return;
+      if (ev.pointerType === "pen") handPenSeen = true;
+      if (ev.pointerType === "touch" && handPenSeen) return;
+      if (st.drawing) return;
+      ev.preventDefault();
+      var tool = st.tool;
+      if (ev.pointerType === "pen" && (ev.button === 5 || (ev.buttons & 32))) tool = "e"; /* pen eraser end */
+      var pt = handPoint(st, ev);
+      st.drawing = { t: tool, p: [pt[0], pt[1]], last: pt, pointerId: ev.pointerId };
+      try{ st.canvas.setPointerCapture(ev.pointerId); }catch(e){}
+    });
+    st.canvas.addEventListener("pointermove", function(ev){
+      var d = st.drawing; if (!d || ev.pointerId !== d.pointerId) return;
+      ev.preventDefault();
+      var evs = (ev.getCoalescedEvents && ev.getCoalescedEvents()) || [];
+      if (!evs.length) evs = [ev];
+      for (var i = 0; i < evs.length; i++){
+        var pt = handPoint(st, evs[i]);
+        if (pt[0] === d.last[0] && pt[1] === d.last[1]) continue;
+        segment(d.last, pt, d.t);
+        d.p.push(pt[0], pt[1]); d.last = pt;
+      }
+    });
+    st.canvas.addEventListener("pointerup", finish);
+    st.canvas.addEventListener("pointercancel", finish);
+    st.canvas.addEventListener("contextmenu", function(ev){ ev.preventDefault(); });
+
+    handSetTool(st, "p");
+    handUpdateButtons(st);
+    var savedMode = null;
+    try{ savedMode = localStorage.getItem(handModeKey(st)); }catch(e){}
+    handSetMode(st, savedMode === "hand" ? "hand" : "type", false);
+    handUpdateMirror(st);
+  }
+
+  function buildAllHand(){
+    var boxes = document.querySelectorAll(".hw-hand[data-hand]");
+    for (var i = 0; i < boxes.length; i++) buildHand(boxes[i]);
+  }
+
+  function handResetAll(){
+    for (var id in HAND){
+      var st = HAND[id];
+      st.strokes = []; st.redo = []; st.h = HAND_H0; st.drawing = null;
+      try{ localStorage.removeItem(handKey(st.id)); localStorage.removeItem(handModeKey(st)); }catch(e){}
+      handSetMode(st, "type", false); handResize(st); handUpdateButtons(st); handUpdateMirror(st);
+    }
+  }
+
+  function handResizeAll(){
+    for (var id in HAND){
+      if (handIsHand(HAND[id])) handResize(HAND[id]);
+    }
+  }
+  var handResizeTimer = null;
+  window.addEventListener("resize", function(){
+    if (handResizeTimer) clearTimeout(handResizeTimer);
+    handResizeTimer = setTimeout(handResizeAll, 120);
+  });
+
   // ---------- Homework: print and clear ----------
   function initHomework() {
     var hw = $('homework');
@@ -1653,6 +2014,7 @@ figcaption b { color: var(--accent-dark); }
         var src = $(mirrors[i].getAttribute('data-mirror'));
         mirrors[i].textContent = src ? src.value : '';
       }
+      for (var hid in HAND) handUpdateMirror(HAND[hid]);
       fillTreeMirrors();
     }
     window.addEventListener('beforeprint', fillMirrors);
@@ -1672,6 +2034,7 @@ figcaption b { color: var(--accent-dark); }
         storeRemove(fields[i].getAttribute('data-save') || fields[i].id);
       }
       for (var j = 0; j < treeEditors.length; j++) if (treeEditors[j].inHomework) treeEditors[j].reset();
+      handResetAll();
     });
   }
 
@@ -1689,6 +2052,7 @@ figcaption b { color: var(--accent-dark); }
     safe(initW7, 'w7');
     safe(initTreeEditors, 'trees');
     safe(initW8, 'w8');
+    safe(buildAllHand, 'hand');
     safe(initHomework, 'homework');
     // persistence after widgets built their fields
     safe(function () { persistAll(document); }, 'persist');

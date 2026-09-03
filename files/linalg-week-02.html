@@ -178,6 +178,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .hand-mirror img{display:block;width:100%;height:auto;border:1px solid #444;border-radius:6px;}
 .hand-mirror.has-ink .hand-empty{display:none;}
 .hand-mirror:not(.has-ink) img{display:none;}
+
 /* ---------- Print ---------- */
 @media print{
   @page{margin:18mm 16mm;}
@@ -195,6 +196,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
   h1,h2,h3{color:#000;}
   .hw-mode, .hw-hand .hand-panel{display:none !important;}
   .hw-q.hand-mode .print-mirror:not(.hand-mirror){display:none !important;}
+  .hw-q:not(.hand-mode) .hand-mirror{display:none !important;}
   .hw-q.hand-mode .hand-mirror{display:block !important;}
   .hw-q .pts{color:#000;}
 }
@@ -1316,7 +1318,6 @@ function rrMirrorText(id){
   return out;
 }
 
-
 /* ---------------- handwritten solution (canvas) ---------------- */
 var HAND_W = 1000;        /* logical width of every canvas, in drawing units */
 var HAND_H0 = 500;        /* initial logical height */
@@ -1625,6 +1626,7 @@ function handResetAll(){
   for (var id in HAND){
     var st = HAND[id];
     st.strokes = []; st.redo = []; st.h = HAND_H0; st.drawing = null;
+    try{ localStorage.removeItem(handKey(st.id)); localStorage.removeItem(handModeKey(st)); }catch(e){}
     handSetMode(st, "type", false); handResize(st); handUpdateButtons(st); handUpdateMirror(st);
   }
 }
@@ -1639,6 +1641,7 @@ window.addEventListener("resize", function(){
   if (handResizeTimer) clearTimeout(handResizeTimer);
   handResizeTimer = setTimeout(handResizeAll, 120);
 });
+
 /* ---------------- localStorage save / restore ---------------- */
 function saveField(el){
   try{
