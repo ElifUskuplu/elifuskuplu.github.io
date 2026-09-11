@@ -2073,5 +2073,94 @@ figcaption b { color: var(--accent-dark); }
   else init();
 })();
 </script>
+<style>
+/* symbol palette under homework text areas */
+.sympal{display:flex;flex-wrap:wrap;margin:4px 0 10px}
+.sympal button{font:inherit;font-size:1rem;line-height:1;min-width:2.1em;padding:4px 6px;margin:3px 4px 0 0;
+  border:1px solid var(--accent);border-radius:5px;background:#fff;color:var(--accent);cursor:pointer}
+.sympal button:hover{background:var(--box-bg)}
+.sympal button:focus{outline:2px solid var(--accent);outline-offset:1px}
+.sympal .sympal-sep{width:8px}
+.hw-q.hand-mode .sympal{display:none}
+@media print{.sympal{display:none !important}}
+</style>
+<script>
+(function(){
+"use strict";
+/* Symbol palette: one row of buttons under every text area in the homework section.
+   Clicking a button inserts the symbol at the caret of that text area and fires the
+   same input/change events that typing would, so the existing autosave code runs. */
+var SYMBOLS = [
+  ["\u22A2","turnstile, proves"], ["\u22AC","does not prove"],
+  ["\u22A8","double turnstile, entails"], ["\u22AD","does not entail"], null,
+  ["\u27E6","left semantic bracket"], ["\u27E7","right semantic bracket"],
+  ["{","left brace"], ["}","right brace"], null,
+  ["\u2205","empty set"], ["\u2208","element of"], ["\u2209","not element of"],
+  ["\u2286","subset of"], ["\u2288","not subset of"], ["\u2229","intersection"],
+  ["\u222A","union"], ["\u2216","set difference"], null,
+  ["\u2200","for all"], ["\u2203","there exists"], ["\u00AC","not"],
+  ["\u2227","and"], ["\u2228","or"], ["\u2192","arrow"], ["\u2194","double arrow"], null,
+  ["\u2260","not equal"], ["\u2264","less or equal"],
+  ["\u0393","capital gamma"], ["\u03C6","phi"], ["\u03C8","psi"]
+];
+function insertAt(ta, text){
+  ta.focus();
+  var s = ta.selectionStart, e = ta.selectionEnd;
+  if(typeof s !== "number"){ ta.value += text; }
+  else if(typeof ta.setRangeText === "function"){ ta.setRangeText(text, s, e, "end"); }
+  else { ta.value = ta.value.slice(0, s) + text + ta.value.slice(e); ta.selectionStart = ta.selectionEnd = s + text.length; }
+  try{ ta.dispatchEvent(new Event("input", { bubbles: true })); }catch(err){}
+  try{ ta.dispatchEvent(new Event("change", { bubbles: true })); }catch(err){}
+}
+/* The palette inserts into its own text area, unless the student last typed in another
+   text field of the same question (for example a short one-line input); then it inserts there. */
+var lastFocused = null;
+function trackFocus(hw){
+  hw.addEventListener("focusin", function(ev){
+    var t = ev.target;
+    if(!t) return;
+    if(t.tagName === "TEXTAREA" || (t.tagName === "INPUT" && (t.type === "text" || !t.type))) lastFocused = t;
+  });
+}
+function targetFor(ta){
+  var q = ta.closest ? ta.closest(".hw-q") : null;
+  if(lastFocused && q && q.contains(lastFocused) && lastFocused !== ta && document.body.contains(lastFocused)) return lastFocused;
+  return ta;
+}
+function build(ta){
+  if(ta.getAttribute("data-sympal") === "1") return;
+  ta.setAttribute("data-sympal", "1");
+  var pal = document.createElement("div");
+  pal.className = "sympal";
+  pal.setAttribute("role", "toolbar");
+  pal.setAttribute("aria-label", "Insert a symbol into the answer above");
+  SYMBOLS.forEach(function(sym){
+    if(sym === null){ var sep = document.createElement("span"); sep.className = "sympal-sep"; pal.appendChild(sep); return; }
+    var b = document.createElement("button");
+    b.type = "button";
+    b.textContent = sym[0];
+    b.title = sym[1];
+    b.setAttribute("aria-label", "insert " + sym[1]);
+    b.addEventListener("mousedown", function(ev){ ev.preventDefault(); }); /* keep the caret in the text area */
+    b.addEventListener("click", function(){ insertAt(targetFor(ta), sym[0]); });
+    pal.appendChild(b);
+  });
+  /* place the palette right after the text area, or after its wrapper when the area is wrapped alone */
+  var anchor = ta;
+  var p = ta.parentNode;
+  if(p && p.children.length === 1 && p.id !== "homework" && !/hw-q\b/.test(p.className || "")) anchor = p;
+  anchor.parentNode.insertBefore(pal, anchor.nextSibling);
+}
+function init(){
+  var hw = document.getElementById("homework");
+  if(!hw) return;
+  trackFocus(hw);
+  var tas = hw.querySelectorAll("textarea");
+  for(var i = 0; i < tas.length; i++){ build(tas[i]); }
+}
+if(document.readyState === "loading"){ document.addEventListener("DOMContentLoaded", init); } else { init(); }
+})();
+</script>
+
 </body>
 </html>
