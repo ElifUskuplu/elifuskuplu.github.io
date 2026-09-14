@@ -22,3 +22,5 @@ Final -- Dec 11 (In class)
 [Week 2](https://elifuskuplu.github.io/files/logic-week-02.html)
 
 [Week 3](https://elifuskuplu.github.io/files/logic-week-03.html)
+
+[Week 4](https://elifuskuplu.github.io/files/logic-week-04.html)
