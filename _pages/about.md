@@ -74,6 +74,6 @@ I earned my M.Sc. degree from [Koç University](https://science.ku.edu.tr/en/dep
 
 3) Formalization of 2LTT & Univalence Principle in Agda - Available on [Github](https://github.com/ElifUskuplu/2LTT-Agda).
  
-2) Univalent mathematics in Agda (as a contributor) - Available on [Github](https://github.com/UniMath/agda-unimath).
+2) Univalent mathematics in Agda (as a maintainer) - Available on [Github](https://github.com/UniMath/agda-unimath).
 
 1) Simply Typed Lambda Calculus with de Bruijn Indices in Lean4 - Available on [Github](https://github.com/ElifUskuplu/Stlc_deBruijn).
