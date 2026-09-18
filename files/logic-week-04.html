@@ -84,6 +84,35 @@ table.data caption{caption-side:bottom;color:var(--muted);font-size:.88rem;paddi
 .rule1{flex:1 1 45%;min-width:230px;display:flex;justify-content:center;padding:10px 6px;font-size:.96rem}
 .rule1 .prem > * + *{margin-left:18px}
 
+/* ---------- tree editor (homework) ---------- */
+.tree-editor{border:1px solid var(--line);border-radius:8px;padding:.6rem .6rem .4rem;margin:.5rem 0;background:#fff;overflow-x:auto}
+.tree-editor .te-hint{font-size:.8rem;color:var(--muted);margin:0 0 .4rem}
+.te-node{display:inline-flex;flex-direction:column;align-items:center;vertical-align:bottom;margin:0 .2rem}
+.te-node > .te-prem{display:flex;align-items:flex-end;padding:0 .3rem}
+.te-node > .te-prem > * + *{margin-left:1.2rem}
+.te-node > .te-cl{position:relative;border-top:1.5px solid var(--text);align-self:stretch;text-align:center;padding:.25rem .4rem 0;margin-top:.25rem;white-space:nowrap}
+.te-node.te-leaf > .te-cl{border-top:none;margin-top:0}
+.te-node .te-sent{white-space:nowrap}
+.te-node .te-sent input{font:inherit;font-size:.95rem;width:2.6rem;text-align:center;padding:.15rem .2rem;border:1px solid #98A8B8;border-radius:4px;background:#fff;color:var(--text)}
+.te-node .te-sent select{font:inherit;font-size:.95rem;padding:.1rem .2rem;border:1px solid #98A8B8;border-radius:4px;background:#fff;color:var(--text)}
+.te-node .te-sent .te-fixed{font-weight:600;padding:0 .15rem}
+.te-node .te-just{display:block;margin-top:.2rem}
+.te-node .te-just select{font:inherit;font-size:.8rem;padding:.1rem .2rem;border:1px solid #98A8B8;border-radius:4px;background:#fff;color:var(--text)}
+.te-node .te-rule{position:absolute;left:100%;top:-1px;margin-left:.3rem;font-size:.78rem;color:var(--secondary);font-style:italic;white-space:nowrap;-webkit-transform:translateY(-50%);transform:translateY(-50%)}
+.te-node.r-axiom > .te-cl,.te-node.r-darii > .te-cl,.te-node.r-zero > .te-cl{margin-right:2.6em}
+.te-node.r-barbara > .te-cl{margin-right:3.5em}.te-node.r-some1 > .te-cl,.te-node.r-some2 > .te-cl{margin-right:2.9em}
+.te-node.r-camestres > .te-cl{margin-right:4.4em}.te-node.r-no > .te-cl{margin-right:1.4em}.te-node.r-x > .te-cl{margin-right:1em}
+.hw-q.hand-mode .tree-editor,.hw-q.hand-mode .te-reset{display:none}
+/* static tree (print mirror) */
+.pt{display:inline-flex;flex-direction:column;align-items:center;vertical-align:bottom;margin:0 .2rem}
+.pt > .prem{display:flex;align-items:flex-end;padding:0 .5rem}
+.pt > .prem > * + *{margin-left:1.6rem}
+.pt > .cl{position:relative;border-top:1.5px solid #000;align-self:stretch;text-align:center;padding:.15rem .5rem 0;margin-top:.2rem;white-space:nowrap}
+.pt > .cl > .rule{display:block;font-size:.72rem;color:#555;font-style:italic}
+.pt.leaf{padding:0 .5rem;white-space:nowrap}
+.pt.leaf > .tag{display:block;font-size:.72rem;color:#555}
+.tree-mirror .tree-wrap{text-align:center;overflow-x:auto}
+
 /* ---------- figures ---------- */
 figure{margin:20px 0;text-align:center}
 figure svg{max-width:100%;height:auto}
@@ -163,7 +192,7 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
   #homework{border-top:none;margin-top:0;page-break-before:auto}
   .hwbar,.hw-mode,.handtools,.hw-note .noprint{display:none !important}
   .hw-q{page-break-inside:avoid;border:1px solid #999}
-  .hw-q .hw-input,.hw-q .modelgrid{display:none !important}
+  .hw-q .hw-input,.hw-q .modelgrid,.tree-editor,.te-reset{display:none !important}
   .print-mirror{display:block;white-space:pre-wrap;border:1px solid #bbb;border-radius:6px;
     padding:6px 9px;margin:6px 0;min-height:1.6em;background:#fff}
   .print-mirror .pmlab{font-size:.8em;color:#555;display:block}
@@ -1161,6 +1190,82 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
       One more (some2) turns it into Some \(c\) are \(d\).</p>
     </div>
   </div>
+
+  <div class="iact" id="ie7">
+    <span class="lbl">Exercise 7 &mdash; a chain and two (camestres) steps</span>
+    <p class="selfcheck">Self-check only. Nothing here counts towards your grade.</p>
+    <p>Let \(\Gamma=\{\text{All }a\text{ are }b, \text{All }b\text{ are }c, \text{No }c\text{ are }d, \text{All }e\text{ are }d\}\). Build a proof tree over \(\Gamma\) with root No \(a\) are \(e\).</p>
+    <div class="tree-editor" id="ie7-tree" data-root="No,a,e" data-store-key="ie7-tree" data-nouns="a,b,c,d,e" data-gamma="All,a,b;All,b,c;No,c,d;All,e,d"></div>
+    <div class="btnrow">
+      <button class="btn te-check" data-tree="ie7-tree" data-fb="ie7fb">Check</button>
+      <button class="btn btn-secondary te-reset" data-tree="ie7-tree">Reset this tree</button>
+      <button class="btn btn-secondary" id="ie7sol">Show solution</button>
+    </div>
+    <div class="fb" id="ie7fb"></div>
+    <div class="sol" id="ie7s"><p>First (barbara) gives All \(a\) are \(c\). Then (camestres) on All \(a\) are \(c\) and No \(c\) are \(d\) gives No \(d\) are \(a\). Finally (camestres) on All \(e\) are \(d\) and No \(d\) are \(a\) gives No \(a\) are \(e\).</p>
+<p>The last step is built on All \(e\) are \(d\) and not on anything starting with \(a\), because (camestres) moves the first noun of its All premise to the end of the conclusion. To end with \(e\), the All premise has to start with \(e\).</p></div>
+  </div>
+
+  <div class="iact" id="ie8">
+    <span class="lbl">Exercise 8 &mdash; a (darii) chain</span>
+    <p class="selfcheck">Self-check only. Nothing here counts towards your grade.</p>
+    <p>Let \(\Gamma=\{\text{Some }a\text{ are }b, \text{All }b\text{ are }c, \text{All }c\text{ are }d, \text{All }a\text{ are }e\}\). Build a proof tree over \(\Gamma\) with root Some \(e\) are \(d\).</p>
+    <div class="tree-editor" id="ie8-tree" data-root="Some,e,d" data-store-key="ie8-tree" data-nouns="a,b,c,d,e" data-gamma="Some,a,b;All,b,c;All,c,d;All,a,e"></div>
+    <div class="btnrow">
+      <button class="btn te-check" data-tree="ie8-tree" data-fb="ie8fb">Check</button>
+      <button class="btn btn-secondary te-reset" data-tree="ie8-tree">Reset this tree</button>
+      <button class="btn btn-secondary" id="ie8sol">Show solution</button>
+    </div>
+    <div class="fb" id="ie8fb"></div>
+    <div class="sol" id="ie8s"><p>(darii) on All \(b\) are \(c\) and Some \(a\) are \(b\) gives Some \(a\) are \(c\); (darii) again with All \(c\) are \(d\) gives Some \(a\) are \(d\). Now (some2) turns this into Some \(d\) are \(a\), so that (darii) with All \(a\) are \(e\) can move the witness into \(e\): Some \(d\) are \(e\). One more (some2) gives Some \(e\) are \(d\).</p>
+<p>Five steps. The witness found by Some \(a\) are \(b\) is carried along the whole way; (some2) is only there to put the noun that (darii) needs in the second position.</p></div>
+  </div>
+
+  <div class="iact" id="ie9">
+    <span class="lbl">Exercise 9 &mdash; an empty noun proves everything</span>
+    <p class="selfcheck">Self-check only. Nothing here counts towards your grade.</p>
+    <p>Let \(\Gamma=\{\text{No }b\text{ are }b, \text{Some }a\text{ are }b\}\). Build a proof tree over \(\Gamma\) with root any sentence \(\varphi\) of your choice. Since the root is not fixed here, type any sentence you like as the root, for instance All \(m\) are \(n\).</p>
+    <div class="tree-editor" id="ie9-tree" data-root="free" data-store-key="ie9-tree" data-nouns="a,b,m,n" data-gamma="No,b,b;Some,a,b"></div>
+    <div class="btnrow">
+      <button class="btn te-check" data-tree="ie9-tree" data-fb="ie9fb">Check</button>
+      <button class="btn btn-secondary te-reset" data-tree="ie9-tree">Reset this tree</button>
+      <button class="btn btn-secondary" id="ie9sol">Show solution</button>
+    </div>
+    <div class="fb" id="ie9fb"></div>
+    <div class="sol" id="ie9s"><p>\(\Gamma\) is inconsistent: No \(b\) are \(b\) says \([\![b]\!]=\varnothing\), while Some \(a\) are \(b\) needs an element in \([\![b]\!]\). The proof system sees this through (X), but (X) needs a No sentence and a Some sentence with the same two nouns in the same order.</p>
+<p>(no) turns No \(b\) are \(b\) into No \(b\) are \(a\); (some2) turns Some \(a\) are \(b\) into Some \(b\) are \(a\). Then (X) on No \(b\) are \(a\) and Some \(b\) are \(a\) gives \(\varphi\), whatever \(\varphi\) is.</p></div>
+  </div>
+
+  <div class="iact" id="ie10">
+    <span class="lbl">Exercise 10 &mdash; a hidden inconsistency</span>
+    <p class="selfcheck">Self-check only. Nothing here counts towards your grade.</p>
+    <p>Let \(\Gamma=\{\text{No }c\text{ are }c, \text{All }b\text{ are }c, \text{Some }a\text{ are }b\}\). Build a proof tree over \(\Gamma\) with root Some \(a\) are \(a\).</p>
+    <div class="tree-editor" id="ie10-tree" data-root="Some,a,a" data-store-key="ie10-tree" data-nouns="a,b,c" data-gamma="No,c,c;All,b,c;Some,a,b"></div>
+    <div class="btnrow">
+      <button class="btn te-check" data-tree="ie10-tree" data-fb="ie10fb">Check</button>
+      <button class="btn btn-secondary te-reset" data-tree="ie10-tree">Reset this tree</button>
+      <button class="btn btn-secondary" id="ie10sol">Show solution</button>
+    </div>
+    <div class="fb" id="ie10fb"></div>
+    <div class="sol" id="ie10s"><p>There is a one-step proof: (some1) applied to Some \(a\) are \(b\) gives Some \(a\) are \(a\) directly. If you built that, you are done.</p>
+<p>There is also something worth seeing in \(\Gamma\). (darii) on All \(b\) are \(c\) and Some \(a\) are \(b\) gives Some \(a\) are \(c\); (some2) gives Some \(c\) are \(a\); (some1) gives Some \(c\) are \(c\). Together with No \(c\) are \(c\) this is a contradiction, and (X) then proves Some \(a\) are \(a\), or anything else. So \(\Gamma\) is inconsistent: \(c\) is declared empty, yet \(b\subseteq c\) and \(a\) meets \(b\). The checker accepts both trees.</p></div>
+  </div>
+
+  <div class="iact" id="ie11">
+    <span class="lbl">Exercise 11 &mdash; the order of the nouns</span>
+    <p class="selfcheck">Self-check only. Nothing here counts towards your grade.</p>
+    <p>Let \(\Gamma=\{\text{All }a\text{ are }b, \text{No }c\text{ are }b\}\). Build a proof tree over \(\Gamma\) with root No \(a\) are \(c\).</p>
+    <div class="tree-editor" id="ie11-tree" data-root="No,a,c" data-store-key="ie11-tree" data-nouns="a,b,c" data-gamma="All,a,b;No,c,b"></div>
+    <div class="btnrow">
+      <button class="btn te-check" data-tree="ie11-tree" data-fb="ie11fb">Check</button>
+      <button class="btn btn-secondary te-reset" data-tree="ie11-tree">Reset this tree</button>
+      <button class="btn btn-secondary" id="ie11sol">Show solution</button>
+    </div>
+    <div class="fb" id="ie11fb"></div>
+    <div class="sol" id="ie11s"><p>(camestres) wants its No premise to start with the second noun of its All premise, so with All \(a\) are \(b\) we need No \(b\) are \(c\), not No \(c\) are \(b\). Convert first: (camestres) on All \(c\) are \(c\) (axiom) and No \(c\) are \(b\) gives No \(b\) are \(c\).</p>
+<p>Now (camestres) on All \(a\) are \(b\) and No \(b\) are \(c\) gives No \(c\) are \(a\). That is the right sentence with the nouns in the wrong order, so convert once more: (camestres) on All \(c\) are \(c\) (axiom) and No \(c\) are \(a\) gives No \(a\) are \(c\). Three (camestres) steps, two of them with an axiom on the left.</p>
+<p>One conversion cannot be enough: every (camestres) step whose All premise is All \(a\) are \(b\) puts \(a\) at the end of its conclusion.</p></div>
+  </div>
 </section>
 
 <!-- ==================== HOMEWORK ==================== -->
@@ -1274,22 +1379,33 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
 
   <div class="hw-q" id="q5">
     <h3><span>Question 5 &mdash; proof trees in S</span><span class="pts">25 points</span></h3>
-    <p>Give a proof tree for each of the following, using only the rules of Definition 4.21. Write the name
-    of the rule at every step. Leaves must be sentences of \(\Gamma\) or instances of (axiom).</p>
+    <p>Build a proof tree for each of the following, using only the rules of Definition 4.21. The root is
+    fixed. For every sentence, choose how it is obtained: an assumption from \(\Gamma\), or a rule. Choosing
+    a rule opens the premise boxes above the sentence: none for (axiom), one for (some1), (some2), (zero) and
+    (no), two for (barbara), (darii), (camestres) and (X). Leaves must be sentences of \(\Gamma\) or instances
+    of (axiom).</p>
     <div class="subq"><span class="stag">(a)</span> (5 pts)
-      Some \(p\) are \(q\), No \(p\) are \(q\) \(\vdash\) All \(m\) are \(n\).</div>
-    <textarea class="hw-input" id="hw-q5a" rows="4"></textarea>
+      \(\Gamma=\{\text{Some }p\text{ are }q,\ \text{No }p\text{ are }q\}\); root All \(m\) are \(n\).</div>
+    <div class="tree-editor" id="hw-q5a-tree" data-root="All,m,n" data-store-key="hw-q5a-tree" data-nouns="m,n,p,q"></div>
+    <div class="btnrow"><button type="button" class="btn btn-secondary te-reset" data-tree="hw-q5a-tree">Reset this tree</button></div>
+    <div class="print-mirror tree-mirror" data-mirror-tree="hw-q5a-tree"><span class="pmlab">Answer (a):</span><div class="tree-wrap"></div></div>
     <div class="subq"><span class="stag">(b)</span> (6 pts)
-      Some \(p\) are \(q\), All \(q\) are \(r\) \(\vdash\) Some \(r\) are \(p\).</div>
-    <textarea class="hw-input" id="hw-q5b" rows="5"></textarea>
+      \(\Gamma=\{\text{Some }p\text{ are }q,\ \text{All }q\text{ are }r\}\); root Some \(r\) are \(p\).</div>
+    <div class="tree-editor" id="hw-q5b-tree" data-root="Some,r,p" data-store-key="hw-q5b-tree" data-nouns="p,q,r"></div>
+    <div class="btnrow"><button type="button" class="btn btn-secondary te-reset" data-tree="hw-q5b-tree">Reset this tree</button></div>
+    <div class="print-mirror tree-mirror" data-mirror-tree="hw-q5b-tree"><span class="pmlab">Answer (b):</span><div class="tree-wrap"></div></div>
     <div class="subq"><span class="stag">(c)</span> (7 pts)
-      All \(p\) are \(q\), No \(q\) are \(r\) \(\vdash\) No \(p\) are \(r\).
-      Note the order of the nouns in the conclusion.</div>
-    <textarea class="hw-input" id="hw-q5c" rows="5"></textarea>
+      \(\Gamma=\{\text{All }p\text{ are }q,\ \text{No }q\text{ are }r\}\); root No \(p\) are \(r\).
+      Note the order of the nouns in the root.</div>
+    <div class="tree-editor" id="hw-q5c-tree" data-root="No,p,r" data-store-key="hw-q5c-tree" data-nouns="p,q,r"></div>
+    <div class="btnrow"><button type="button" class="btn btn-secondary te-reset" data-tree="hw-q5c-tree">Reset this tree</button></div>
+    <div class="print-mirror tree-mirror" data-mirror-tree="hw-q5c-tree"><span class="pmlab">Answer (c):</span><div class="tree-wrap"></div></div>
     <div class="subq"><span class="stag">(d)</span> (7 pts)
-      All \(a\) are \(b\), All \(b\) are \(c\), All \(c\) are \(e\), No \(e\) are \(d\)
-      \(\vdash\) No \(d\) are \(a\).</div>
-    <textarea class="hw-input" id="hw-q5d" rows="6"></textarea>
+      \(\Gamma=\{\text{All }a\text{ are }b,\ \text{All }b\text{ are }c,\ \text{All }c\text{ are }e,\ \text{No }e\text{ are }d\}\);
+      root No \(d\) are \(a\).</div>
+    <div class="tree-editor" id="hw-q5d-tree" data-root="No,d,a" data-store-key="hw-q5d-tree" data-nouns="a,b,c,d,e"></div>
+    <div class="btnrow"><button type="button" class="btn btn-secondary te-reset" data-tree="hw-q5d-tree">Reset this tree</button></div>
+    <div class="print-mirror tree-mirror" data-mirror-tree="hw-q5d-tree"><span class="pmlab">Answer (d):</span><div class="tree-wrap"></div></div>
     <div class="hw-hand" data-hand="hw-q5-hand"></div>
   </div>
 
@@ -2062,6 +2178,206 @@ function buildModes(){
   }
 }
 
+/* ---------------- tree editor for S (homework) ---------------- */
+var TREES = {};
+var TE_RULES = [["", "obtained by..."], ["gamma", "assumption from \u0393"], ["axiom", "rule (axiom)"],
+  ["barbara", "rule (barbara)"], ["some1", "rule (some1)"], ["some2", "rule (some2)"], ["darii", "rule (darii)"],
+  ["camestres", "rule (camestres)"], ["zero", "rule (zero)"], ["no", "rule (no)"], ["X", "rule (X)"]];
+var TE_ARITY = { axiom: 0, barbara: 2, some1: 1, some2: 1, darii: 2, camestres: 2, zero: 1, no: 1, X: 2 };
+function teNewNode(q, x, y){ return { q: q || "All", x: x || "", y: y || "", j: "", k: [] }; }
+function teSent(n){ return (n.q || "All") + " " + (n.x || "?") + " are " + (n.y || "?"); }
+function teArity(j){ return TE_ARITY.hasOwnProperty(j) ? TE_ARITY[j] : -1; }
+function teNormalize(n){
+  if(!n || typeof n !== "object") return teNewNode();
+  var q = (n.q === "Some" || n.q === "No") ? n.q : "All";
+  var out = teNewNode(q, String(n.x || "").slice(0, 12), String(n.y || "").slice(0, 12));
+  out.j = (n.j === "gamma" || teArity(n.j) >= 0) ? n.j : "";
+  var ar = teArity(out.j);
+  if(ar > 0){
+    var k = Array.isArray(n.k) ? n.k : [];
+    for(var i = 0; i < ar; i++) out.k.push(teNormalize(k[i]));
+  }
+  return out;
+}
+function escHtml(s){ return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+function buildTreeEditor(container){
+  var id = container.id;
+  var rootAttr = container.getAttribute("data-root") || "All,,";
+  var freeRoot = (rootAttr === "free");
+  var root = freeRoot ? ["All","",""] : rootAttr.split(",");
+  var nouns = (container.getAttribute("data-nouns") || "").split(",").map(function(s){ return s.trim(); }).filter(Boolean);
+  var storeId = container.getAttribute("data-store-key") || id;
+  var ed = { id: id, container: container, rootQ: root[0].trim(), rootX: root[1].trim(), rootY: root[2].trim(),
+             nouns: nouns, storeId: storeId, state: null, listeners: [], freeRoot: freeRoot };
+  TREES[id] = ed;
+  ed.reset = function(){ ed.state = teNewNode(ed.rootQ, ed.rootX, ed.rootY); ed.render(); ed.save(); };
+  ed.save = function(){
+    try{
+      var untouched = ed.state.j === "" && ed.state.k.length === 0 && (!ed.freeRoot || (!ed.state.x && !ed.state.y));
+      if(untouched) del(ed.storeId); else save(ed.storeId, JSON.stringify(ed.state));
+    }catch(e){}
+    ed.listeners.forEach(function(f){ try{ f(); }catch(e){} });
+  };
+  ed.restore = function(){
+    var raw = load(ed.storeId);
+    if(raw){ try{ ed.state = teNormalize(JSON.parse(raw)); }catch(e){ ed.state = null; } }
+    if(!ed.state) ed.state = teNewNode(ed.rootQ, ed.rootX, ed.rootY);
+    if(!ed.freeRoot){ ed.state.q = ed.rootQ; ed.state.x = ed.rootX; ed.state.y = ed.rootY; }
+  };
+  ed.onChange = function(f){ ed.listeners.push(f); };
+
+  function mkNode(node, isRoot){
+    var ar = teArity(node.j);
+    var el = document.createElement("div");
+    el.className = "te-node" + (ar >= 0 ? " r-" + node.j.toLowerCase() : " te-leaf");
+    if(ar >= 0){
+      var prem = document.createElement("div"); prem.className = "te-prem";
+      while(node.k.length < ar) node.k.push(teNewNode());
+      if(node.k.length > ar) node.k = node.k.slice(0, ar);
+      for(var i = 0; i < ar; i++) prem.appendChild(mkNode(node.k[i], false));
+      el.appendChild(prem);
+    }
+    var cl = document.createElement("div"); cl.className = "te-cl";
+    var sent = document.createElement("span"); sent.className = "te-sent";
+    if(isRoot){
+      var fq = document.createElement("span"); fq.className = "te-fixed"; fq.textContent = node.q; sent.appendChild(fq);
+    } else {
+      var sq = document.createElement("select"); sq.setAttribute("aria-label", "sentence form");
+      ["All","Some","No"].forEach(function(v){ var o = document.createElement("option"); o.value = v; o.textContent = v; if(node.q === v) o.selected = true; sq.appendChild(o); });
+      sq.addEventListener("change", function(){ node.q = sq.value; ed.save(); });
+      sent.appendChild(sq);
+    }
+    sent.appendChild(document.createTextNode(" "));
+    function nounField(key, label){
+      if(isRoot){ var f = document.createElement("span"); f.className = "te-fixed"; f.textContent = node[key]; return f; }
+      var inp = document.createElement("input"); inp.type = "text"; inp.value = node[key]; inp.maxLength = 12;
+      inp.setAttribute("aria-label", label); inp.autocomplete = "off";
+      inp.addEventListener("input", function(){ node[key] = inp.value.trim(); ed.save(); });
+      return inp;
+    }
+    sent.appendChild(nounField("x", "first noun"));
+    sent.appendChild(document.createTextNode(" are "));
+    sent.appendChild(nounField("y", "second noun"));
+    cl.appendChild(sent);
+    if(ar >= 0){ var tag = document.createElement("span"); tag.className = "te-rule"; tag.textContent = node.j; cl.appendChild(tag); }
+    var just = document.createElement("label"); just.className = "te-just";
+    var sel = document.createElement("select"); sel.setAttribute("aria-label", "how this sentence is obtained");
+    TE_RULES.forEach(function(o){ var op = document.createElement("option"); op.value = o[0]; op.textContent = o[1]; if(node.j === o[0]) op.selected = true; sel.appendChild(op); });
+    sel.addEventListener("change", function(){
+      node.j = sel.value;
+      var a = teArity(node.j);
+      if(a <= 0) node.k = [];
+      else { while(node.k.length < a) node.k.push(teNewNode()); node.k = node.k.slice(0, a); }
+      ed.render(); ed.save();
+    });
+    just.appendChild(sel); cl.appendChild(just); el.appendChild(cl);
+    return el;
+  }
+  ed.render = function(){
+    container.innerHTML = "";
+    var hint = document.createElement("p"); hint.className = "te-hint";
+    hint.textContent = (ed.freeRoot ? "Root: any sentence (type it in the bottom boxes)." : "Root: " + teSent(ed.state) + " (fixed).") + " Nouns: " + ed.nouns.join(", ") +
+      ". Choose a rule to open premise boxes above a sentence; leaves are assumptions from \u0393 or instances of (axiom).";
+    container.appendChild(hint);
+    var wrap = document.createElement("div"); wrap.style.textAlign = "center";
+    wrap.appendChild(mkNode(ed.state, !ed.freeRoot));
+    container.appendChild(wrap);
+  };
+  ed.restore(); ed.render();
+  return ed;
+}
+function teToHtml(n){
+  var s = escHtml(teSent(n)), ar = teArity(n.j);
+  if(ar > 0 && n.k.length === ar){
+    var inner = ""; for(var i = 0; i < ar; i++) inner += teToHtml(n.k[i]);
+    return '<div class="pt"><div class="prem">' + inner + '</div><div class="cl">' + s + '<span class="rule">' + escHtml(n.j) + '</span></div></div>';
+  }
+  if(ar === 0) return '<div class="pt"><div class="prem"></div><div class="cl">' + s + '<span class="rule">axiom</span></div></div>';
+  if(n.j === "gamma") return '<div class="pt leaf">' + s + '<span class="tag">(from \u0393)</span></div>';
+  return '<div class="pt leaf">' + s + '<span class="tag">(not justified)</span></div>';
+}
+/* validation of an S tree against gamma (array of {q,s,t}); returns null or an error message */
+function teValidateS(node, gamma, nouns){
+  function toS(n){ return { q: n.q, s: n.x, t: n.y }; }
+  function inGamma(n){ return gamma.some(function(g){ return g.q === n.q && g.s === n.x && g.t === n.y; }); }
+  function check(n){
+    if(!n.x || !n.y) return "Fill in both nouns of every sentence (one sentence still has a blank).";
+    if(nouns.indexOf(n.x) < 0) return "\"" + n.x + "\" is not one of the nouns " + nouns.join(", ") + ".";
+    if(nouns.indexOf(n.y) < 0) return "\"" + n.y + "\" is not one of the nouns " + nouns.join(", ") + ".";
+    if(n.j === "") return "Choose how the sentence " + teSent(n) + " is obtained.";
+    if(n.j === "gamma"){
+      if(!inGamma(n)) return teSent(n) + " is marked as an assumption, but it is not in \u0393. A leaf must be a sentence of \u0393 or an instance of (axiom).";
+      return null;
+    }
+    var ar = teArity(n.j);
+    if(n.k.length !== ar) return "Internal error: wrong number of premises above " + teSent(n) + ".";
+    for(var i = 0; i < ar; i++){ if(!n.k[i].x || !n.k[i].y) return "Fill in the premise" + (ar > 1 ? "s" : "") + " above " + teSent(n) + "."; }
+    if(!ruleApplies(n.j, n.k.map(toS), toS(n))){
+      var ps = n.k.map(teSent).join(" and ");
+      var why = "";
+      if(n.j === "axiom") why = " (axiom) only justifies a sentence of the form All x are x.";
+      else if(n.j === "barbara") why = " (barbara) needs All p are n and All n are q with the same middle noun n, and concludes All p are q.";
+      else if(n.j === "darii") why = " (darii) needs All q are n and Some p are q; the second noun of the Some premise must be the first noun of the All premise, and the conclusion is Some p are n.";
+      else if(n.j === "camestres") why = " (camestres) needs All p are q and No q are r; the No premise must start with the second noun of the All premise, and the conclusion is No r are p, with the nouns swapped.";
+      else if(n.j === "some1") why = " (some1) takes Some p are q to Some p are p.";
+      else if(n.j === "some2") why = " (some2) takes Some p are q to Some q are p.";
+      else if(n.j === "zero") why = " (zero) takes No q are q to All q are p; the premise must repeat one noun, and the conclusion must start with it.";
+      else if(n.j === "no") why = " (no) takes No p are p to No p are q; the premise must repeat one noun, and the conclusion must start with it.";
+      else if(n.j === "X") why = " (X) needs No p are q and Some p are q with the same two nouns in the same order.";
+      return "The step (" + n.j + ") that gives " + teSent(n) + (ar ? " from " + ps : "") + " is not a correct application of the rule." + why;
+    }
+    for(var j = 0; j < ar; j++){ var e = check(n.k[j]); if(e) return e; }
+    return null;
+  }
+  return check(node);
+}
+function parseGammaAttr(s){
+  return String(s || "").split(";").map(function(x){ return x.trim(); }).filter(Boolean).map(function(x){
+    var p = x.split(","); return { q: p[0].trim(), s: p[1].trim(), t: p[2].trim() };
+  });
+}
+function initTreeChecks(){
+  var btns = document.querySelectorAll(".te-check[data-tree]");
+  for(var i = 0; i < btns.length; i++) (function(btn){
+    btn.addEventListener("click", function(){
+      var ed = TREES[btn.getAttribute("data-tree")], fb = document.getElementById(btn.getAttribute("data-fb"));
+      if(!ed || !fb) return;
+      var gamma = parseGammaAttr(ed.container.getAttribute("data-gamma"));
+      if(ed.freeRoot && (!ed.state.x || !ed.state.y)){ feedback(fb, false, "Type a root sentence in the bottom boxes first."); return; }
+      var err = teValidateS(ed.state, gamma, ed.nouns);
+      if(err){ feedback(fb, false, escHtml(err)); return; }
+      feedback(fb, true, "Correct. Every leaf is a sentence of \u0393 or an instance of (axiom), and every step matches its rule, so this is a proof tree over \u0393 with root " + escHtml(teSent(ed.state)) + ".");
+    });
+  })(btns[i]);
+  var sols = document.querySelectorAll('.iact [id$="sol"]');
+  for(var k = 0; k < sols.length; k++) (function(b){
+    if(b.getAttribute("data-bound")) return;
+    var target = document.getElementById(b.id.replace(/sol$/, "s"));
+    if(!target || !/^ie(7|8|9|10|11)sol$/.test(b.id)) return;
+    b.setAttribute("data-bound", "1");
+    b.addEventListener("click", function(){ target.classList.toggle("open"); });
+  })(sols[k]);
+}
+
+function buildAllTrees(){
+  var eds = document.querySelectorAll(".tree-editor[data-root]");
+  for(var i = 0; i < eds.length; i++){ try{ buildTreeEditor(eds[i]); }catch(e){ if(window.console) console.error(e); } }
+  var resets = document.querySelectorAll(".te-reset[data-tree]");
+  for(var j = 0; j < resets.length; j++) (function(btn){
+    btn.addEventListener("click", function(){
+      var ed = TREES[btn.getAttribute("data-tree")]; if(!ed) return;
+      if(window.confirm("Reset this tree? The nodes you built will be removed.")) ed.reset();
+    });
+  })(resets[j]);
+}
+function fillTreeMirrors(){
+  var trs = document.querySelectorAll(".tree-mirror[data-mirror-tree]");
+  for(var k = 0; k < trs.length; k++){
+    var ed = TREES[trs[k].getAttribute("data-mirror-tree")];
+    trs[k].querySelector(".tree-wrap").innerHTML = ed ? teToHtml(ed.state) : "";
+  }
+}
+
 /* ---------------- homework text fields + print mirrors ---------------- */
 function initHomeworkFields(){
   var fields = document.querySelectorAll("#homework .hw-input");
@@ -2086,6 +2402,7 @@ function fillMirrors(){
     mirs[i].textContent = txt.length ? txt : "(no answer)";
   }
   for(var id in HAND){ if(HAND.hasOwnProperty(id)) handUpdateMirror(HAND[id]); }
+  fillTreeMirrors();
 }
 function clearAnswers(resets){
   if(!window.confirm("Clear every answer on this page, including the handwritten ones? This cannot be undone.")) return;
@@ -2095,6 +2412,8 @@ function clearAnswers(resets){
     if(fields[i].id) del(fields[i].id);
   }
   handResetAll();
+  for(var t in TREES){ if(TREES.hasOwnProperty(t)) TREES[t].reset(); }
+  var tfb = document.querySelectorAll(".iact .fb"); for(var f = 0; f < tfb.length; f++) tfb[f].className = "fb";
   var qs = document.querySelectorAll("#homework .hw-q");
   for(var j = 0; j < qs.length; j++){ setMode(qs[j], "type", true); }
   resets.forEach(function(fn){ try{ fn(); }catch(e){} });
@@ -2108,6 +2427,7 @@ function boot(){
     try{ var r = fn(); if(r) resets.push(r); }catch(e){ if(window.console) console.error(e); }
   });
   try{ initHomeworkFields(); }catch(e){ if(window.console) console.error(e); }
+  try{ buildAllTrees(); initTreeChecks(); }catch(e){ if(window.console) console.error(e); }
   try{ buildAllHand(); }catch(e){ if(window.console) console.error(e); }
   try{ buildModes(); }catch(e){ if(window.console) console.error(e); }
 
