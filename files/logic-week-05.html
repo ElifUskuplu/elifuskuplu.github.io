@@ -266,9 +266,8 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
       <li>\(\Gamma\vDash\varphi\) means that every model of \(\Gamma\) is a model of \(\varphi\).
           \(\Gamma\vdash\varphi\) means that there is a proof tree with root \(\varphi\) whose leaves are
           sentences of \(\Gamma\) or instances of (axiom).</li>
-      <li>Two things were left open last week. The form Some \(p\) are not \(q\) is not a sentence of
-          \(\mathcal S\). And completeness of \(\mathbf S\) was proved only for conclusions of the form
-          Some \(p\) are \(q\).</li>
+      <li>One thing was left open last week: the form Some \(p\) are not \(q\) is not a sentence of
+          \(\mathcal S\).</li>
     </ul>
   </div>
 
@@ -1563,19 +1562,17 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
   <h2>9. The canonical model built from states</h2>
 
   <div class="box def">
-    <span class="lbl">Definition 5.37: the canonical model \(\mathcal M_3\) of \(\Gamma\)</span>
-    <p>Let \(\Gamma\) be a set of sentences of \(\mathcal S^{\dagger}\). The universe \(M_3\) is the set of
+    <span class="lbl">Definition 5.37: the canonical model \(\mathcal M_\Gamma\) of \(\Gamma\)</span>
+    <p>Let \(\Gamma\) be a set of sentences of \(\mathcal S^{\dagger}\). The universe \(M_\Gamma\) is the set of
     all states of \(P_\Gamma\). Each noun \(u\) is interpreted by
-    \[[\![u]\!]=\{S\in M_3:[u]\in S\}.\]
-    The book calls this the <em>third</em> canonical model. The first was the model of nouns for
-    \(\mathbf A\). The second, for \(\mathbf S\), had the Some sentences of \(\Gamma\) as its points.</p>
+    \[[\![u]\!]=\{S\in M_\Gamma:[u]\in S\}.\]</p>
   </div>
 
   <div class="box thm">
     <span class="lbl">Remark 5.38</span>
-    <p>The equation \([\![u]\!]=\{S\in M_3:[u]\in S\}\) holds for complemented nouns as well. Indeed, for a
+    <p>The equation \([\![u]\!]=\{S\in M_\Gamma:[u]\in S\}\) holds for complemented nouns as well. Indeed, for a
     noun \(u\),
-    \[[\![\overline u]\!]=M_3\setminus[\![u]\!]=\{S:[u]\notin S\}=\{S:[\overline u]\in S\}.\]
+    \[[\![\overline u]\!]=M_\Gamma\setminus[\![u]\!]=\{S:[u]\notin S\}=\{S:[\overline u]\in S\}.\]
     The last step uses that states are complete and consistent: a state misses \([u]\) exactly when it
     contains \([\overline u]\). This is the reason for these two conditions in the definition of a
     state.</p>
@@ -1583,7 +1580,7 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
 
   <div class="box ex">
     <span class="lbl">Example 5.39: the canonical model of the hexagon</span>
-    <p>Take \(\Gamma\) from the box above. Then \(M_3=\{S_1,S_2,S_3\}\). We read off, for each noun, which
+    <p>Take \(\Gamma\) from the box above. Then \(M_\Gamma=\{S_1,S_2,S_3\}\). We read off, for each noun, which
     states contain its class:</p>
     <p style="text-align:center">
       \([\![x]\!]=\{S_1,S_2,S_3\}\),&nbsp;&nbsp; \([\![y]\!]=\{S_1,S_2\}\),&nbsp;&nbsp;
@@ -1597,8 +1594,8 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
       <li>All \(\overline z\) are \(y\): \(\{S_1,S_2\}\subseteq\{S_1,S_2\}\). True.</li>
       <li>All \(z\) are \(w\): \(\{S_3\}\subseteq\{S_2,S_3\}\). True.</li>
     </ul>
-    <p><em>Use it.</em> Is All \(y\) are \(w\) a consequence of \(\Gamma\)? In \(\mathcal M_3\) we have
-    \(S_1\in[\![y]\!]\) and \(S_1\notin[\![w]\!]\). So \(\mathcal M_3\) is a model of \(\Gamma\) in which
+    <p><em>Use it.</em> Is All \(y\) are \(w\) a consequence of \(\Gamma\)? In \(\mathcal M_\Gamma\) we have
+    \(S_1\in[\![y]\!]\) and \(S_1\notin[\![w]\!]\). So \(\mathcal M_\Gamma\) is a model of \(\Gamma\) in which
     All \(y\) are \(w\) is false, and \(\Gamma\nvDash\) All \(y\) are \(w\). By soundness,
     \(\Gamma\nvdash\) All \(y\) are \(w\).</p>
     <p>The names of the points do not matter. Writing \(1,2,3\) for \(S_1,S_2,S_3\), the model is
@@ -1700,7 +1697,7 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
       <text x="630" y="275" class="ha" style="font-size:14px">S&#8323;</text>
   </svg>
       <figcaption><strong>Figure 6.</strong> The three states of the hexagon, which are the three points of
-      \(\mathcal M_3\). A point belongs to \([\![u]\!]\) exactly when the node of \(u\) is highlighted in
+      \(\mathcal M_\Gamma\). A point belongs to \([\![u]\!]\) exactly when the node of \(u\) is highlighted in
       its picture. For instance \(w\) is highlighted in the second and third picture, so
       \([\![w]\!]=\{S_2,S_3\}\).</figcaption>
     </figure>
@@ -1715,11 +1712,11 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
     <p style="text-align:center">
       \(S_1=\{p,q,\overline r\}\),&nbsp;&nbsp; \(S_2=\{\overline p,q,\overline r\}\),&nbsp;&nbsp;
       \(S_3=\{\overline p,\overline q,r\}\),&nbsp;&nbsp; \(S_4=\{\overline p,\overline q,\overline r\}\).</p>
-    <p><strong>(a)</strong> Give the following sets in \(\mathcal M_3\). Type the numbers of the states,
+    <p><strong>(a)</strong> Give the following sets in \(\mathcal M_\Gamma\). Type the numbers of the states,
     separated by commas; for example <code>1, 3</code> stands for \(\{S_1,S_3\}\).</p>
     <p>\([\![q]\!]=\) <input class="tin" id="ie8q" type="text" autocomplete="off" placeholder="e.g. 1, 3"></p>
     <p>\([\![\overline r]\!]=\) <input class="tin" id="ie8r" type="text" autocomplete="off" placeholder="e.g. 1, 3"></p>
-    <p><strong>(b)</strong> Which of these sentences are true in \(\mathcal M_3\)?</p>
+    <p><strong>(b)</strong> Which of these sentences are true in \(\mathcal M_\Gamma\)?</p>
     <div id="ie8grid"></div>
     <div class="btnrow">
       <button class="btn" id="ie8chk">Check</button>
@@ -1742,7 +1739,7 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
         <li>All \(\overline q\) are \(\overline p\): <strong>true</strong>,
             \(\{S_3,S_4\}\subseteq\{S_2,S_3,S_4\}\).</li>
       </ol>
-      <p>Sentence 4 is true in \(\mathcal M_3\), but it is not provable from \(\Gamma\): in the empty model
+      <p>Sentence 4 is true in \(\mathcal M_\Gamma\), but it is not provable from \(\Gamma\): in the empty model
       \(\Gamma\) holds and every Some sentence is false. So the canonical model of \(\Gamma\) alone does not
       decide Some sentences. Section 11 explains how the completeness proof deals with this.</p>
     </div>
@@ -1753,7 +1750,7 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
   <div class="box thm">
     <span class="lbl">Lemma 5.40</span>
     <p>Let \(\Gamma\) be a consistent set of sentences of \(\mathcal S^{\dagger}\). Then
-    \(\mathcal M_3\vDash\Gamma\).</p>
+    \(\mathcal M_\Gamma\vDash\Gamma\).</p>
     <div class="proof">
       <p><em>All sentences.</em> Let All \(x\) are \(y\) be in \(\Gamma\). Then \([x]\le[y]\) in
       \(P_\Gamma\). Let \(S\in[\![x]\!]\), so \([x]\in S\). States are up-closed, so \([y]\in S\), that is,
@@ -1782,7 +1779,7 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
       <p>The root is a contradiction, so \(\Gamma\vdash\bot\). This contradicts the assumption that
       \(\Gamma\) is consistent. So \(\{[x],[y]\}\) is extendible, and by Lemma 5.34 there is a state \(S\)
       with \([x]\in S\) and \([y]\in S\). Then \(S\in[\![x]\!]\cap[\![y]\!]\), and
-      \(\mathcal M_3\vDash\) Some \(x\) are \(y\). <span class="qed">&#9633;</span></p>
+      \(\mathcal M_\Gamma\vDash\) Some \(x\) are \(y\). <span class="qed">&#9633;</span></p>
     </div>
   </div>
 
@@ -1797,9 +1794,9 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
     inconsistent (Definition 5.17), so it proves every sentence. In particular \(u\le v\) for all literals
     \(u,v\). All literals are equivalent, and \(P_\Gamma\) has a single element, which is \(0\) and \(1\)
     at the same time. A state would have to contain this element and also not contain it. So there are no
-    states, and \(\mathcal M_3\) is the model with empty universe. In that model every All sentence is
-    true and every Some sentence is false. So \(\mathcal M_3\nvDash\) Some \(p\) are \(\overline q\), and
-    \(\mathcal M_3\) is not a model of \(\Gamma\). This must happen, because an inconsistent set has no
+    states, and \(\mathcal M_\Gamma\) is the model with empty universe. In that model every All sentence is
+    true and every Some sentence is false. So \(\mathcal M_\Gamma\nvDash\) Some \(p\) are \(\overline q\), and
+    \(\mathcal M_\Gamma\) is not a model of \(\Gamma\). This must happen, because an inconsistent set has no
     model at all: by soundness, a model of \(\Gamma\) would be a model of \(\bot\).</p>
   </div>
 
@@ -1825,10 +1822,10 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
       <p><em>Step 1.</em> The set \(\Gamma\cup\{\overline\varphi\}\) is consistent. Otherwise
       \(\Gamma\cup\{\overline\varphi\}\vdash\bot\), and Lemma 5.16 gives
       \(\Gamma\vdash\overline{\overline\varphi}=\varphi\), against our assumption.</p>
-      <p><em>Step 2.</em> By Lemma 5.40, the canonical model \(\mathcal M_3\) of the set
-      \(\Gamma\cup\{\overline\varphi\}\) satisfies \(\Gamma\cup\{\overline\varphi\}\).</p>
-      <p><em>Step 3.</em> So \(\mathcal M_3\vDash\Gamma\) and \(\mathcal M_3\vDash\overline\varphi\). By
-      Proposition 5.8, \(\mathcal M_3\nvDash\varphi\). We have a model of \(\Gamma\) in which
+      <p><em>Step 2.</em> Write \(\Gamma'=\Gamma\cup\{\overline\varphi\}\). By Lemma 5.40, the canonical model
+      \(\mathcal M_{\Gamma'}\) of the set \(\Gamma'\) satisfies \(\Gamma'\).</p>
+      <p><em>Step 3.</em> So \(\mathcal M_{\Gamma'}\vDash\Gamma\) and \(\mathcal M_{\Gamma'}\vDash\overline\varphi\). By
+      Proposition 5.8, \(\mathcal M_{\Gamma'}\nvDash\varphi\). We have a model of \(\Gamma\) in which
       \(\varphi\) is false, so \(\Gamma\nvDash\varphi\). <span class="qed">&#9633;</span></p>
     </div>
   </div>
@@ -1854,7 +1851,7 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
     <p><em>The proof's model.</em> We have \(\overline\varphi=\) All \(p\) are \(\overline p\). For
     \(\Gamma\cup\{\overline\varphi\}=\{\text{All }p\text{ are }\overline p\}\) we get \(p\le\overline p\),
     so \([p]=0\) and \([\overline p]=1\). Now \(P\) has two elements, and its only state is \(\{1\}\). The
-    model \(\mathcal M_3\) has one point, \([\![p]\!]=\varnothing\), and \(\varphi\) is false in it. So
+    canonical model of this set has one point, \([\![p]\!]=\varnothing\), and \(\varphi\) is false in it. So
     \(\varnothing\nvDash\) Some \(p\) are \(p\).</p>
   </div>
 
@@ -1872,7 +1869,7 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
     <span class="lbl">Corollary 5.45</span>
     <p>A set \(\Gamma\) of sentences of \(\mathcal S^{\dagger}\) is consistent iff it is satisfiable.</p>
     <div class="proof">
-      <p>If \(\Gamma\) is consistent, then \(\mathcal M_3\vDash\Gamma\) by Lemma 5.40, so \(\Gamma\) is
+      <p>If \(\Gamma\) is consistent, then \(\mathcal M_\Gamma\vDash\Gamma\) by Lemma 5.40, so \(\Gamma\) is
       satisfiable. If \(\Gamma\) is inconsistent, then \(\Gamma\vdash\bot\), and by soundness every model
       of \(\Gamma\) is a model of \(\bot\). There are no models of \(\bot\), so \(\Gamma\) has no model.
       <span class="qed">&#9633;</span></p>
@@ -1947,7 +1944,7 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
       </tbody>
     </table>
     </div>
-    <p><em>Step 3: check \(\Gamma'\) in \(\mathcal M_3\).</em> All \(a\) are \(b\):
+    <p><em>Step 3: check \(\Gamma'\) in \(\mathcal M_{\Gamma'}\).</em> All \(a\) are \(b\):
     \(\{S_1,S_2\}\subseteq\{S_1,S_2,S_3,S_4\}\). All \(\overline b\) are \(c\):
     \(\{S_5\}\subseteq\{S_1,S_3,S_5\}\). Some \(a\) are \(\overline c\): \(S_2\) is a witness.
     Some \(c\) are \(\overline b\): \(S_5\) is a witness. All four hold. In particular \(\Gamma'\) has a
@@ -2026,8 +2023,8 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
     do not have yet is an efficient procedure that decides it. Searching for proof trees is harder than it
     was for \(\mathbf A\), because (raa) allows us to assume any sentence at any time. Next week we turn
     \(P_\Gamma\) into a graph that can be computed directly from \(\Gamma\), as we did with the all-graph
-    for \(\mathbf A\), and we use it to finish the completeness proof for the smaller system
-    \(\mathbf S\) as well.</p>
+    for \(\mathbf A\). This gives algorithms that decide consistency and derivability in
+    \(\mathbf S^{\dagger}\).</p>
   </div>
 </section>
 
@@ -2158,12 +2155,12 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
   <div class="hw-q" id="q4">
     <h3><span>Question 4: the canonical model and completeness</span><span class="pts">25 points</span></h3>
     <p>Keep \(\Gamma\) from Question 3.</p>
-    <div class="subq"><span class="stag">(a)</span> (9 pts) Build the canonical model \(\mathcal M_3\) of
+    <div class="subq"><span class="stag">(a)</span> (9 pts) Build the canonical model \(\mathcal M_\Gamma\) of
       \(\Gamma\). Its universe is the set of states you found in Question 3(c). Give \([\![a]\!]\),
       \([\![b]\!]\), \([\![c]\!]\), \([\![d]\!]\) and \([\![e]\!]\), and verify that each of the five
-      sentences of \(\Gamma\) is true in \(\mathcal M_3\).</div>
+      sentences of \(\Gamma\) is true in \(\mathcal M_\Gamma\).</div>
     <textarea class="hw-input" id="hw-q4a" rows="7"></textarea>
-    <div class="subq"><span class="stag">(b)</span> (8 pts) Use \(\mathcal M_3\) to show that
+    <div class="subq"><span class="stag">(b)</span> (8 pts) Use \(\mathcal M_\Gamma\) to show that
       \(\Gamma\nvdash\) All \(\overline c\) are \(a\) and that \(\Gamma\nvdash\) All \(c\) are \(e\). Name
       the theorem that lets you pass from a model to a statement about \(\nvdash\).</div>
     <textarea class="hw-input" id="hw-q4b" rows="5"></textarea>
@@ -2635,13 +2632,13 @@ function initIE8(){
   var wantOrder = ["110","010","001","000"];
   states.sort(function(a, b){ return wantOrder.indexOf(code(a)) - wantOrder.indexOf(code(b)); });
   function extStates(l){ var out = []; states.forEach(function(v, i){ if(valLit(v, l)) out.push(i + 1); }); return out; }
-  function trueInM3(s){
+  function trueInCanon(s){
     var X = extStates(s.x), Y = extStates(s.y);
     if(s.q === "All") return X.every(function(i){ return Y.indexOf(i) >= 0; });
     return X.some(function(i){ return Y.indexOf(i) >= 0; });
   }
   var sents = [S("All","p","~r"), S("All","~r","q"), S("Some","q","r"), S("Some","~p","~r"), S("All","~q","~p")];
-  var truth = sents.map(trueInM3);
+  var truth = sents.map(trueInCanon);
   var grid = buildChoiceGrid(host, sents.map(sentTex), ["True","False"], "ie8");
   var iq = document.getElementById("ie8q"), ir = document.getElementById("ie8r"), fb = document.getElementById("ie8fb");
   [["ie8q", iq], ["ie8r", ir]].forEach(function(pr){
