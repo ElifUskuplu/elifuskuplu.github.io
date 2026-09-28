@@ -1,0 +1,1906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polarity Tagger — build a CCG derivation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@800&display=swap">
+<style>
+  :root {
+    --bg: #ffffff;            /* white background */
+    --panel: #f3f5fa;
+    --panel-2: #e7ecf6;
+    --ink: #131a2e;          /* deep navy text (was the old background) */
+    --ink-dim: #5a6378;
+    --line: #c9d2e4;
+    --accent: #a8801f;        /* brass, darkened for light bg: rules, lines */
+    --up: #2b7fa8;            /* polarity up */
+    --down: #c25a36;         /* polarity down */
+    --eq: #5a6378;           /* polarity equals */
+    --pick: #d6e0f5;
+    --pick-edge: #4a6aa0;
+    --mono: "SFMono-Regular", "JetBrains Mono", "Menlo", "Consolas", monospace;
+    --sans: "Inter", system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: var(--sans); line-height: 1.5;
+  }
+  [hidden] { display: none !important; }
+  .topbar {
+    padding: 24px 28px 20px; border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 64px; flex-wrap: wrap;
+  }
+  /* arrow-P wordmark: capital P whose stem is two arrows (polarity up/down) */
+  .brand {
+    flex: 0 0 auto; display: inline-block; white-space: nowrap;
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif; font-weight: 800;
+    font-size: 35.4px; letter-spacing: -0.02em; line-height: 1; color: var(--ink);
+  }
+  .brand .brand-p {
+    display: inline-block; overflow: visible;
+    vertical-align: 9.2px; transform: translateY(18px); margin-right: -3.1px;
+  }
+  .flowstrip { flex: 0 1 580px; min-width: 340px; }
+  .flowstrip svg { width: 100%; max-width: 580px; height: auto; display: block; }
+  main { padding: 24px 28px 80px; max-width: 1200px; margin: 0 auto; }
+
+  .inputrow { display: flex; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+  .inputrow input {
+    flex: 1; min-width: 280px; background: var(--panel); color: var(--ink);
+    border: 1px solid var(--line); border-radius: 8px; padding: 11px 14px;
+    font-family: var(--mono); font-size: 14px;
+  }
+  .inputrow input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  button {
+    background: var(--panel-2); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 8px; padding: 11px 16px; font-size: 13px; cursor: pointer;
+    font-family: var(--sans); transition: background .12s, border-color .12s;
+  }
+  button:hover { background: var(--pick); border-color: var(--pick-edge); }
+  button.primary { background: #d6ab4a; color: #3a2c08; border-color: #c79a35; font-weight: 600; }
+  button.primary:hover { background: #c79a35; }
+  #loadBtn.primary { background: #f3d49a; color: #633806; border-color: #854f0b; }
+  #loadBtn.primary:hover { background: #edc77f; }
+  #tagBtn.primary { background: #a8e0cb; color: #085041; border-color: #0f6e56; }
+  #tagBtn.primary:hover { background: #93d8bb; }
+  button:disabled { opacity: .4; cursor: not-allowed; }
+
+  .hint { color: var(--ink-dim); font-size: 12.5px; margin: 6px 2px 14px; }
+  .hint b { color: var(--ink); font-weight: 600; }
+  .hint ul { margin: 4px 0 0; padding-left: 18px; }
+  .hint li { margin: 2px 0; }
+  .hint code { font-family: var(--mono); color: var(--ink); background: var(--panel-2);
+    padding: 1px 5px; border-radius: 4px; }
+  footer.ai-note {
+    margin-top: 28px; padding: 14px 28px 18px;
+    border-top: 1px solid var(--line);
+    color: var(--ink-dim); font-size: 12.5px; line-height: 1.55;
+  }
+
+  /* derivation workspace */
+  .workspace {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+    padding: 20px; min-height: 140px; margin-bottom: 16px; overflow-x: auto;
+  }
+  .nodes { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
+  .node {
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 9px;
+    padding: 9px 12px 8px; cursor: pointer; user-select: none;
+    text-align: center; min-width: 64px; transition: border-color .12s, background .12s, transform .08s;
+  }
+  .node:hover { border-color: var(--pick-edge); transform: translateY(-1px); }
+  .node.sel { border-color: var(--accent); background: var(--pick); }
+  .node .word { font-family: var(--sans); font-size: 12px; color: var(--ink-dim); margin-bottom: 3px; }
+  .node .cat  { font-family: var(--mono); font-size: 13.5px; color: var(--ink); }
+  .node .cat.catswitch { cursor: pointer; border-bottom: 1px dashed var(--pick-edge); }
+  .node .cat.catswitch:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  .node .switchhint { font-size: 11px; color: var(--accent); opacity: .8; }
+  .node .cls { font-size: 10.5px; color: var(--ink-dim); margin-top: 3px; max-width: 150px;
+    margin-left: auto; margin-right: auto; line-height: 1.3; }
+  .mono { font-family: var(--mono); }
+  .node .built { font-family: var(--mono); font-size: 11px; color: var(--accent); margin-top: 3px; }
+
+  .rulebar { display: flex; gap: 16px; margin: 16px 0 6px; align-items: flex-start; flex-wrap: nowrap; }
+  .rule-group { display: flex; flex-direction: column; gap: 8px; flex: 1 1 auto; min-width: 0; }
+  .rule-line { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .action-group { display: flex; gap: 8px; align-items: center; flex: 0 0 auto; }
+  .rule-line .lab { color: var(--ink-dim); font-size: 12px; min-width: 78px; text-align: right; }
+  .rulebar button.rule { padding: 6px 11px; font-family: var(--mono); font-size: 11px; }
+  .rulebar #undoBtn, .rulebar #tagBtn { padding: 8px 13px; font-size: 13px; }
+  @media (max-width: 640px) {
+    .rulebar { flex-wrap: wrap; }
+    .action-group { margin-left: auto; }
+  }
+
+  .status { font-size: 12.5px; color: var(--ink-dim); margin: 10px 2px; min-height: 18px; }
+  .status.err { color: var(--down); }
+  .status.ok { color: var(--up); }
+  .status a { color: #1e7fb0; font-weight: 600; }
+
+  /* polarities summary (shown prominently at the top of the output) */
+  .summary {
+    font-family: var(--mono); font-size: 19px; line-height: 1.45;
+    color: var(--ink); margin: 14px 0 6px; font-weight: 600;
+  }
+  .summary .summary-label { color: var(--ink-dim); font-weight: 600; margin-right: 4px; }
+  .summary .item { white-space: nowrap; margin-right: 14px; }
+  .summary .trees-note {
+    display: block; font-family: var(--sans); font-size: 13px;
+    font-weight: 400; color: var(--ink-dim); margin-top: 8px;
+  }
+
+  /* output derivations */
+  .out { margin-top: 26px; }
+  .out h2 {
+    font-size: 13px; font-weight: 600; color: var(--ink-dim);
+    letter-spacing: .4px; margin: 26px 0 10px; padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+  }
+  pre.deriv {
+    font-family: var(--mono); font-size: 13px; line-height: 1.5; color: var(--ink);
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 18px; overflow-x: auto; margin: 0; white-space: pre;
+  }
+  .pol-up { color: #c41e1e; font-weight: 600; }
+  .pol-down { color: #c41e1e; font-weight: 600; }
+  .pol-eq { color: #c41e1e; font-weight: 600; }
+  .ty-mark  { color: #1e7fb0; }                      /* markings: light blue */
+  .rule-name { color: #2f8f3f; font-weight: 600; }   /* rule names: green */
+  .rulebar button.rule { color: #2f8f3f; font-weight: 600; }  /* rule buttons green */
+  .node .built { color: #2f8f3f !important; }                 /* card rule label green */
+
+  /* example chips under the input */
+  .examples { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 4px 0 16px; }
+  .examples .lab { color: var(--accent); font-weight: 600; font-size: 11px; text-transform: uppercase;
+    letter-spacing: .5px; margin-right: 4px; }
+  .exlink { cursor: pointer; font-size: 12.5px; border: 0.5px solid var(--line); border-radius: 6px;
+    padding: 3px 9px; color: #1e7fb0; background: var(--panel); white-space: nowrap; }
+  .exlink:hover { border-color: #9a7616; color: #9a7616; }
+  .morelink { font-size: 12.5px; font-weight: 600; color: #1e7fb0; margin-left: 6px; }
+  .morelink:hover { color: #9a7616; }
+
+  /* collapsible reference panels at the bottom (lexicon) */
+  details.ref { margin-top: 16px; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 12px; padding: 0 16px; }
+  details.ref:first-of-type { margin-top: 36px; }
+  details.ref > summary { cursor: pointer; padding: 12px 0; font-size: 13.5px; font-weight: 600;
+    list-style: none; display: flex; align-items: center; gap: 8px; }
+  details.ref > summary::-webkit-details-marker { display: none; }
+  details.ref > summary::before { content: '\25B8'; color: var(--accent); font-size: 11px; }
+  details.ref[open] > summary::before { content: '\25BE'; }
+  details.ref > summary .sub { font-weight: 400; color: var(--ink-dim); font-size: 12.5px; }
+  details.ref .body { padding: 2px 0 16px; }
+  details.ref .desc { font-size: 12.5px; color: var(--ink-dim); margin: 0 0 12px; line-height: 1.55; max-width: 90ch; }
+  details.ref .desc code, details.ref li code { font-family: var(--mono); color: var(--ink); background: var(--panel-2);
+    padding: 1px 5px; border-radius: 4px; }
+  .lexfilter { background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 6px;
+    padding: 6px 10px; font-size: 12.5px; width: 260px; max-width: 100%; margin-bottom: 10px; }
+  .lexfilter:focus { outline: 1.5px solid var(--accent); outline-offset: -1px; }
+  .tablewrap { overflow-x: auto; }
+  table.lex { border-collapse: collapse; font-size: 12.5px; width: 100%; }
+  table.lex th, table.lex td { text-align: left; padding: 5px 14px 5px 0; border-bottom: 1px solid var(--line);
+    vertical-align: top; }
+  table.lex th { color: var(--ink-dim); font-weight: 600; }
+  table.lex td:nth-child(1), table.lex td:nth-child(2), table.lex td:nth-child(3) { white-space: nowrap; }
+
+  /* test set view (?view=tests) */
+  #tests h1 { font-size: 22px; margin: 0 0 6px; }
+  #tests .conv { font-size: 13.5px; color: var(--ink-dim); margin: 0 0 18px; line-height: 1.55; }
+  #tests .conv p { margin: 0 0 6px; }
+  #tests .conv ul { margin: 0; padding-left: 20px; }
+  #tests .conv li { margin: 2px 0; }
+  .case { margin-top: 28px; padding-top: 14px; border-top: 2px solid var(--line); }
+  .case-head { display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap; }
+  .case-head .num { font-family: var(--mono); font-weight: 700; color: var(--accent); font-size: 15px; min-width: 28px; }
+  .case-head .sent { font-size: 16px; font-weight: 600; }
+  .case-head .pos { font-family: var(--mono); font-size: 11.5px; color: var(--ink-dim); }
+  .case-head .open { font-size: 12px; color: #1e7fb0; margin-left: auto; }
+  .case-head .open:hover { color: #9a7616; }
+  .cards { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0 4px; }
+  .card { background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 5px 10px;
+    text-align: center; display: inline-flex; flex-direction: column; min-width: 54px; }
+  .card .w { font-size: 12px; color: var(--ink-dim); }
+  .card .c { font-family: var(--mono); font-size: 12.5px; }
+  .case .summary { font-size: 18px; margin: 12px 0 4px; }
+  details.tree { margin: 10px 0 0; }
+  details.tree summary { cursor: pointer; font-size: 12.5px; font-weight: 600; color: var(--ink-dim);
+    letter-spacing: .3px; padding: 4px 0; list-style: none; display: flex; align-items: center; gap: 8px; }
+  details.tree summary::-webkit-details-marker { display: none; }
+  details.tree summary::before { content: '\25B8'; color: var(--accent); font-size: 11px; }
+  details.tree[open] summary::before { content: '\25BE'; }
+  details.tree[open] summary { border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+  details.tree pre.deriv { padding: 16px; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand" aria-label="Polarity Tagger">
+    <svg class="brand-p" width="42.8" height="60.5" viewBox="0 -22 102 144" aria-hidden="true">
+      <path d="M42,1 C 84,-3 98,17 98,35 C 98,55 80,60 42,57" fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"></path>
+      <g fill="none" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="14" y1="100" x2="14" y2="-8"></line>
+        <path d="M3,4 L14,-13 L25,4"></path>
+        <line x1="42" y1="1" x2="42" y2="108"></line>
+        <path d="M31,95 L42,113 L53,95"></path>
+      </g>
+    </svg><span>olarity&nbsp;Tagger</span>
+  </div>
+  <div class="flowstrip" id="flowstrip">
+    <svg viewBox="0 0 680 96" role="img" aria-label="Workflow: type a sentence, load words, build the CCG derivation, then tag to read off polarities">
+    <defs>
+      <marker id="flowarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="#73726c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+    </defs>
+    <g>
+      <rect x="8" y="22" width="132" height="50" rx="8" fill="#f1efe8" stroke="#5f5e5a" stroke-width="0.5"/>
+      <text x="74" y="42" text-anchor="middle" fill="#444441" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600">Type a sentence</text>
+      <text x="74" y="59" text-anchor="middle" fill="#5f5e5a" font-family="Inter, system-ui, sans-serif" font-size="11">e.g. Fido runs</text>
+    </g>
+    <line x1="144" y1="47" x2="174" y2="47" stroke="#73726c" stroke-width="1.5" marker-end="url(#flowarrow)"/>
+    <g>
+      <rect x="178" y="22" width="120" height="50" rx="8" fill="#faeeda" stroke="#854f0b" stroke-width="0.5"/>
+      <text x="238" y="42" text-anchor="middle" fill="#633806" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600">Load</text>
+      <text x="238" y="59" text-anchor="middle" fill="#854f0b" font-family="Inter, system-ui, sans-serif" font-size="11">get the cards</text>
+    </g>
+    <line x1="302" y1="47" x2="332" y2="47" stroke="#73726c" stroke-width="1.5" marker-end="url(#flowarrow)"/>
+    <g>
+      <rect x="336" y="22" width="156" height="50" rx="8" fill="#eeedfe" stroke="#534ab7" stroke-width="0.5"/>
+      <text x="414" y="42" text-anchor="middle" fill="#3c3489" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600">Build derivation</text>
+      <text x="414" y="59" text-anchor="middle" fill="#534ab7" font-family="Inter, system-ui, sans-serif" font-size="11">combine to one S</text>
+    </g>
+    <line x1="496" y1="47" x2="526" y2="47" stroke="#73726c" stroke-width="1.5" marker-end="url(#flowarrow)"/>
+    <g>
+      <rect x="530" y="22" width="142" height="50" rx="8" fill="#e1f5ee" stroke="#0f6e56" stroke-width="0.5"/>
+      <text x="601" y="42" text-anchor="middle" fill="#085041" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600">Tag</text>
+      <text x="601" y="59" text-anchor="middle" fill="#0f6e56" font-family="Inter, system-ui, sans-serif" font-size="11">read off polarities</text>
+    </g>
+    </svg>
+  </div>
+</div>
+
+<main id="tagger">
+  <div class="inputrow">
+    <input id="sentence" type="text" placeholder="type your sentence"
+           autocomplete="off" spellcheck="false">
+    <button id="loadBtn" class="primary">Load</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+  <div class="hint">
+    <b>When typing:</b> write the words the grammar needs, even where English leaves them out.
+    <ul>
+      <li>A bare plural or mass noun takes a determiner: write the one you mean</li>
+      <li>A command takes its subject: <i>you don't leave a tip</i> for <i>don't leave a tip</i></li>
+      <li>A bare numeral takes a determiner: write the one you mean</li>
+      <li>A generic <i>a</i>, meaning every member of the kind, is written <i>every</i>: <i>every lie has no legs</i> for <i>a lie has no legs</i></li>
+    </ul>
+  </div>
+  <div id="examples" class="examples"></div>
+
+  <div class="workspace">
+    <div id="nodes" class="nodes"></div>
+  </div>
+
+  <div class="rulebar">
+    <div class="rule-group">
+      <div class="rule-line">
+        <span class="lab">apply rule:</span>
+        <button data-rule=">"   class="rule">&gt; forward app</button>
+        <button data-rule="<"   class="rule">&lt; backward app</button>
+        <button data-rule="Tf"  class="rule">&gt;T forward raise</button>
+        <button data-rule="Tb"  class="rule">&lt;T backward raise</button>
+        <button data-rule="Phi" class="rule">&Phi; coordinate</button>
+        <button data-rule="Bf"  class="rule">&gt;B forward comp</button>
+        <button data-rule="Bb"  class="rule">&lt;B backward comp</button>
+      </div>
+    </div>
+    <div class="action-group">
+      <button id="undoBtn">Undo</button>
+      <button id="tagBtn" class="primary">Tag</button>
+    </div>
+  </div>
+  <div id="status" class="status"></div>
+
+  <div id="output" class="out"></div>
+
+  <details class="ref" id="lexPanel">
+    <summary>Lexicon <span class="sub" id="lexCount"></span></summary>
+    <div class="body">
+      <p class="desc">Each class pairs a CCG category with a marking-enriched type; every word in the class gets
+        that pair. A word listed in more than one class loads as a switch card (&#8644;): tap its category to
+        change the reading. The first class listed is the default.</p>
+      <input id="lexFilter" class="lexfilter" type="search" placeholder="find a word or class" autocomplete="off" spellcheck="false">
+      <div class="tablewrap"><div id="lexTable"></div></div>
+    </div>
+  </details>
+</main>
+
+<main id="tests" hidden>
+  <h1>Test set</h1>
+  <div class="conv">
+    <p>Each sentence is shown as its cards: one card per word, after a few fixed changes.</p>
+    <ul>
+      <li>Some words are added, because the grammar needs them: <i>some</i> before a bare plural or mass noun (<i>some theorems</i>), <i>you</i> as the subject of a command, <i>exactly</i> before a bare numeral (<i>exactly two bananas</i>).</li>
+      <li>A generic <i>a</i> is written as <i>every</i>: <i>every lie has no legs</i>.</li>
+      <li>Some word groups are one card: <i>more than</i>, <i>less than</i>, <i>at least</i>, <i>at most</i>, <i>for free</i>, <i>got in</i>, <i>peanut butter</i>.</li>
+      <li><i>everyone</i> and <i>anyone</i> are two cards: <i>every one</i>, <i>any one</i>.</li>
+      <li><i>did not</i> is the card <i>not</i>; <i>didn't</i>, <i>doesn't</i> and <i>don't</i> are one card each.</li>
+    </ul>
+  </div>
+  <div id="testCases"></div>
+</main>
+
+<script>
+"use strict";
+/* =====================================================================
+   CORE LOGIC — to be embedded in the tagger HTML after validation here.
+   Pieces: type DSL (parse/show/unify/subst), repair engine, Enrich
+   (marking-enrichment, bottom-up), polarize (top-down).
+   ===================================================================== */
+
+/* ---------------- type AST + DSL ---------------- */
+const BASE = new Set(['e','t','num']);
+const isUpper = s => /^[A-Z][A-Za-z0-9_]*$/.test(s);
+const isLower = s => /^[a-z][A-Za-z0-9_]*$/.test(s);
+
+function tokenize(src){
+  const toks=[]; let i=0; const n=src.length;
+  while(i<n){
+    const c=src[i];
+    if(/\s/.test(c)){i++;continue;}
+    if(c==='('){toks.push({t:'('});i++;continue;}
+    if(c===')'){toks.push({t:')'});i++;continue;}
+    if(c==='-'&&src[i+1]==='>'){
+      i+=2;
+      if(i<n&&(src[i]==='+'||src[i]==='-'||src[i]==='.')){toks.push({t:'arr',mark:src[i]});i++;continue;}
+      let j=i; while(j<n&&/[A-Za-z0-9_]/.test(src[j]))j++;
+      if(j>i){
+        const name=src.slice(i,j);
+        if(isLower(name)&&!BASE.has(name)){toks.push({t:'arr',mark:{mvar:name}});i=j;continue;}
+        toks.push({t:'arr',mark:'.'});continue;
+      }
+      toks.push({t:'arr',mark:'.'});continue;
+    }
+    let j=i; while(j<n&&/[A-Za-z0-9_]/.test(src[j]))j++;
+    if(j>i){toks.push({t:'id',v:src.slice(i,j)});i=j;continue;}
+    throw new Error("unexpected character '"+c+"'");
+  }
+  return toks;
+}
+function parseType(src){
+  const toks=tokenize(src); let p=0;
+  const peek=()=>toks[p], next=()=>toks[p++];
+  function atom(){
+    const tk=peek();
+    if(!tk) throw new Error('unexpected end of type');
+    if(tk.t==='('){next(); const inner=expr(); const cl=next();
+      if(!cl||cl.t!==')') throw new Error('missing )'); return inner;}
+    if(tk.t==='id'){next();
+      if(BASE.has(tk.v)) return {k:'base',name:tk.v};
+      if(isUpper(tk.v)) return {k:'tvar',name:tk.v};
+      throw new Error("unknown token '"+tk.v+"' (base: e,t,num; type vars: Uppercase)");}
+    throw new Error("expected a type");
+  }
+  function expr(){
+    const left=atom(); const tk=peek();
+    if(tk&&tk.t==='arr'){next(); const right=expr(); return {k:'arr',dom:left,cod:right,mark:tk.mark};}
+    return left;
+  }
+  const ty=expr();
+  if(p!==toks.length) throw new Error('trailing tokens in type');
+  return ty;
+}
+function markSym(m){
+  if(m==='+')return '+'; if(m==='-')return '\u2212'; if(m==='.')return '\u2022';
+  if(m&&m.mvar)return m.mvar; return '?';
+}
+function showType(ty){
+  if(ty.k==='base')return ty.name;
+  if(ty.k==='tvar')return ty.name;
+  return '('+showType(ty.dom)+' \u2192'+markSym(ty.mark)+' '+showType(ty.cod)+')';
+}
+function eqType(a,b){
+  if(a.k!==b.k)return false;
+  if(a.k==='base')return a.name===b.name;
+  if(a.k==='tvar')return a.name===b.name;
+  return a.mark===b.mark&&eqType(a.dom,b.dom)&&eqType(a.cod,b.cod);
+}
+function emptySubst(){return {tv:{},mv:{}};}
+function applySubst(ty,s){
+  if(ty.k==='base')return ty;
+  if(ty.k==='tvar')return s.tv[ty.name]?applySubst(s.tv[ty.name],s):ty;
+  return {k:'arr',dom:applySubst(ty.dom,s),cod:applySubst(ty.cod,s),mark:applyMark(ty.mark,s)};
+}
+function applyMark(m,s){ if(m&&m.mvar)return s.mv[m.mvar]!==undefined?s.mv[m.mvar]:m; return m; }
+function unify(pat,tgt,s){
+  s=s||emptySubst(); pat=applySubst(pat,s);
+  if(pat.k==='tvar'){
+    const prior=s.tv[pat.name];
+    if(prior)return eqType(applySubst(prior,s),tgt)?s:null;
+    s.tv[pat.name]=tgt; return s;
+  }
+  if(pat.k==='base')return (tgt.k==='base'&&tgt.name===pat.name)?s:null;
+  if(tgt.k!=='arr')return null;
+  if(!unifyMark(pat.mark,tgt.mark,s))return null;
+  if(!unify(pat.dom,tgt.dom,s))return null;
+  if(!unify(pat.cod,tgt.cod,s))return null;
+  return s;
+}
+function unifyMark(pm,tm,s){
+  if(pm&&pm.mvar){const prior=s.mv[pm.mvar];
+    if(prior!==undefined)return prior===tm; s.mv[pm.mvar]=tm; return true;}
+  return pm===tm;
+}
+
+/* ---------------- repair DSL ---------------- */
+const REPAIR_RULES=new Set(['app','comp','coord']);
+function splitTopComma(s){
+  const out=[]; let d=0,cur='';
+  for(const c of s){
+    if(c==='('){d++;cur+=c;} else if(c===')'){d--;cur+=c;}
+    else if(c===','&&d===0){out.push(cur);cur='';} else cur+=c;
+  }
+  out.push(cur); return out.map(x=>x.trim());
+}
+// A line has three parts separated by '::' :
+//   RULE : leftPat, rightPat => leftOut, rightOut  ::  leftPol, rightPol  ::  LABEL
+// The last two parts are optional. Defaults: polarity rules = (d, d) i.e. the
+// child keeps the incoming polarity (monotone); label = ADAPT. The polarity
+// rules and label are inputs the user supplies per line; the core never names
+// any particular adaptation.
+function parseRepairProgram(text){
+  const rules=[];
+  text.split('\n').forEach((raw,idx)=>{
+    const line=raw.replace(/#.*$/,'').trim();
+    if(!line)return;
+    const parts=line.split('::').map(s=>s.trim());
+    const core=parts[0];
+    const colon=core.indexOf(':');
+    if(colon<0)throw new Error('line '+(idx+1)+': expected RULE : pat,pat => out,out');
+    const ruleName=core.slice(0,colon).trim().toLowerCase();
+    if(!REPAIR_RULES.has(ruleName))throw new Error('line '+(idx+1)+": rule must be app, comp, or coord");
+    const rest=core.slice(colon+1); const ap=rest.indexOf('=>');
+    if(ap<0)throw new Error('line '+(idx+1)+": expected '=>'");
+    const lp=splitTopComma(rest.slice(0,ap)), rp=splitTopComma(rest.slice(ap+2));
+    if(lp.length!==2)throw new Error('line '+(idx+1)+': left of => needs two patterns');
+    if(rp.length!==2)throw new Error('line '+(idx+1)+': right of => needs two templates');
+    // polarity rules (optional)
+    let leftPol={kind:'d'}, rightPol={kind:'d'};
+    if(parts.length>1 && parts[1]!==''){
+      const pl=splitTopComma(parts[1]);
+      if(pl.length!==2)throw new Error('line '+(idx+1)+': polarity part needs two rules: leftPol, rightPol');
+      try{ leftPol=parsePol(pl[0]); rightPol=parsePol(pl[1]); }
+      catch(e){ throw new Error('line '+(idx+1)+': '+e.message); }
+    }
+    // label (optional)
+    let label='ADAPT';
+    if(parts.length>2 && parts[2]!=='') label=parts[2];
+    if(parts.length>3) throw new Error('line '+(idx+1)+': too many :: sections');
+    rules.push({rule:ruleName, leftPat:parseType(lp[0]), rightPat:parseType(lp[1]),
+                leftOut:parseOut(rp[0]), rightOut:parseOut(rp[1]),
+                leftPol, rightPol, label, lineno:idx+1});
+  });
+  return rules;
+}
+// A polarity rule maps the incoming polarity d (and, via md, the marks of this
+// side's rewritten type) to the polarity its child receives. Grammar:
+//   pol  := d | up | down | eq | flip( pol ) | md( pol , path )
+//   path := (empty = top arrow) | step ('.' step)*   where step in {dom, cod}
+// Evaluated by evalPol against the node's new type.
+function parsePol(src){
+  const s=src.trim();
+  if(s==='d') return {kind:'d'};
+  if(s==='up'||s==='down'||s==='eq') return {kind:'const', v:s};
+  let m=s.match(/^flip\s*\(([\s\S]*)\)$/);
+  if(m) return {kind:'flip', e:parsePol(m[1])};
+  m=s.match(/^md\s*\(([\s\S]*)\)$/);
+  if(m){
+    const args=splitTopComma(m[1]);
+    if(args.length!==2) throw new Error("md expects two arguments: md(pol, path)");
+    return {kind:'md', e:parsePol(args[0]), path:parsePath(args[1])};
+  }
+  throw new Error("bad polarity rule '"+s+"' (use d, up, down, eq, flip(...), md(...))");
+}
+function parsePath(src){
+  const s=src.trim();
+  if(s===''||s==='.'||s==='top') return [];
+  return s.split('.').map(step=>{
+    const t=step.trim();
+    if(t!=='dom'&&t!=='cod') throw new Error("path step must be dom or cod, got '"+t+"'");
+    return t;
+  });
+}
+// An output template is either an ordinary type, or Join(A, B) — a structural
+// join of two type patterns, evaluated under the substitution at apply time.
+function parseOut(src){
+  const s=src.trim();
+  const mj=s.match(/^Join\s*\(([\s\S]*)\)$/);
+  if(mj){
+    const args=splitTopComma(mj[1]);
+    if(args.length!==2) throw new Error('Join expects two arguments: Join(A, B)');
+    return {join:true, a:parseType(args[0]), b:parseType(args[1])};
+  }
+  return {join:false, ty:parseType(s)};
+}
+// instantiate an output template under a substitution; returns a type or null
+// (null = the join does not exist, so the rule must not fire).
+function instantiate(out, s){
+  if(!out.join) return applySubst(out.ty, s);
+  const a=applySubst(out.a, s), b=applySubst(out.b, s);
+  return joinTy(a, b);   // may be null
+}
+function makeRepair(rules){
+  return function(lty,rty,ruleName){
+    for(const r of rules){
+      if(r.rule!==ruleName)continue;
+      let s=emptySubst();
+      s=unify(r.leftPat,lty,s); if(!s)continue;
+      s=unify(r.rightPat,rty,s); if(!s)continue;
+      const lo=instantiate(r.leftOut,s), ro=instantiate(r.rightOut,s);
+      if(lo===null||ro===null) continue;   // join failed: rule does not fire
+      return {left:lo, right:ro, fired:true, lineno:r.lineno,
+              leftPol:r.leftPol, rightPol:r.rightPol, label:r.label};
+    }
+    return {left:lty, right:rty, fired:false};
+  };
+}
+
+/* ---------------- Enrich ---------------- */
+const isArr=t=>t.k==='arr';
+const markMul=(a,b)=>(a==='.'||b==='.')?'.':(a===b?'+':'-');
+// ---- Join: a structural property of types,
+// not part of the algorithm. Called only by the W repair via Join(A,B).
+function markJoin(a,b){ return a===b ? a : '.'; }
+function eraseTy(t){
+  if(t.k==='base'||t.k==='tvar') return t;
+  return {k:'arr',dom:eraseTy(t.dom),cod:eraseTy(t.cod),mark:'.'};
+}
+// join at a given polarity: pos=true means a spine position (join the markings),
+// pos=false means a domain position: the two types must be EQUAL as marked
+// types (the whole subtree, all markings), else no join exists. Only the spine
+// markings are joined; see Lemma (join) in the paper.
+function joinPol(a,b,pos){
+  if(!pos) return eqType(a,b)?a:null;
+  if(a.k==='base'||b.k==='base'||a.k==='tvar'||b.k==='tvar')
+    return eqType(a,b)?a:null;
+  if(a.k!=='arr'||b.k!=='arr') return null;
+  const mk=markJoin(a.mark,b.mark);
+  const dom=joinPol(a.dom,b.dom,false); if(dom===null) return null;
+  const cod=joinPol(a.cod,b.cod,true);  if(cod===null) return null;
+  return {k:'arr',dom,cod,mark:mk};
+}
+function joinTy(a,b){
+  if(eqType(a,b)) return a;
+  // must share an underlying unmarked type
+  if(!eqType(eraseTy(a),eraseTy(b))) return null;
+  // top-level position is positive
+  return joinPol(a,b,true);
+}
+// conjoinable types: t, or any marked function type whose final result is t.
+// The connective schema has instances only at these types, so coordination
+// is defined only here (mirrors the conjoinable check in the paper's Phase 1).
+function isConjoinableTy(t){
+  if(t.k==='base') return t.name==='t';
+  if(t.k==='arr')  return isConjoinableTy(t.cod);
+  return false;   // type variables never reach a concrete coordination
+}
+// wrap a node in an 'adapt' node only if the new type differs from the node's
+// own type; an identity rewrite leaves the node untouched (no adapt node in the
+// tree). The node carries the label (shown in the tree) and the polarity rule
+// (used by Phase 2); both come from the Adapt line that fired.
+function wrapRepair(node, newTy, label, polRule){
+  return eqType(node.ty, newTy) ? node
+    : {kind:'repair', ty:newTy, children:[node], repairLabel:label||'ADAPT', polRule:polRule||{kind:'d'}};
+}
+
+function Enrich(N, repair){
+  if(N.rule==='leaf') return {kind:'leaf', ty:N.lty, word:N.word, children:[]};
+
+  if(N.rule==='Bf'||N.rule==='Bb'||N.rule==='Bfx'||N.rule==='Bbx'){
+    const fwd=(N.rule==='Bf'||N.rule==='Bfx');
+    // u supplies rho (result codomain), v supplies sigma.
+    // forward: u=left child, v=right child; backward: u=right, v=left.
+    const uRaw=fwd?N.children[0]:N.children[1];
+    const vRaw=fwd?N.children[1]:N.children[0];
+
+    // The raise check for a T child uses the OTHER premise as functor.
+    function raiseAgainst(innerEnr, functorTy){
+      if(!isArr(functorTy)) throw new Error('raise: neighbour '+showType(functorTy)+' is not a function');
+      const cod=functorTy.cod;
+      // check 1: real raise — arg == domain(codomain(functor))
+      if(isArr(cod)&&eqType(innerEnr.ty,cod.dom)){
+        return {kind:'T', ty:{k:'arr',dom:cod,cod:cod.cod,mark:'+'}, raiseKind:'raised',
+                children:[innerEnr]};
+      }
+      // check 2: identity — domain(arg) == codomain(functor)
+      if(isArr(innerEnr.ty)&&eqType(innerEnr.ty.dom,cod)){
+        return {kind:'T', ty:innerEnr.ty, raiseKind:'identity', children:[innerEnr]};
+      }
+      throw new Error('raise: cannot raise '+showType(innerEnr.ty)+' against '+showType(functorTy));
+    }
+
+    // A coordination of two type-raised conjuncts counts as a raised premise:
+    // each conjunct is raised against the neighbour, then the two are coordinated.
+    // a coordination of raised premises, possibly nested: each conjunct is a raise or such a coordination
+    const isRaisedCoord=R=>R.rule==='Phi'&&[R.children[0],R.children[2]].every(c=>c.rule==='T'||isRaisedCoord(c));
+    function resolveRaised(R, functorTy){
+      if(R.rule==='T') return raiseAgainst(Enrich(R.children[0],repair), functorTy);
+      const x=resolveRaised(R.children[0], functorTy);
+      const y=resolveRaised(R.children[2], functorTy);
+      return coordinate(x, R.children[1], y, repair);
+    }
+    const uIsT=uRaw.rule==='T'||isRaisedCoord(uRaw), vIsT=vRaw.rule==='T'||isRaisedCoord(vRaw);
+    let uEnr, vEnr;
+    if(uIsT && !vIsT){
+      vEnr=Enrich(vRaw,repair);
+      uEnr=resolveRaised(uRaw, vEnr.ty);
+    } else if(vIsT && !uIsT){
+      uEnr=Enrich(uRaw,repair);
+      vEnr=resolveRaised(vRaw, uEnr.ty);
+    } else if(!uIsT && !vIsT){
+      uEnr=Enrich(uRaw,repair); vEnr=Enrich(vRaw,repair);
+    } else {
+      const err=new Error('composition with both premises type-raised is not supported');
+      err.hint='Raise only one of the two premises, then Tag again.';
+      throw err;
+    }
+
+    let u=uEnr.ty, v=vEnr.ty;
+    if(!isArr(u)||!isArr(v)) throw new Error('composition: both premises must be functions ('+showType(u)+' , '+showType(v)+')');
+    // condition: dom(u) == cod(v)   (tau)
+    if(!eqType(u.dom, v.cod)){
+      const r=repair(u, v, 'comp');
+      if(r.fired){ u=r.left; v=r.right;
+        uEnr=wrapRepair(uEnr, u, r.label, r.leftPol); vEnr=wrapRepair(vEnr, v, r.label, r.rightPol); }
+      if(!isArr(u)||!isArr(v)||!eqType(u.dom, v.cod))
+        throw new Error('composition does not fit'+(r.fired?' even after repair':'')+': '+showType(u)+' , '+showType(v));
+    }
+    const rho=u.cod, n=u.mark, sigma=v.dom, m=v.mark;
+    return {kind:'B', ty:{k:'arr',dom:sigma,cod:rho,mark:markMul(m,n)},
+            children: fwd?[uEnr,vEnr]:[vEnr,uEnr], uIdx: fwd?0:1};
+  }
+
+  if(N.rule==='App>'||N.rule==='App<'){
+    const fwd=(N.rule==='App>');
+    const fRaw=fwd?N.children[0]:N.children[1];
+    const aRaw=fwd?N.children[1]:N.children[0];
+    let f=Enrich(fRaw,repair), a=Enrich(aRaw,repair);
+    if(isArr(f.ty)&&eqType(a.ty,f.ty.dom))
+      return {kind:N.rule, ty:f.ty.cod, children:fwd?[f,a]:[a,f], fIdx:fwd?0:1};
+    const r=repair(f.ty, a.ty, 'app');
+    if(r.fired){
+      const f2=r.left, a2=r.right;
+      if(isArr(f2)&&eqType(a2,f2.dom)){
+        const fN=wrapRepair(f,f2,r.label,r.leftPol), aN=wrapRepair(a,a2,r.label,r.rightPol);
+        return {kind:N.rule, ty:f2.cod, children:fwd?[fN,aN]:[aN,fN], fIdx:fwd?0:1};
+      }
+    }
+    const err=new Error('application does not fit'+(r.fired?' even after repair':'')+': '+showType(f.ty)+' \u00b7 '+showType(a.ty));
+    if(f.kind==='B') err.hint='The functor here was built by composition, and no Adapt line fits it. '
+      +'Where the syntax allows, use application instead of composition, then Tag again.';
+    throw err;
+  }
+
+  if(N.rule==='Phi'){
+    // three children: left conjunct, connector (and/or/but), right conjunct.
+    return coordinate(Enrich(N.children[0],repair), N.children[1], Enrich(N.children[2],repair), repair);
+  }
+
+  if(N.rule==='T'){
+    const err=new Error('a type raising must feed a composition');
+    err.hint='Compose the raised card with its neighbour, or use application without raising, then Tag again.';
+    throw err;
+  }
+  throw new Error('cannot enrich '+N.rule);
+}
+
+// Coordinate two enriched conjuncts x, y with the connector leaf conn.
+// Used by the Phi case and by a coordination of raised premises inside a composition.
+function coordinate(x, conn, y, repair){
+    // ML (structural): coordination expects np-typed conjuncts, so a bare
+    // individual e is lifted to np+ = (e->t)->+t.
+    const NPplus={k:'arr',dom:{k:'arr',dom:{k:'base',name:'e'},cod:{k:'base',name:'t'},mark:'.'},cod:{k:'base',name:'t'},mark:'+'};
+    const isE=t=>t.k==='base'&&t.name==='e';
+    if(isE(x.ty)) x={kind:'ML', ty:NPplus, children:[x]};
+    if(isE(y.ty)) y={kind:'ML', ty:NPplus, children:[y]};
+    // Adapt (e.g. a weakening line): if the conjuncts differ, rewrite both.
+    if(!eqType(x.ty,y.ty)){
+      const r=repair(x.ty, y.ty, 'coord');
+      if(!(r.fired && eqType(r.left,r.right)))
+        throw new Error('coordination needs equal conjuncts'+(r.fired?' even after repair':'')+': '+showType(x.ty)+' vs '+showType(y.ty));
+      x=wrapRepair(x, r.left, r.label, r.leftPol); y=wrapRepair(y, r.right, r.label, r.rightPol);
+    }
+    // both conjuncts now share type sigma; instantiate the connector at
+    // sigma ->+ (sigma ->+ sigma) and build a three-child Coord node.
+    const sigma=x.ty;
+    if(!isConjoinableTy(sigma)){
+      const err=new Error('coordination at '+showType(sigma)
+        +' fails: the connective schema has instances only at conjoinable types '
+        +'(t, or a function type whose final result is t)');
+      err.noAdaptHint=true; throw err;
+    }
+    const connTy={k:'arr',dom:sigma,cod:{k:'arr',dom:sigma,cod:sigma,mark:'+'},mark:'+'};
+    const connEnr={kind:'leaf', ty:connTy, word:conn.word, isConnector:true, children:[]};
+    return {kind:'Coord', ty:sigma, children:[x, connEnr, y]};
+}
+
+/* ---------------- polarize (top-down) ---------------- */
+function md(d,m){ if(d==='eq'||m==='.')return 'eq'; if(m==='+')return d; return d==='up'?'down':'up'; }
+function flipPol(d){ return d==='up'?'down':(d==='down'?'up':'eq'); }
+// follow a dom/cod path into a type and return the marking of the arrow reached.
+function markAtPath(ty, path){
+  let t=ty;
+  for(const step of path){
+    if(t.k!=='arr') throw new Error('polarity rule: path leaves the function type');
+    t = step==='dom' ? t.dom : t.cod;
+  }
+  if(t.k!=='arr') throw new Error('polarity rule: path does not end on an arrow');
+  return t.mark;
+}
+// evaluate a polarity rule: incoming polarity d, this node's (rewritten) type ty.
+function evalPol(p, d, ty){
+  if(p.kind==='d') return d;
+  if(p.kind==='const') return p.v;
+  if(p.kind==='flip') return flipPol(evalPol(p.e,d,ty));
+  if(p.kind==='md') return md(evalPol(p.e,d,ty), markAtPath(ty, p.path));
+  throw new Error('polarity rule: unknown form');
+}
+function polarize(en,d){
+  en.pol=d;
+  const k=en.kind;
+  if(k==='leaf') return;
+  if(k==='App>'||k==='App<'){
+    const fIdx=en.fIdx, f=en.children[fIdx], a=en.children[1-fIdx];
+    polarize(f,d); polarize(a, md(d, f.ty.mark));
+    return;
+  }
+  if(k==='B'){
+    // rule:  u^d , v^(nd) ; u carries result codomain, v the rest.
+    const uIdx=en.uIdx, u=en.children[uIdx], v=en.children[1-uIdx];
+    polarize(u,d); polarize(v, md(d, u.ty.mark));
+    return;
+  }
+  if(k==='T'){
+    // paper: premise gets md, where m is the marking of the INNER arrow of the
+    // raise target (dom of the raised type), not the outer + . In this fragment
+    // that inner arrow is always dot, so the premise receives = .
+    if(en.raiseKind==='identity') polarize(en.children[0], d);
+    else polarize(en.children[0], md(d, en.ty.dom.mark));
+    return;
+  }
+  if(k==='repair'){
+    // The Adapt line that fired here attached its own polarity rule. It maps the
+    // incoming polarity d to the child's polarity, and may read the marks of this
+    // node's rewritten type. The default rule is monotone (the child keeps d).
+    // The core does not know which adaptation this is; H, W, and any user line are
+    // all handled the same way, through their declared polarity rule.
+    polarize(en.children[0], evalPol(en.polRule||{kind:'d'}, d, en.ty));
+    return;
+  }
+  if(k==='ML'){
+    // ML is a special case of type raising: e is lifted to np+ = (e ->. t) ->+ t.
+    // As in T, the premise receives md(d, m) where m is the marking of the inner
+    // arrow of the raised type (the dom of np+). That inner arrow is e ->. t,
+    // whose mark is dot, so the premise always receives = .
+    polarize(en.children[0], md(d, en.ty.dom.mark));
+    return;
+  }
+  if(k==='Coord'){
+    // children: [left a, connector conj, right b]; conj : x ->m (x ->n x).
+    // rule:  a gets nd, conj gets d, b gets md.
+    const a=en.children[0], conn=en.children[1], b=en.children[2];
+    const m=conn.ty.mark;                 // outer marking of conj
+    const n=conn.ty.cod.mark;             // inner marking of conj
+    polarize(a, md(d,n));
+    polarize(conn, d);
+    polarize(b, md(d,m));
+    return;
+  }
+  throw new Error('polarize: unknown kind '+k);
+}
+
+
+
+/* ===================================================================
+   LEXICON (read-only). One row per class:
+   [class, CCG category, marking-enriched type (DSL), words].
+   A word listed in several classes has several entries and loads as a
+   switch card; the first class listed is its default reading.
+   =================================================================== */
+const LEX = [
+  ['proper name',                       'NP',   'e',  ['fido','felix','tom','mary','john','nina','jack','jones','smith','anderson','english','japanese']],
+  ['pronoun',                           'NP',   'e',  ['i','he','him','them','we','you','she']],
+  ['common noun',                       'N',    'e->t', ['man','alien','novel','dog','cat','mouse','animal','farmer','race','bath','boy','girl','body','elephant','meeting','business','profit','muscle','rat','hole','lie','leg','hunter','deer','student','teacher','meat','truth','horse','watch','life','hat','house','cap','card','account','knife','name','face','gun','clue','idea','bus','berry','daughter','woman','word','service','tip','contract','car','motorcycle','fee','strawberry','room','banana','fork','theorem','geometry','definition','debate','nature','lexicon','sandwich','representative','client','cold','one']],
+  ['intransitive verb',                 'S\\NP','e->t', ['run','smile','sing','dance','go','drive','swim','kiss','move','miss','gotin']],
+  ['transitive verb',                   '(S\\NP)/NP','e->(e->t)', ['read','chase','follow','enter','refresh','produce','move','chew','have','attack','kiss','speak','need','wear','lead','catch','forget','adore','love','make','pick','eat','see','say','buy','own','pay','sign','leave','shoot','surprise','discuss','state','prove','attend','like']],
+  ['intersective adjective, noun modifier','N/N', '(e->t) ->+ (e->t)', ['red','sci-fi','peanut','blue','peaceful','ripe','vw','golden','algebraic','parking','credit','bank','company','peanutbutter','jelly']],
+  ['relative adjective, noun modifier',  'N/N', '(e->t) -> (e->t)', ['tall','fat','cold','little','great','big','fast','easy','brave','new','full','elegant','large','old']],
+  ['predicative adjective',             'S\\NP','e->t', ['hairy','pink','pretty','delighted','tall','big','large','little','fat','great','fast','cold','easy','elegant','brave','old','new','full','red','blue','ripe','peaceful','golden']],
+  ['degree adverb',                     '(N/N)/(N/N)', '((e->t) -> (e->t)) -> ((e->t) -> (e->t))', ['very']],
+  ['degree adverb, intersective',       '(N/N)/(N/N)', '((e->t) ->+ (e->t)) -> ((e->t) ->+ (e->t))', ['very']],
+  ['universal determiner',              'NP/N', '(e->t) ->- ((e->t) ->+ t)', ['every']],
+  ['NPI any',                           'NP/N', '(e->t) ->+ ((e->t) ->+ t)', ['any']],
+  ['free-choice any',                   'NP/N', '(e->t) ->- ((e->t) ->+ t)', ['any']],
+  ['existential determiner',            'NP/N', '(e->t) ->+ ((e->t) ->+ t)', ['a','an','some']],
+  ['definite determiner',               'NP/N', '(e->t) -> e',  ['the']],
+  ['negative determiner',               'NP/N', '(e->t) ->- ((e->t) ->- t)', ['no']],
+  ['proportional determiner',           'NP/N', '(e->t) -> ((e->t) ->+ t)',  ['most','many']],
+  ['relative pronoun, subject extraction','(N\\N)/(S\\NP)','(e->t) ->+ ((e->t) ->+ (e->t))', ['who','that']],
+  ['relative pronoun, object extraction','(N\\N)/(S/NP)', '(e->t) ->+ ((e->t) ->+ (e->t))', ['who','whom','that']],
+  ['negation',                          '(S\\NP)/(S\\NP)', '(e->t) ->- (e->t)', ['not',"didn't",'never']],
+  ['preverbal adverb, increasing',      '(S\\NP)/(S\\NP)', '(e->t) ->+ (e->t)', ['always','usually','really','even','passionately']],
+  ['preverbal adverb, decreasing',      '(S\\NP)/(S\\NP)', '(e->t) ->- (e->t)', ['seldom','rarely']],
+  ['postverbal adverb',                 '(S\\NP)\\(S\\NP)', '(e->t) ->+ (e->t)', ['quickly','early','well','forfree','fast']],
+  ['copula + adjective',                '(S\\NP)/(S\\NP)', '(e->t) ->+ (e->t)', ['be']],
+  ['copula + NP',                       '(S\\NP)/NP', 'e->(e->t)', ['be']],
+  ['coordinator',                       'CONJ', 'x ->+ (x ->+ x)', ['and','or','but']],
+  ['exceptive',                         '(NP\\NP)/NP', 'e -> (e -> ((e->t) -> t))', ['but']],
+  ['conditional, clause-final',         '(S\\S)/S', 't ->- (t ->+ t)', ['if']],
+  ['conditional, clause-initial',       '(S/S)/S',  't ->- (t ->+ t)', ['if']],
+  ['relational preposition',            '(N\\N)/NP', 'e->((e->t)->(e->t))', ['of']],
+  ['noun-modifying preposition',        '(N\\N)/NP', 'e->(e->t)', ['of','about','in','with']],
+  ['verb-modifying preposition',        '((S\\NP)\\(S\\NP))/NP', 'e->(e->t)', ['in','with']],
+  ['gerund preposition, increasing',    '((S\\NP)\\(S\\NP))/(S\\NP)', '(e->t) ->+ ((e->t) ->+ (e->t))', ['by']],
+  ['gerund preposition, decreasing',    '((S\\NP)\\(S\\NP))/(S\\NP)', '(e->t) ->- ((e->t) ->+ (e->t))', ['before']],
+  ['partitive preposition',             'N/NP', 'e->(e->t)', ['of']],
+  ['numeral',                           'NUM',  'num', ['one','two','three','five','10','12']],
+  ['measure unit',                      'NUM\\NUM', 'num ->+ num', ['minute']],
+  ['measure preposition',               '((S\\NP)\\(S\\NP))/NUM', 'num ->+ ((e->t) ->+ (e->t))', ['in']],
+  ['numeral determiner, decreasing',    '(NP/N)/NUM', 'num ->- ((e->t) ->+ ((e->t) ->+ t))', ['morethan','atleast']],
+  ['numeral determiner, increasing',    '(NP/N)/NUM', 'num ->+ ((e->t) ->- ((e->t) ->- t))', ['lessthan','atmost']],
+  ['numeral determiner, neutral',       '(NP/N)/NUM', 'num -> ((e->t) -> ((e->t) -> t))', ['exactly']],
+  ['degree adverb, predicative',        '(S\\NP)/(S\\NP)', '(e->t) -> (e->t)', ['very']],
+];
+
+/* word -> entries [{cls, cat, sem}], and the parsed semantic types keyed by word@class */
+const ENTRIES = {}, SEM = {};
+for(const [cls,cat,sem,words] of LEX) for(const w of words){
+  (ENTRIES[w]=ENTRIES[w]||[]).push({cls,cat,sem});
+  if(cat!=='CONJ') SEM[w+'@'+cls]=parseType(sem);
+}
+
+/* multi-word items that load as one card, and how their cards are shown */
+const MULTI = { 'more than':'morethan', 'less than':'lessthan', 'at least':'atleast', 'at most':'atmost',
+                'for free':'forfree', 'got in':'gotin', 'peanut butter':'peanutbutter' };
+const DISPLAY = {};
+for(const k in MULTI) DISPLAY[MULTI[k]]=k;
+function disp(w){ return DISPLAY[w] || w; }
+
+/* irregular and listed inflected forms -> base form */
+const LEMMA = {
+  'novels':'novel','farmers':'farmer','elephants':'elephant','legs':'leg','words':'word','aliens':'alien','girls':'girl',
+  'cats':'cat','dogs':'dog','mice':'mouse','animals':'animal','berries':'berry','minutes':'minute','bananas':'banana',
+  'theorems':'theorem','definitions':'definition','men':'man','women':'woman',
+  'ran':'run','runs':'run','swam':'swim','swims':'swim','chased':'chase','chases':'chase','follows':'follow','followed':'follow',
+  'sees':'see','saw':'see','entered':'enter','refreshed':'refresh','smiled':'smile','sang':'sing','danced':'dance',
+  'is':'be','are':'be','was':'be','were':'be','am':'be',
+  'chewed':'chew','has':'have','had':'have','attacked':'attack','kissed':'kiss','speaks':'speak','needs':'need','leads':'lead','wears':'wear',
+  'moves':'move','moved':'move','forgets':'forget','adores':'adore','loves':'love','made':'make','picked':'pick','ate':'eat',
+  'bought':'buy','said':'say','left':'leave','signed':'sign','attended':'attend','owns':'own','paid':'pay','surprised':'surprise',
+  'eating':'eat','making':'make','proving':'prove','missed':'miss','shot':'shoot',
+  "doesn't":"didn't","don't":"didn't",
+};
+/* Regular inflection: strip a suffix, and accept the stem only if it is a
+   noun or verb in the lexicon (so that e.g. "as" never becomes "a"). */
+const NOUN=['common noun'], VERB=['intransitive verb','transitive verb'];
+function stemCandidates(w){
+  const c=[];
+  if(/ies$/.test(w)) c.push([w.slice(0,-3)+'y', NOUN.concat(VERB)]);
+  if(/es$/.test(w))  c.push([w.slice(0,-2), NOUN.concat(VERB)]);
+  if(/[^s]s$/.test(w)) c.push([w.slice(0,-1), NOUN.concat(VERB)]);
+  if(/ied$/.test(w)) c.push([w.slice(0,-3)+'y', VERB]);
+  if(/ed$/.test(w)){
+    c.push([w.slice(0,-2), VERB], [w.slice(0,-1), VERB]);
+    if(/(.)\1ed$/.test(w)) c.push([w.slice(0,-3), VERB]);
+  }
+  if(/ing$/.test(w)){
+    const b=w.slice(0,-3);
+    c.push([b, VERB], [b+'e', VERB]);
+    if(/(.)\1$/.test(b)) c.push([b.slice(0,-1), VERB]);
+  }
+  return c.filter(([s])=>s.length>=2);
+}
+/* the lexicon key of a surface word, or null if the word is not in the lexicon */
+function lookupKey(w){
+  const lo=w.toLowerCase();
+  if(LEMMA[lo]) return LEMMA[lo];
+  if(ENTRIES[lo]) return lo;
+  for(const [s,classes] of stemCandidates(lo))
+    if((ENTRIES[s]||[]).some(e=>classes.includes(e.cls))) return s;
+  return null;
+}
+
+/* Sentence -> card tokens (surface strings). Drops punctuation, merges
+   multi-word items, drops the auxiliary do/does/did before not, splits
+   isn't/aren't/wasn't/weren't into be + not, and everyone/anybody/... into
+   determiner + noun. */
+function normalize(raw){
+  const words=raw.replace(/[‘’]/g,"'").replace(/[“”"]/g,' ')
+    .replace(/[.,;:!?]+/g,' ').trim().split(/\s+/).filter(Boolean);
+  const out=[];
+  for(let i=0;i<words.length;i++){
+    const w=words[i], lo=w.toLowerCase(), nx=(words[i+1]||'').toLowerCase();
+    if(MULTI[lo+' '+nx]){ out.push(MULTI[lo+' '+nx]); i++; continue; }
+    if(/^(do|does|did)$/.test(lo) && nx==='not'){ out.push(words[i+1]); i++; continue; }
+    if(/^(do|does|did)$/.test(lo) && nx==="n't"){ out.push(w+"n't"); i++; continue; }
+    const neg=w.match(/^(is|are|was|were)n't$/i);
+    if(neg){ out.push(neg[1], 'not'); continue; }
+    const q=w.match(/^(every|any|some|no)(one|body)$/i);
+    if(q){ out.push(q[1], q[2]); continue; }
+    out.push(w);
+  }
+  return out;
+}
+
+/* A card: the surface word, its lexicon key, and its entries; ei picks the
+   current reading. tok is a string, or {w, cat} / {w, cls} to pick a reading. */
+function tokenToLeaf(tok){
+  const w = typeof tok==='string' ? tok : tok.w;
+  const key = lookupKey(w);
+  if(!key){ const err=new Error("'"+w+"' is not in the lexicon."); err.notInLexicon=true; throw err; }
+  const entries = ENTRIES[key];
+  let ei = 0;
+  if(typeof tok!=='string' && tok.cat){
+    ei = entries.findIndex(e=>catEq(e.cat,tok.cat));
+    if(ei<0) throw new Error("'"+w+"' has no entry "+tok.cat);
+  }
+  if(typeof tok!=='string' && tok.cls){
+    ei = entries.findIndex(e=>e.cls.indexOf(tok.cls)>=0);
+    if(ei<0) throw new Error("'"+w+"' has no entry in class "+tok.cls);
+  }
+  return {rule:'leaf', kind:'leaf', word:DISPLAY[key]||w, key, entries, ei, cat:entries[ei].cat, span:null};
+}
+function tokensToForest(tokens){
+  return tokens.map((t,i)=>{ const leaf=tokenToLeaf(t); leaf.span=[i,i+1]; return leaf; });
+}
+function tokenText(t){ const w = typeof t==='string' ? t : t.w; return disp(w); }
+
+/* Adapt: H (argument lift), PM (predicate modification), W (weakening). Built in; the user does not edit them. */
+const ADAPT_TEXT = [
+'# H: lift an argument slot from e to a quantifier np^m; one line per result type',
+'app : e -> t      , (e->t) ->m t => ((e->t) ->m t) ->+ t      , (e->t) ->m t :: md(d, dom), d :: H',
+'app : e -> (e->t) , (e->t) ->m t => ((e->t) ->m t) ->+ (e->t) , (e->t) ->m t :: md(d, dom), d :: H',
+'app : e -> ((e->t) -> (e->t)) , (e->t) ->m t => ((e->t) ->m t) ->+ ((e->t) -> (e->t)) , (e->t) ->m t :: md(d, dom), d :: H',
+'app : e -> ((e->t) -> t) , (e->t) ->m t => ((e->t) ->m t) ->+ ((e->t) -> t) , (e->t) ->m t :: md(d, dom), d :: H',
+'app : e -> (e -> ((e->t) -> t)) , (e->t) ->m t => ((e->t) ->m t) ->+ (e -> ((e->t) -> t)) , (e->t) ->m t :: md(d, dom), d :: H',
+'# PM: an e->t modifier meets an e->t noun or verb phrase, or is coordinated with an n ->m n modifier',
+'app : e -> t , e -> t => (e->t) ->+ (e->t) , e -> t :: d, d :: PM',
+'coord : e -> t , (e->t) ->m (e->t) => Join((e->t) ->+ (e->t), (e->t) ->m (e->t)) , Join((e->t) ->+ (e->t), (e->t) ->m (e->t)) :: d, d :: PM',
+'coord : (e->t) ->m (e->t) , e -> t => Join((e->t) ->m (e->t), (e->t) ->+ (e->t)) , Join((e->t) ->m (e->t), (e->t) ->+ (e->t)) :: d, d :: PM',
+'# W: weaken two conjuncts to their join',
+'coord : A , B => Join(A, B) , Join(A, B) :: d, d :: W',
+].join('\n');
+const repairFn = makeRepair(parseRepairProgram(ADAPT_TEXT));
+
+/* ===================================================================
+   CCG category parsing and the syntax-only building phase.
+   A CCG node: {rule, cat, children, word, key, entries, ei, span, kind}.
+   Rules: leaf, App>, App<, B (forward), Bx(backward), T, Phi.
+   We keep distinct kinds so the enricher knows
+   the slash direction (u/v assignment).
+   =================================================================== */
+function parseCat(s){
+  s=s.trim();
+  while(s[0]==='('&&matchParen(s)) s=s.slice(1,-1).trim();
+  let depth=0;
+  for(let i=s.length-1;i>=0;i--){
+    const c=s[i];
+    if(c===')')depth++; else if(c==='(')depth--;
+    else if(depth===0&&(c==='/'||c==='\\')) return {res:parseCat(s.slice(0,i)),arg:parseCat(s.slice(i+1)),dir:c};
+  }
+  return {atom:s};
+}
+function matchParen(s){
+  if(s[0]!=='('||s[s.length-1]!==')')return false;
+  let d=0;
+  for(let i=0;i<s.length;i++){if(s[i]==='(')d++;else if(s[i]===')'){d--;if(d===0)return i===s.length-1;}}
+  return false;
+}
+function catToStr(cat){ return cat.atom!==undefined?cat.atom:'('+catToStr(cat.res)+cat.dir+catToStr(cat.arg)+')'; }
+function catEq(a,b){
+  if(a==null||b==null)return false;
+  const pa=(typeof a==='string')?parseCat(a):a, pb=(typeof b==='string')?parseCat(b):b;
+  if(pa.atom!==undefined||pb.atom!==undefined)return pa.atom===pb.atom;
+  return pa.dir===pb.dir&&catEq(pa.res,pb.res)&&catEq(pa.arg,pb.arg);
+}
+
+const RULE_NAME = {'App>':'>','App<':'<','B':'>B','Bx':'<B',
+                   'T':'T','Coord':'\u0026','Phi':'\u0026','repair':'rep','leaf':''};
+
+
+function ccgStep(rule, picks){
+  if(rule==='Tf' || rule==='Tb'){
+    const x=picks[0];
+    const xcat=x.cat||'NP';
+    // forward raise:  X => T/(T\X) ; backward raise: X => T\(T/X). We use S as T.
+    const cat = (rule==='Tf') ? 'S/(S\\'+xcat+')' : 'S\\(S/'+xcat+')';
+    return {rule:'T', cat, children:[x], span:x.span, kind:'T', raiseDir:(rule==='Tf'?'f':'b')};
+  }
+  const [left,right]=picks;
+  const span=[left.span[0], right.span[1]];
+  const lp=parseCat(left.cat), rp=parseCat(right.cat);
+
+  if(rule==='>'){
+    if(lp.atom!==undefined||lp.dir!=='/') throw new Error('> needs a left card X/Y; got '+left.cat);
+    if(!catEq(lp.arg,right.cat)) throw new Error('> does not fit: '+left.cat+' wants '+catToStr(lp.arg)+' on its right, got '+right.cat);
+    return {rule:'App>', cat:catToStr(lp.res), children:[left,right], span, kind:'App>'};
+  }
+  if(rule==='<'){
+    if(rp.atom!==undefined||rp.dir!=='\\') throw new Error('< needs a right card X\\Y; got '+right.cat);
+    if(!catEq(rp.arg,left.cat)) throw new Error('< does not fit: '+right.cat+' wants '+catToStr(rp.arg)+' on its left, got '+left.cat);
+    return {rule:'App<', cat:catToStr(rp.res), children:[left,right], span, kind:'App<'};
+  }
+  if(rule==='Bf'){
+    // X/Y  Y/Z => X/Z
+    if(lp.atom!==undefined||lp.dir!=='/'||rp.atom!==undefined||rp.dir!=='/')
+      throw new Error('>B needs X/Y and Y/Z; got '+left.cat+' and '+right.cat);
+    if(!catEq(lp.arg,rp.res)) throw new Error('>B middle category does not match: '+left.cat+' , '+right.cat);
+    return {rule:'B', cat:catToStr({res:lp.res,arg:rp.arg,dir:'/'}), children:[left,right], span, kind:'B'};
+  }
+  if(rule==='Bb'){
+    // Y\Z  X\Y => X\Z
+    if(lp.atom!==undefined||lp.dir!=='\\'||rp.atom!==undefined||rp.dir!=='\\')
+      throw new Error('<B needs Y\\Z and X\\Y; got '+left.cat+' and '+right.cat);
+    if(!catEq(rp.arg,lp.res)) throw new Error('<B middle category does not match: '+left.cat+' , '+right.cat);
+    return {rule:'Bx', cat:catToStr({res:rp.res,arg:lp.arg,dir:'\\'}), children:[left,right], span, kind:'Bx'};
+  }
+  throw new Error('unknown rule '+rule);
+}
+
+/* coordination is a ternary step: left conjunct, connector, right conjunct */
+function ccgCoord(picks){
+  const [left, conn, right]=picks;
+  if(!conn || conn.kind!=='leaf' || conn.cat!=='CONJ')
+    throw new Error('the middle card must be a connector (and, or, but)');
+  if(!catEq(left.cat,right.cat))
+    throw new Error('coordination needs equal conjunct categories; got '+left.cat+' and '+right.cat);
+  const span=[left.span[0], right.span[1]];
+  return {rule:'Phi', cat:left.cat, children:[left,conn,right], span, kind:'Phi'};
+}
+
+/* Build the enricher input tree from the CCG tree. Leaves carry lty (from SEM,
+   for the card's current reading). */
+function toEnrichTree(N){
+  if(N.rule==='leaf'){
+    const ent=N.entries[N.ei];
+    if(ent.cat==='CONJ')
+      return {rule:'leaf', word:N.word, connector:true};   // type set in Enrich
+    const ty = SEM[N.key+'@'+ent.cls];
+    if(!ty) throw new Error("no semantic type for '"+N.word+"'");
+    return {rule:'leaf', word:N.word, lty:ty};
+  }
+  if(N.rule==='T') return {rule:'T', children:[toEnrichTree(N.children[0])], raiseDir:N.raiseDir};
+  const kids = N.children.map(toEnrichTree);
+  const rule = ({'App>':'App>','App<':'App<','B':'Bf','Bx':'Bb','Phi':'Phi'})[N.rule];
+  return {rule, children:kids};
+}
+
+/* ===================================================================
+   RENDER (ASCII).  Two views: the CCG tree, and the enriched+polarized
+   tree.  The enriched node kinds come from core.js: leaf, App>, App<, B,
+   T (with raiseKind), repair, Coord.
+   =================================================================== */
+function center(s,w){ if(s.length>=w)return s; const l=Math.floor((w-s.length)/2); return ' '.repeat(l)+s+' '.repeat(w-s.length-l); }
+function hline(w,name){ return '-'.repeat(w)+' '+name; }
+
+function renderTree(node, label, ruleNameFn){
+  const kids = node.children || [];
+  if(!kids.length){
+    const lab=label(node), word=node.word||'';
+    const w=Math.max(word.length, lab.length);
+    return {lines:[center(word,w), center(lab,w)], width:w};
+  }
+  if(kids.length===1){
+    const child=renderTree(kids[0],label,ruleNameFn);
+    const lab=label(node), w=Math.max(child.width, lab.length);
+    const lines=child.lines.map(l=>l.padEnd(w));
+    lines.push(hline(w, ruleNameFn(node)));
+    lines.push(center(lab,w));
+    return {lines,width:w};
+  }
+  const parts=kids.map(c=>renderTree(c,label,ruleNameFn));
+  const gap=2, h=Math.max(...parts.map(p=>p.lines.length));
+  parts.forEach(p=>{ while(p.lines.length<h) p.lines.unshift(' '.repeat(p.width)); });
+  const combined=[];
+  for(let i=0;i<h;i++) combined.push(parts.map(p=>p.lines[i]).join(' '.repeat(gap)));
+  let totalW=combined.length?combined[0].length:0;
+  const lab=label(node);
+  if(lab.length>totalW){ for(let i=0;i<combined.length;i++)combined[i]=combined[i].padEnd(lab.length); totalW=lab.length; }
+  combined.push(hline(totalW, ruleNameFn(node)));
+  combined.push(center(lab,totalW));
+  return {lines:combined,width:totalW};
+}
+
+/* labels */
+function rawLabelCat(rn){ if(rn.cat)return rn.cat; if(rn.children&&rn.children.length)return rawLabelCat(rn.children[0]); return '?'; }
+function rawRuleName(rn){ return RULE_NAME[rn.kind]!==undefined?RULE_NAME[rn.kind]:(rn.kind||''); }
+const POLSYM={up:'\u2191',down:'\u2193',eq:'='};
+function enLabel(en){ return POLSYM[en.pol]+' '+showType(en.ty); }
+function enRuleName(en){
+  if(en.kind==='T') return en.raiseKind==='identity' ? 'T(id)' : 'T';
+  if(en.kind==='repair') return en.repairLabel || 'ADAPT';
+  if(en.kind==='ML') return 'ML';
+  if(en.kind==='B') return 'B';
+  return RULE_NAME[en.kind]!==undefined?RULE_NAME[en.kind]:(en.kind||'');
+}
+
+/* ===================================================================
+   UI STATE
+   =================================================================== */
+let forest=[], selected=[], history=[];
+const $=id=>document.getElementById(id);
+const nodesEl=$('nodes'), statusEl=$('status'), outputEl=$('output');
+
+function snapshot(){ history.push(JSON.parse(JSON.stringify(forest))); }
+function setStatus(msg,cls){ statusEl.textContent=msg||''; statusEl.className='status'+(cls?' '+cls:''); }
+
+/* ---- words / forest ---- */
+function loadWords(){
+  const raw=$('sentence').value.trim();
+  if(!raw){ setStatus('Type a sentence first.','err'); return; }
+  forest=[]; selected=[]; history=[]; outputEl.innerHTML='';
+  try{ forest=tokensToForest(normalize(raw)); }
+  catch(e){
+    forest=[]; setStatus(e.message,'err'); renderForest();
+    if(e.notInLexicon){
+      statusEl.innerHTML=escapeHtml(e.message)
+        +'<br><span style="color:var(--ink-dim)">This means one of two things: the lexicon has another word of the '
+        +'same class that you can use instead (see the <a href="#lexPanel" id="seeLex">Lexicon</a> below), '
+        +'or the word belongs to a class this tagger does not cover.</span>';
+      $('seeLex').onclick=ev=>{ ev.preventDefault(); $('lexPanel').open=true; $('lexPanel').scrollIntoView({behavior:'smooth'}); };
+    }
+    return;
+  }
+  setStatus('Loaded '+forest.length+' words.','ok'); renderForest();
+}
+
+function renderForest(){
+  nodesEl.innerHTML='';
+  forest.forEach((node,idx)=>{
+    const div=document.createElement('div');
+    div.className='node'+(selected.includes(idx)?' sel':'');
+    const built = node.kind!=='leaf' ? '<div class="built">'+rawRuleName(node)+'</div>' : '';
+    const top = node.kind==='leaf' ? '<div class="word">'+escapeHtml(node.word)+'</div>'
+                                   : '<div class="word">'+escapeHtml(spanWords(node))+'</div>';
+    const alts=node.kind==='leaf'&&node.entries.length>1;
+    const catCls=alts?'cat catswitch':'cat';
+    const catHtml='<div class="'+catCls+'">'+escapeHtml(rawLabelCat(node))
+      +(alts?' <span class="switchhint" title="tap to switch reading">⇄</span>':'')+'</div>'
+      +(alts?'<div class="cls">'+escapeHtml(node.entries[node.ei].cls)+'</div>':'');
+    div.innerHTML=top+catHtml+built;
+    div.onclick=()=>toggleSelect(idx);
+    if(alts){ const catEl=div.querySelector('.cat'); catEl.onclick=ev=>{ev.stopPropagation();cycleReading(idx);}; }
+    nodesEl.appendChild(div);
+  });
+}
+function cycleReading(idx){
+  const node=forest[idx];
+  if(node.kind!=='leaf'||node.entries.length<2)return;
+  snapshot();
+  node.ei=(node.ei+1)%node.entries.length; node.cat=node.entries[node.ei].cat;
+  outputEl.innerHTML='';
+  setStatus("'"+node.word+"' is now "+node.cat+' — '+node.entries[node.ei].cls+'.','ok'); renderForest();
+}
+function spanWords(node){
+  const acc=[];
+  (function walk(n){ if(n.kind==='leaf')acc.push([n.span[0],n.word]); else (n.children||[]).forEach(walk); })(node);
+  acc.sort((a,b)=>a[0]-b[0]); return acc.map(x=>x[1]).join(' ');
+}
+function toggleSelect(idx){
+  const at=selected.indexOf(idx);
+  if(at>=0)selected.splice(at,1); else { selected.push(idx); if(selected.length>3)selected.shift(); }
+  renderForest();
+}
+function doRule(rule){
+  if(rule==='Tf'||rule==='Tb'){
+    if(selected.length!==1){ setStatus('Select exactly one card for a raising.','err'); return; }
+    const i=selected[0];
+    try{ snapshot(); forest[i]=ccgStep(rule,[forest[i]]); selected=[]; setStatus('Applied '+(rule==='Tf'?'>T':'<T')+'.','ok'); renderForest(); }
+    catch(e){ history.pop(); setStatus(e.message,'err'); }
+    return;
+  }
+  if(rule==='Phi'){
+    if(selected.length!==3){ setStatus('Select three adjacent cards: left conjunct, connector, right conjunct.','err'); return; }
+    let idx=selected.slice().sort((a,b)=>a-b);
+    if(idx[1]!==idx[0]+1 || idx[2]!==idx[1]+1){ setStatus('The three cards must be adjacent.','err'); return; }
+    try{
+      snapshot();
+      const out=ccgCoord([forest[idx[0]],forest[idx[1]],forest[idx[2]]]);
+      forest.splice(idx[0],3,out); selected=[];
+      setStatus('Applied coordination.','ok'); renderForest();
+    }catch(e){ history.pop(); setStatus(e.message,'err'); }
+    return;
+  }
+  if(selected.length!==2){ setStatus('Select two adjacent cards.','err'); return; }
+  let [i,j]=selected.slice().sort((a,b)=>a-b);
+  if(j!==i+1){ setStatus('The two cards must be adjacent.','err'); return; }
+  try{
+    snapshot(); const out=ccgStep(rule,[forest[i],forest[j]]); forest.splice(i,2,out); selected=[];
+    setStatus('Applied '+(RULE_NAME[out.kind]||rule)+'.','ok'); renderForest();
+  }catch(e){ history.pop(); setStatus(e.message,'err'); }
+}
+function undo(){ if(!history.length){ setStatus('Nothing to undo.'); return; } forest=history.pop(); selected=[]; outputEl.innerHTML=''; setStatus('Undid.'); renderForest(); }
+
+/* ---- tag ---- */
+function tag(){
+  if(forest.length!==1){ setStatus('Build the whole sentence into one node first.','err'); return; }
+  const ccg=forest[0];
+  if(!catEq(ccg.cat,'S')){
+    setStatus('Incomplete: the derivation must reduce to a single S; its root is '+(ccg.cat||'?')+'.','err'); return;
+  }
+  let enriched;
+  try{
+    const inTree=toEnrichTree(ccg);
+    enriched=Enrich(inTree, repairFn);
+    if(!eqType(enriched.ty, parseType('t')))
+      throw new Error('root type is '+showType(enriched.ty)+', not t');
+    polarize(enriched,'up');
+  }catch(e){
+    statusEl.className='status err';
+    statusEl.innerHTML = escapeHtml(e.message)
+      + (e.noAdaptHint ? ''
+        : '<br><span style="color:var(--ink-dim)">'
+        + (e.hint ? escapeHtml(e.hint)
+          : 'None of the built-in Adapt rules (H, PM, W) fits at this point. Check the derivation, '
+          + 'or tap a switch card (&#8644;) to try another reading, then Tag again.')
+        + '</span>');
+    return;
+  }
+  renderOutput(ccg, enriched);
+  setStatus('Tagged.','ok');
+}
+
+function colorPol(text){
+  // operate line by line to color rule names (after '--- ') without touching types
+  return text.split('\n').map(line=>{
+    // 1) rule-name: the single token right after a run of dashes + a space.
+    //    A line may carry several (siblings' rule lines sit side by side), so this
+    //    is global and stops at the next whitespace (rule names have no spaces).
+    line = line.replace(/(-{2,} )(\S+)/g, function(_,dashes,name){
+      return dashes+'<span class="rule-name">'+name+'</span>';
+    });
+    // 2) marking glyph after a type arrow:  color the + - bullet or var, NOT the arrow
+    line = line.replace(/\u2192([+\u2212\u2022A-Za-z])/g, function(_,mk){
+      return '\u2192<span class="ty-mark">'+mk+'</span>';
+    });
+    // 3) polarity arrows at label positions (leading, after spaces)
+    line = line.replace(/\u2191/g,'<span class="pol-up">\u2191</span>')
+               .replace(/\u2193/g,'<span class="pol-down">\u2193</span>')
+               .replace(/(^|\s)=(?=\s|$)/g,'$1<span class="pol-eq">=</span>');
+    return line;
+  }).join('\n');
+}
+function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderOutput(ccg, enriched){
+  outputEl.innerHTML='';
+
+  // Polarities summary first, shown prominently right under "Tagged."
+  const sum=document.createElement('div'); sum.className='summary';
+  const acc=[];
+  (function walk(n){ if(n.kind==='leaf')acc.push([n.word,n.pol]); else (n.children||[]).forEach(walk); })(enriched);
+  sum.innerHTML='<span class="summary-label">Polarities:</span>'
+    +acc.map(([w,p])=>'<span class="item">'+w+'<span class="pol-'+(p==='eq'?'eq':p)+'">'+POLSYM[p]+'</span></span>').join(' ')
+    +'<span class="trees-note">CCG tree and marking-enriched + polarized tree are shown below.</span>';
+  outputEl.appendChild(sum);
+
+  const views=[
+    ['1. CCG Tree', ccg, rawLabelCat, rawRuleName],
+    ['2. Marking-Enriched + Polarized Tree', enriched, enLabel, enRuleName],
+  ];
+  for(const [title,node,lab,rn] of views){
+    const h=document.createElement('h2'); h.innerHTML=title; outputEl.appendChild(h);
+    const pre=document.createElement('pre'); pre.className='deriv';
+    const r=renderTree(node,lab,rn);
+    const text=r.lines.map(l=>l.replace(/\s+$/,'')).join('\n');
+    pre.innerHTML=colorPol(escapeHtml(text)); outputEl.appendChild(pre);
+  }
+}
+
+/* ===================================================================
+   EXAMPLES. A derivation script is a list of steps: a binary rule
+   {rule, at} combining cards at, at+1; a unary raise {rule:'Tf'|'Tb', at};
+   a coordination {rule:'Phi', at} of cards at..at+2; or a reading switch
+   {switch:i, to:cat}. 'at' indexes the current forest. Paper examples are
+   loaded from their sentence; test cases list their cards (tokens), where
+   {w, cat} or {w, cls} picks a reading of a switch card.
+   =================================================================== */
+const PAPER_EXAMPLES = [
+  {id:1, sentence:'Fido runs', steps:[
+    {rule:'<',at:0}]},
+  {id:2, sentence:'no dogs ran', steps:[
+    {rule:'>',at:0},{rule:'<',at:0}]},
+  {id:3, sentence:'most dogs swam', steps:[
+    {rule:'>',at:0},{rule:'<',at:0}]},
+  {id:4, sentence:'exactly three cats swam', steps:[
+    {rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:5, sentence:'more than two dogs swam', steps:[
+    {rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:6, sentence:"Fido didn't chase Felix", steps:[
+    {rule:'Bf',at:1},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:7, sentence:"Fido didn't chase a cat", steps:[
+    {rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:8, sentence:'every dog chased some cat', steps:[
+    {rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:9, sentence:'every dog chased no cat', steps:[
+    {rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:10, sentence:'Felix ran if Fido swam', steps:[
+    {rule:'<',at:0},{rule:'<',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:11, sentence:'every cat who Fido chased ran', steps:[
+    {switch:2,to:'(N\\N)/(S/NP)'},{rule:'Tf',at:3},{rule:'Bf',at:3},{rule:'>',at:2},{rule:'<',at:1},
+    {rule:'>',at:0},{rule:'<',at:0}]},
+  {id:12, sentence:'every cat who no dog chased ran', steps:[
+    {switch:2,to:'(N\\N)/(S/NP)'},{rule:'>',at:3},{rule:'Tf',at:3},{rule:'Bf',at:3},{rule:'>',at:2},
+    {rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:13, sentence:'every dog who swam ran', steps:[
+    {switch:2,to:'(N\\N)/(S\\NP)'},
+    {rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:14, sentence:'Fido swam and Felix ran', steps:[
+    {rule:'<',at:0},{rule:'<',at:2},{rule:'Phi',at:0}]},
+  {id:15, sentence:'Fido chased and Felix saw a cat', steps:[
+    {rule:'Tf',at:0},{rule:'Bf',at:0},
+    {rule:'Tf',at:2},{rule:'Bf',at:2},
+    {rule:'Phi',at:0},
+    {rule:'>',at:1},{rule:'>',at:0}]},
+  {id:16, sentence:'some dog and no cat swam', steps:[
+    {rule:'>',at:0},{rule:'>',at:2},{rule:'Phi',at:0},{rule:'<',at:0}]},
+  {id:17, sentence:'every cat who Fido and Felix chased ran', steps:[
+    {switch:2,to:'(N\\N)/(S/NP)'},{rule:'Tf',at:3},{rule:'Tf',at:5},{rule:'Phi',at:3},{rule:'Bf',at:3},
+    {rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+];
+
+/* Test set: word cards are the tokens after preprocessing; ordered from simple to complex. */
+const TEST_CASES = [
+  {id:1, pos:'NAME IV', sentence:'john moves.',
+   tokens:['john','moves'],
+   steps:[{rule:'<',at:0}]},
+  {id:2, pos:'NAME TV NAME', sentence:'mary loves john.',
+   tokens:['mary','loves','john'],
+   steps:[{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:3, pos:'NAME ADV IV', sentence:'tom seldom swims.',
+   tokens:['tom','seldom','swims'],
+   steps:[{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:4, pos:'NAME COP ADJ', sentence:'john is tall.',
+   tokens:['john','is',{w:'tall',cat:'S\\NP'}],
+   steps:[{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:5, pos:'DET N IV', sentence:'no man ran.',
+   tokens:['no','man','ran'],
+   steps:[{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:6, pos:'NAME NEG IV', sentence:'we never kissed.',
+   tokens:['we','never','kissed'],
+   steps:[{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:7, pos:'DET ADJ N IV', sentence:'some tall man ran.',
+   tokens:['some','tall','man','ran'],
+   steps:[{rule:'>',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:8, pos:'DET N TV NAME', sentence:'a dog attacked nina.',
+   tokens:['a','dog','attacked','nina'],
+   steps:[{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:9, pos:'NAME TV DET N', sentence:'nina has a dog.',
+   tokens:['nina','has','a','dog'],
+   steps:[{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:10, pos:'DET N COP ADJ', sentence:'every dog is pretty.',
+   tokens:['every','dog',{w:'is',cat:'(S\\NP)/(S\\NP)'},'pretty'],
+   steps:[{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:11, pos:'DET N COP ADJ', sentence:'every man is tall.',
+   tokens:['every','man','is',{w:'tall',cat:'S\\NP'}],
+   steps:[{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:12, pos:'DET N COP ADJ', sentence:'some car is red.',
+   tokens:['some','car','is',{w:'red',cat:'S\\NP'}],
+   steps:[{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:13, pos:'NAME COP DEG ADJ', sentence:'mary is very pretty.',
+   tokens:['mary','is',{w:'very',cat:'(S\\NP)/(S\\NP)'},'pretty'],
+   steps:[{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:14, pos:'DET N IV ADV', sentence:'no man ran quickly.',
+   tokens:['no','man','ran','quickly'],
+   steps:[{rule:'<',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:15, pos:'NAME NEG IV ADV', sentence:"jack doesn't drive fast.",
+   tokens:['jack',"doesn't",'drive',{w:'fast',cat:'(S\\NP)\\(S\\NP)'}],
+   steps:[{rule:'<',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:16, pos:'NAME NEG TV NAME', sentence:'she never kissed him.',
+   tokens:['she','never',{w:'kissed',cat:'(S\\NP)/NP'},'him'],
+   steps:[{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:17, pos:'NUMDET N IV', sentence:'exactly one man ran.',
+   tokens:['exactly',{w:'one',cat:'NUM'},'man','ran'],
+   steps:[{rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:18, pos:'NAME COP NEG ADJ', sentence:'john is not tall.',
+   tokens:['john','is','not',{w:'tall',cat:'S\\NP'}],
+   steps:[{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:19, pos:'DET ADJ N IV ADV', sentence:'every tall man ran quickly.',
+   tokens:['every','tall','man','ran','quickly'],
+   steps:[{rule:'<',at:3},{rule:'>',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:20, pos:'DET ADJ N TV NAME', sentence:'a cold bath refreshed him.',
+   tokens:['a',{w:'cold',cat:'N/N'},'bath','refreshed','him'],
+   steps:[{rule:'>',at:3},{rule:'>',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:21, pos:'NAME ADV TV DET N', sentence:'i rarely catch a cold.',
+   tokens:['i','rarely','catch','a','cold'],
+   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:22, pos:'NAME TV DET ADJ N', sentence:'i bought a vw bus.',
+   tokens:['i','bought','a','vw','bus'],
+   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:23, pos:'NAME TV DET N ADV', sentence:'john entered the race early.',
+   tokens:['john','entered','the','race','early'],
+   steps:[{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:1},{rule:'<',at:0}]},
+  {id:24, pos:'DET DEG ADJ N IV', sentence:'a very tall man ran.',
+   tokens:['a','very','tall','man','ran'],
+   steps:[{rule:'>',at:1},{rule:'>',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:25, pos:'DET DEG ADJ N IV', sentence:'a very red car ran.',
+   tokens:['a',{w:'very',cls:'intersective'},'red','car','ran'],
+   steps:[{rule:'>',at:1},{rule:'>',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:26, pos:'DET N NEG IV', sentence:'some elephants are not pink.',
+   tokens:['some','elephants','are','not','pink'],
+   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:27, pos:'DET N NEG IV ADV', sentence:"the meeting didn't go well.",
+   tokens:['the','meeting',"didn't",'go','well'],
+   steps:[{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:28, pos:'DET N TV DET N', sentence:'every lie has no legs.',
+   tokens:['every','lie','has','no','legs'],
+   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:29, pos:'NAME NEG TV DET N', sentence:"tom didn't have a gun.",
+   tokens:['tom',"didn't",'have','a','gun'],
+   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:30, pos:'NAME TV NUMDET N', sentence:'she said more than three words.',
+   tokens:['she','said','morethan','three','words'],
+   steps:[{rule:'>',at:2},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:31, pos:'NUMDET ADJ N IV', sentence:'exactly one tall man ran.',
+   tokens:['exactly',{w:'one',cat:'NUM'},'tall','man','ran'],
+   steps:[{rule:'>',at:0},{rule:'>',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:32, pos:'NUMDET N IV ADV', sentence:'exactly one man ran quickly.',
+   tokens:['exactly',{w:'one',cat:'NUM'},'man','ran','quickly'],
+   steps:[{rule:'<',at:3},{rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:33, pos:'DET N TV ANY N', sentence:'no dog chased any cat.',
+   tokens:['no','dog','chased','any','cat'],
+   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:34, pos:'DET N COP DEG ADJ', sentence:'no man is very tall.',
+   tokens:['no','man','is',{w:'very',cat:'(S\\NP)/(S\\NP)'},{w:'tall',cat:'S\\NP'}],
+   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:35, pos:'DET ADJ N TV DET N', sentence:'a fat dog chased a cat.',
+   tokens:['a','fat','dog','chased','a','cat'],
+   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:36, pos:'DET N TV DET ADJ N', sentence:'a rat chewed a big hole.',
+   tokens:['a','rat','chewed','a','big','hole'],
+   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:37, pos:'DET N TV DET N ADV', sentence:'many men entered the race early.',
+   tokens:['many','men','entered','the','race','early'],
+   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:38, pos:'NAME ADV TV DET ADJ N', sentence:'tom seldom wears a big hat.',
+   tokens:['tom','seldom','wears','a','big','hat'],
+   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:39, pos:'DET N EXC NAME IV', sentence:'every body but tom smiled.',
+   tokens:['every','body',{w:'but',cat:'(NP\\NP)/NP'},'tom','smiled'],
+   steps:[{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0},{rule:'<',at:0}]},
+  {id:40, pos:'DET N IV CONJ IV', sentence:'every man sang or danced.',
+   tokens:['every','man','sang','or','danced'],
+   steps:[{rule:'Phi',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:41, pos:'NUMDET N NEG IV', sentence:'at most three girls did not move.',
+   tokens:['atmost','three','girls','not','move'],
+   steps:[{rule:'>',at:3},{rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:42, pos:'NAME IV P MEAS', sentence:'john swam in 10 minutes.',
+   tokens:['john','swam',{w:'in',cat:'((S\\NP)\\(S\\NP))/NUM'},'10','minutes'],
+   steps:[{rule:'<',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'<',at:0}]},
+  {id:43, pos:'NAME IV CONJ NAME IV', sentence:'john ran and mary smiled.',
+   tokens:['john','ran','and','mary','smiled'],
+   steps:[{rule:'<',at:0},{rule:'<',at:2},{rule:'Phi',at:0}]},
+  {id:44, pos:'DET N NEG TV DET N', sentence:"the cat didn't move a muscle.",
+   tokens:['the','cat',"didn't",{w:'move',cat:'(S\\NP)/NP'},'a','muscle'],
+   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:45, pos:'NAME ADV NEG TV DET N', sentence:"i usually don't wear a watch.",
+   tokens:['i','usually',"don't",'wear','a','watch'],
+   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:46, pos:'NAME NEG ADV TV DET N', sentence:"i don't even have a house.",
+   tokens:['i',"don't",'even','have','a','house'],
+   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:47, pos:'NAME NEG TV DET ADJ N', sentence:"i don't have a new knife.",
+   tokens:['i',"don't",'have','a','new','knife'],
+   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:48, pos:'NUMDET N TV DET N', sentence:'exactly 12 aliens ate some meat.',
+   tokens:['exactly','12','aliens','ate','some','meat'],
+   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:49, pos:'NAME TV NUMDET ADJ N', sentence:'jones has more than one company car.',
+   tokens:['jones','has','morethan',{w:'one',cat:'NUM'},'company','car'],
+   steps:[{rule:'>',at:4},{rule:'>',at:2},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:50, pos:'DET N TV NUMDET N', sentence:'every student read at most three novels.',
+   tokens:['every','student','read','atmost',{w:'three',cat:'NUM'},'novels'],
+   steps:[{rule:'>',at:3},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:51, pos:'DET ADJ N TV DET ADJ N', sentence:'the red alien read some sci-fi novels.',
+   tokens:['the','red','alien','read','some','sci-fi','novels'],
+   steps:[{rule:'>',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:52, pos:'DET ADJ N TV DET N ADV', sentence:'most peanut farmers entered the race early.',
+   tokens:['most','peanut','farmers','entered','the','race','early'],
+   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'<',at:3},{rule:'>',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:53, pos:'NAME ADV TV DET DEG ADJ N', sentence:'tom seldom wears a very big hat.',
+   tokens:['tom','seldom',{w:'wears',cat:'(S\\NP)/NP'},'a','very','big','hat'],
+   steps:[{rule:'>',at:4},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:54, pos:'NAME CONJ DET N IV', sentence:'fido and no cat swam.',
+   tokens:['fido','and','no','cat','swam'],
+   steps:[{rule:'>',at:2},{rule:'Phi',at:0},{rule:'<',at:0}]},
+  {id:55, pos:'DET N EXC NAME IV', sentence:'no man but fido ran.',
+   tokens:['no','man',{w:'but',cat:'(NP\\NP)/NP'},'fido','ran'],
+   steps:[{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0},{rule:'<',at:0}]},
+  {id:56, pos:'NAME TV CONJ ADV TV NAME', sentence:'mary adores and passionately loves john.',
+   tokens:['mary','adores','and','passionately','loves','john'],
+   steps:[{rule:'Bf',at:3},{rule:'Phi',at:1},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:57, pos:'NAME CONJ NAME TV DET N', sentence:'smith and jones left the meeting.',
+   tokens:['smith','and','jones','left','the','meeting'],
+   steps:[{rule:'Phi',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:58, pos:'NAME TV DET N EXC NAME', sentence:'john kissed every girl but mary.',
+   tokens:['john',{w:'kissed',cat:'(S\\NP)/NP'},'every','girl',{w:'but',cat:'(NP\\NP)/NP'},'mary'],
+   steps:[{rule:'>',at:4},{rule:'>',at:2},{rule:'<',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:59, pos:'DET N EXC DET N IV', sentence:'every man but the teacher smiled.',
+   tokens:['every','man',{w:'but',cat:'(NP\\NP)/NP'},'the','teacher','smiled'],
+   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0},{rule:'<',at:0}]},
+  {id:60, pos:'DET N CONJ DET N IV', sentence:'the man and every boy ran.',
+   tokens:['the','man','and','every','boy','ran'],
+   steps:[{rule:'>',at:3},{rule:'>',at:0},{rule:'Phi',at:0},{rule:'<',at:0}]},
+  {id:61, pos:'DET N Pn DET N IV', sentence:'some dog in the room ran.',
+   tokens:['some','dog','in','the','room','ran'],
+   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:62, pos:'DET N NEG TV DET ADJ N', sentence:"the business didn't produce a great profit.",
+   tokens:['the','business',"didn't",'produce','a','great','profit'],
+   steps:[{rule:'>',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:63, pos:'NAME ADV NEG TV DET ADJ N', sentence:"i usually don't wear a blue watch.",
+   tokens:['i','usually',"don't",'wear','a','blue','watch'],
+   steps:[{rule:'>',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:64, pos:'NAME NEG ADV TV DET ADJ N', sentence:"tom doesn't usually wear a big hat.",
+   tokens:['tom',"doesn't",'usually','wear','a','big','hat'],
+   steps:[{rule:'>',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:65, pos:'NUMDET N TV DET ADJ N', sentence:'exactly 12 aliens read some sci-fi novels.',
+   tokens:['exactly','12','aliens','read','some','sci-fi','novels'],
+   steps:[{rule:'>',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:66, pos:'DET N who NAME TV IV', sentence:'every student whom mary kissed smiled.',
+   tokens:['every','student','whom','mary',{w:'kissed',cat:'(S\\NP)/NP'},'smiled'],
+   steps:[{rule:'Tf',at:3},{rule:'Bf',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:67, pos:'NAME NEG TV NAME CONJ NAME', sentence:"you don't speak english and japanese.",
+   tokens:['you',"don't",'speak','english','and','japanese'],
+   steps:[{rule:'Phi',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:68, pos:'NUMDET N IV CONJ IV', sentence:'exactly one man sang or danced.',
+   tokens:['exactly',{w:'one',cat:'NUM'},'man','sang','or','danced'],
+   steps:[{rule:'Phi',at:3},{rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:69, pos:'DET N IV CONJ NEG IV', sentence:'every dog ran and never swam.',
+   tokens:['every','dog','ran','and','never','swam'],
+   steps:[{rule:'>',at:4},{rule:'Phi',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:70, pos:'NAME TV DET N EXC NAME', sentence:'john kissed no girl but mary.',
+   tokens:['john',{w:'kissed',cat:'(S\\NP)/NP'},'no','girl',{w:'but',cat:'(NP\\NP)/NP'},'mary'],
+   steps:[{rule:'>',at:4},{rule:'>',at:2},{rule:'<',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:71, pos:'NUMDET N EXC NAME IV', sentence:'exactly one man but fido ran.',
+   tokens:['exactly',{w:'one',cat:'NUM'},'man',{w:'but',cat:'(NP\\NP)/NP'},'fido','ran'],
+   steps:[{rule:'>',at:3},{rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0},{rule:'<',at:0}]},
+  {id:72, pos:'NAME TV NUMDET PART NAME', sentence:'john kissed more than two of them.',
+   tokens:['john',{w:'kissed',cat:'(S\\NP)/NP'},'morethan','two',{w:'of',cat:'N/NP'},'them'],
+   steps:[{rule:'>',at:4},{rule:'>',at:2},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:73, pos:'NAME TV NUMDET PART NAME', sentence:'john kissed at most two of them.',
+   tokens:['john',{w:'kissed',cat:'(S\\NP)/NP'},'atmost','two',{w:'of',cat:'N/NP'},'them'],
+   steps:[{rule:'>',at:4},{rule:'>',at:2},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:74, pos:'DET N CONJ DET N IV', sentence:'every boy and every girl was delighted.',
+   tokens:['every','boy','and','every','girl','was','delighted'],
+   steps:[{rule:'>',at:3},{rule:'>',at:0},{rule:'Phi',at:0},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:75, pos:'DET N TV DET N CONJ IV', sentence:'the hunter shot a deer but missed.',
+   tokens:['the','hunter','shot','a','deer','but','missed'],
+   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'Phi',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:76, pos:'NAME TV DET ADJ CONJ ADJ N', sentence:'tom made a peanut butter and jelly sandwich.',
+   tokens:['tom','made','a','peanutbutter','and','jelly','sandwich'],
+   steps:[{rule:'Phi',at:3},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:77, pos:'NAME TV DET N CONJ DET N', sentence:'i see a man and a woman.',
+   tokens:['i','see','a','man','and','a','woman'],
+   steps:[{rule:'>',at:5},{rule:'>',at:2},{rule:'Phi',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:78, pos:'NAME TV DET N CONJ TV NAME', sentence:'tom picked some berries and ate them.',
+   tokens:['tom','picked','some','berries','and','ate','them'],
+   steps:[{rule:'>',at:5},{rule:'>',at:2},{rule:'>',at:1},{rule:'Phi',at:1},{rule:'<',at:0}]},
+  {id:79, pos:'DET N CONJ N TV DET N', sentence:'every representative or client attended the meeting.',
+   tokens:['every','representative','or','client','attended','the','meeting'],
+   steps:[{rule:'Phi',at:1},{rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:80, pos:'NAME TV DET N Pn DET N', sentence:'mary read a novel about every alien.',
+   tokens:['mary','read','a','novel','about','every','alien'],
+   steps:[{rule:'>',at:5},{rule:'>',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:81, pos:'NAME TV CONJ NAME TV DET N', sentence:'john chased and mary saw a cat.',
+   tokens:['john',{w:'chased',cat:'(S\\NP)/NP'},'and','mary',{w:'saw',cat:'(S\\NP)/NP'},'a','cat'],
+   steps:[{rule:'Tf',at:0},{rule:'Bf',at:0},{rule:'Tf',at:2},{rule:'Bf',at:2},{rule:'Phi',at:0},{rule:'>',at:1},{rule:'>',at:0}]},
+  {id:82, pos:'DET N IV if NAME IV', sentence:'every dog ran if john ran.',
+   tokens:['every','dog','ran',{w:'if',cat:'(S\\S)/S'},'john','ran'],
+   steps:[{rule:'<',at:4},{rule:'>',at:3},{rule:'>',at:0},{rule:'<',at:0},{rule:'<',at:0}]},
+  {id:83, pos:'DET N who TV DET N IV', sentence:'every student who kissed every teacher smiled.',
+   tokens:['every','student',{w:'who',cat:'(N\\N)/(S\\NP)'},{w:'kissed',cat:'(S\\NP)/NP'},'every','teacher','smiled'],
+   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:84, pos:'NAME NEG TV DET N CONJ N', sentence:"i don't have a clue or idea.",
+   tokens:['i',"don't",'have','a','clue','or','idea'],
+   steps:[{rule:'Phi',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:85, pos:'NAME TV DET N who IV', sentence:'he has a daughter who is pretty.',
+   tokens:['he','has','a','daughter',{w:'who',cat:'(N\\N)/(S\\NP)'},'is','pretty'],
+   steps:[{rule:'>',at:5},{rule:'>',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:86, pos:'DET N CONJ DET N IV ADV', sentence:'some dog and no cat swam quickly.',
+   tokens:['some','dog','and','no','cat','swam','quickly'],
+   steps:[{rule:'>',at:3},{rule:'>',at:0},{rule:'Phi',at:0},{rule:'<',at:1},{rule:'<',at:0}]},
+  {id:87, pos:'NUMDET N CONJ DET N IV', sentence:'exactly three cats and some dogs swam.',
+   tokens:['exactly','three','cats','and','some','dogs','swam'],
+   steps:[{rule:'>',at:4},{rule:'>',at:0},{rule:'>',at:0},{rule:'Phi',at:0},{rule:'<',at:0}]},
+  {id:88, pos:'NAME ADV CONJ ADV TV DET N', sentence:'tom always or never wears a hat.',
+   tokens:['tom','always','or','never','wears','a','hat'],
+   steps:[{rule:'Phi',at:1},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:89, pos:'DET N who IV TV DET N', sentence:'every dog who swam chased a cat.',
+   tokens:['every','dog',{w:'who',cat:'(N\\N)/(S\\NP)'},'swam','chased','a','cat'],
+   steps:[{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:90, pos:'NAME TV DET N who NAME TV', sentence:'mary loves every dog whom john chased.',
+   tokens:['mary','loves','every','dog','whom','john',{w:'chased',cat:'(S\\NP)/NP'}],
+   steps:[{rule:'Tf',at:5},{rule:'Bf',at:5},{rule:'>',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:91, pos:'NAME TV DET N Pn DET N', sentence:'mary read a novel about no alien.',
+   tokens:['mary',{w:'read',cat:'(S\\NP)/NP'},'a','novel','about','no','alien'],
+   steps:[{rule:'>',at:5},{rule:'>',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:92, pos:'DET N CONJ DET ADJ N IV', sentence:'every boy and every little girl was delighted.',
+   tokens:['every','boy','and','every','little','girl','was','delighted'],
+   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:0},{rule:'Phi',at:0},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:93, pos:'NAME TV DET ADJ N CONJ TV NAME', sentence:'tom picked some ripe berries and ate them.',
+   tokens:['tom','picked','some','ripe','berries','and','ate','them'],
+   steps:[{rule:'>',at:6},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'Phi',at:1},{rule:'<',at:0}]},
+  {id:94, pos:'NAME TV DET N CONJ DET ADJ N', sentence:'i see a man and an elegant woman.',
+   tokens:['i','see','a','man','and','an','elegant','woman'],
+   steps:[{rule:'>',at:6},{rule:'>',at:5},{rule:'>',at:2},{rule:'Phi',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:95, pos:'NUMDET CONJ NUMDET N IV', sentence:'more than two and less than five dogs swam.',
+   tokens:['morethan','two','and','lessthan','five','dogs','swam'],
+   steps:[{rule:'>',at:3},{rule:'>',at:0},{rule:'Phi',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:96, pos:'NUMDET CONJ NUMDET N IV', sentence:'at least two or at least three dogs ran.',
+   tokens:['atleast','two','or','atleast','three','dogs','ran'],
+   steps:[{rule:'>',at:3},{rule:'>',at:0},{rule:'Phi',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:97, pos:'DET N who DET N TV IV', sentence:'every student whom no teacher kissed smiled.',
+   tokens:['every','student',{w:'whom',cat:'(N\\N)/(S/NP)'},'no','teacher',{w:'kissed',cat:'(S\\NP)/NP'},'smiled'],
+   steps:[{rule:'>',at:3},{rule:'Tf',at:3},{rule:'Bf',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:98, pos:'DET N who TV DET ADJ N IV', sentence:'every student who kissed every tall teacher smiled.',
+   tokens:['every','student',{w:'who',cat:'(N\\N)/(S\\NP)'},{w:'kissed',cat:'(S\\NP)/NP'},'every','tall','teacher','smiled'],
+   steps:[{rule:'>',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:99, pos:'NAME ADV TV DET ADJ CONJ ADJ N', sentence:'tom really leads no easy and peaceful life.',
+   tokens:['tom','really','leads','no','easy','and','peaceful','life'],
+   steps:[{rule:'Phi',at:4},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:100, pos:'NAME NEG TV DET N CONJ DET N', sentence:'tom never forgets a name or a face.',
+   tokens:['tom','never','forgets','a','name','or','a','face'],
+   steps:[{rule:'>',at:6},{rule:'>',at:3},{rule:'Phi',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:101, pos:'NAME TV DET ADJ N who IV', sentence:'he has a brave daughter who is pretty.',
+   tokens:['he','has','a','brave','daughter',{w:'who',cat:'(N\\N)/(S\\NP)'},'is','pretty'],
+   steps:[{rule:'>',at:6},{rule:'>',at:5},{rule:'>',at:3},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:102, pos:'NAME NEG TV DET N P MEAS', sentence:"john didn't eat every strawberry in 10 minutes.",
+   tokens:['john',"didn't",'eat','every','strawberry',{w:'in',cat:'((S\\NP)\\(S\\NP))/NUM'},'10','minutes'],
+   steps:[{rule:'<',at:6},{rule:'>',at:5},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:103, pos:'DET N who TV DET N COP ADJ', sentence:'the man who loves every woman is tall.',
+   tokens:['the','man',{w:'who',cat:'(N\\N)/(S\\NP)'},{w:'loves',cat:'(S\\NP)/NP'},'every','woman','is',{w:'tall',cat:'S\\NP'}],
+   steps:[{rule:'>',at:6},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:104, pos:'NAME NEG ADV TV DET N CONJ DET N', sentence:"tom doesn't usually wear a hat or a cap.",
+   tokens:['tom',"doesn't",'usually','wear','a','hat','or','a','cap'],
+   steps:[{rule:'>',at:7},{rule:'>',at:4},{rule:'Phi',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:105, pos:'NAME NEG TV DET ADJ N CONJ DET N', sentence:'tom never forgets a full name or a face.',
+   tokens:['tom','never','forgets','a','full','name','or','a','face'],
+   steps:[{rule:'>',at:7},{rule:'>',at:4},{rule:'>',at:3},{rule:'Phi',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:106, pos:'DET N who TV DET N TV DET N', sentence:'everyone who loves everyone loves everyone.',
+   tokens:['every','one',{w:'who',cat:'(N\\N)/(S\\NP)'},'loves','every','one','loves','every','one'],
+   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:107, pos:'ANY N who TV ANY N TV ANY N', sentence:'anyone who loves anyone loves anyone.',
+   tokens:[{w:'any',cls:'free-choice'},'one',{w:'who',cat:'(N\\N)/(S\\NP)'},'loves','any','one','loves',{w:'any',cls:'free-choice'},'one'],
+   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:108, pos:'DET N who NAME CONJ NAME TV IV', sentence:'every man whom fido and felix chased ran.',
+   tokens:['every','man',{w:'whom',cat:'(N\\N)/(S/NP)'},'fido','and','felix',{w:'chased',cat:'(S\\NP)/NP'},'ran'],
+   steps:[{rule:'Tf',at:3},{rule:'Tf',at:5},{rule:'Phi',at:3},{rule:'Bf',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:109, pos:'DET N who NEG TV DET N IV', sentence:'every alien who did not eat some meat is hairy.',
+   tokens:['every','alien',{w:'who',cat:'(N\\N)/(S\\NP)'},'not','eat','some','meat','is','hairy'],
+   steps:[{rule:'>',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:110, pos:'DET N who TV DET N TV DET ADJ N', sentence:'every man who speaks the truth needs a fast horse.',
+   tokens:['every','man',{w:'who',cat:'(N\\N)/(S\\NP)'},'speaks','the','truth','needs','a','fast','horse'],
+   steps:[{rule:'>',at:8},{rule:'>',at:7},{rule:'>',at:6},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:111, pos:'NAME NEG TV DET ADJ CONJ DET ADJ N', sentence:"tom doesn't have a credit card or a bank account.",
+   tokens:['tom',"doesn't",'have','a','credit','card','or','a','bank','account'],
+   steps:[{rule:'>',at:8},{rule:'>',at:7},{rule:'>',at:4},{rule:'>',at:3},{rule:'Phi',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:112, pos:'DET N who NEG TV DET ADJ N IV', sentence:'every alien who did not read some sci-fi novels is hairy.',
+   tokens:['every','alien',{w:'who',cat:'(N\\N)/(S\\NP)'},'not','read','some','sci-fi','novels','is','hairy'],
+   steps:[{rule:'>',at:6},{rule:'>',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:113, pos:'NAME TV N+ Pn ADJ N+ PG TV NAME', sentence:'we state theorems of algebraic geometry before proving them.',
+   tokens:['we','state','some','theorems','of','some','algebraic','geometry','before','proving','them'],
+   steps:[{rule:'>',at:9},{rule:'>',at:8},
+          {rule:'>',at:6},{rule:'>',at:5},{rule:'>',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:1},{rule:'<',at:0}]},
+  {id:114, pos:'DET N who NAME CONJ NAME CONJ NAME TV IV', sentence:'every man whom fido and felix and tom chased ran.',
+   tokens:['every','man',{w:'whom',cat:'(N\\N)/(S/NP)'},'fido','and','felix','and','tom',{w:'chased',cat:'(S\\NP)/NP'},'ran'],
+   steps:[{rule:'Tf',at:3},{rule:'Tf',at:5},{rule:'Tf',at:7},{rule:'Phi',at:3},{rule:'Phi',at:3},{rule:'Bf',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:115, pos:'if NAME NEG IV , DET N NEG TV DET N', sentence:"if you don't like the service, don't leave a tip.",
+   tokens:[{w:'if',cat:'(S/S)/S'},'you',"don't",'like','the','service','you',"don't",'leave','a','tip'],
+   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},
+          {rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0}]},
+  {id:116, pos:'DET N who NEG TV DET N CONJ N IV ADV', sentence:'everyone who does not own a car or motorcycle got in for free.',
+   tokens:['every','one',{w:'who',cat:'(N\\N)/(S\\NP)'},'not','own','a','car','or','motorcycle','gotin','forfree'],
+   steps:[{rule:'Phi',at:6},{rule:'>',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:1},{rule:'<',at:0}]},
+  {id:117, pos:'DET N who TV DET N who TV DET N IV', sentence:'every dog who chased a cat who ate some meat ran.',
+   tokens:['every','dog',{w:'who',cat:'(N\\N)/(S\\NP)'},'chased','a','cat',{w:'who',cat:'(N\\N)/(S\\NP)'},'ate','some','meat','ran'],
+   steps:[{rule:'>',at:8},{rule:'>',at:7},{rule:'>',at:6},{rule:'<',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:118, pos:'NAME TV N+ Pn N+ CONJ Pn N+', sentence:'we discuss theorems of geometry and about nature.',
+   tokens:['we','discuss','some','theorems','of','some','geometry','and','about','some','nature'],
+   steps:[{rule:'>',at:9},{rule:'>',at:8},{rule:'>',at:5},{rule:'>',at:4},{rule:'Phi',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:119, pos:'DET N who TV DET N CONJ N TV DET ADJ N', sentence:'everyone who owns a car or motorcycle paid a parking fee.',
+   tokens:['every','one',{w:'who',cat:'(N\\N)/(S\\NP)'},'owns','a','car','or','motorcycle','paid','a','parking','fee'],
+   steps:[{rule:'Phi',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},
+          {rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:120, pos:'NAME TV N+ Pn ADJ N+ PG TV ADJ N+', sentence:'we discuss theorems of algebraic geometry before making new definitions.',
+   tokens:['we','discuss','some','theorems','of','some','algebraic','geometry','before','making','some','new','definitions'],
+   steps:[{rule:'>',at:11},{rule:'>',at:10},{rule:'>',at:9},{rule:'>',at:8},
+          {rule:'>',at:6},{rule:'>',at:5},{rule:'>',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:1},{rule:'<',at:0}]},
+  {id:121, pos:'DET N Pn DET N Pn DET N COP DET DEG ADJ N', sentence:'the debate about the nature of the lexicon is a very old one.',
+   tokens:['the','debate','about','the','nature','of','the','lexicon',{w:'is',cat:'(S\\NP)/NP'},'a','very','old','one'],
+   steps:[{rule:'>',at:10},{rule:'>',at:10},{rule:'>',at:9},{rule:'>',at:8},
+          {rule:'>',at:6},{rule:'>',at:5},{rule:'<',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:122, pos:'if NAME NEG IV , DET N NEG TV DET ADJ N', sentence:"if you don't like the service, don't leave a large tip.",
+   tokens:[{w:'if',cat:'(S/S)/S'},'you',"don't",'like','the','service','you',"don't",'leave','a','large','tip'],
+   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},
+          {rule:'>',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0}]},
+  {id:123, pos:'if NAME CONJ NAME NEG TV DET N , NAME TV DET N', sentence:'if smith and anderson did not sign the contract, jones signed the contract.',
+   tokens:[{w:'if',cat:'(S/S)/S'},'smith','and','anderson','not','sign','the','contract','jones','signed','the','contract'],
+   steps:[{rule:'Phi',at:1},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},
+          {rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0}]},
+  {id:124, pos:'NAME TV N+ Pn ADJ N+ PG TV NUMD PART NAME', sentence:'we state theorems of algebraic geometry before proving two of them.',
+   tokens:['we','state','some','theorems','of','some','algebraic','geometry','before','proving','exactly','two',{w:'of',cat:'N/NP'},'them'],
+   steps:[{rule:'>',at:12},{rule:'>',at:10},{rule:'>',at:10},{rule:'>',at:9},{rule:'>',at:8},
+          {rule:'>',at:6},{rule:'>',at:5},{rule:'>',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:1},{rule:'<',at:0}]},
+  {id:125, pos:'NAME TV DET N Pn DET N PG TV NUMD N P DET ADJ N', sentence:'mary surprised every woman in the room by eating two bananas with a golden fork.',
+   tokens:['mary','surprised','every','woman','in','the','room','by','eating',{w:'exactly',cat:'(NP/N)/NUM'},'two','bananas',{w:'with',cat:'((S\\NP)\\(S\\NP))/NP'},'a','golden','fork'],
+   steps:[{rule:'>',at:14},{rule:'>',at:13},{rule:'>',at:12},{rule:'>',at:9},{rule:'>',at:9},{rule:'>',at:8},{rule:'<',at:8},{rule:'>',at:7},
+          {rule:'>',at:5},{rule:'>',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:1},{rule:'<',at:0}]},
+];
+
+/* example id in URLs and links: P<n> for the paper examples, T<n> for the test set */
+function findExample(ref){
+  const m=/^([PT])(\d+)$/.exec(ref||''); if(!m) return null;
+  const list = m[1]==='P' ? PAPER_EXAMPLES : TEST_CASES;
+  return list.find(c=>c.id===+m[2]) || null;
+}
+function exampleTokens(ex){ return ex.tokens || normalize(ex.sentence); }
+
+/* build the CCG forest of an example; with record=true, each step is snapshotted so Undo can peel it back */
+function buildForest(ex, record){
+  let f=tokensToForest(exampleTokens(ex));
+  for(const st of ex.steps){
+    if(record) history.push(JSON.parse(JSON.stringify(f)));
+    if(st.switch!==undefined){
+      const leaf=f[st.switch], ei=leaf.entries.findIndex(e=>catEq(e.cat,st.to));
+      if(ei<0) throw new Error("'"+leaf.word+"' has no entry "+st.to);
+      leaf.ei=ei; leaf.cat=leaf.entries[ei].cat; continue;
+    }
+    if(st.rule==='Tf'||st.rule==='Tb'){ f[st.at]=ccgStep(st.rule,[f[st.at]]); continue; }
+    if(st.rule==='Phi'){ const out=ccgCoord([f[st.at],f[st.at+1],f[st.at+2]]); f.splice(st.at,3,out); continue; }
+    const out=ccgStep(st.rule,[f[st.at],f[st.at+1]]); f.splice(st.at,2,out);
+  }
+  return f;
+}
+
+/* Load an example into the tagger and replay its derivation script onto the forest. */
+function loadExample(ex){
+  $('sentence').value=exampleTokens(ex).map(tokenText).join(' ');
+  forest=[]; selected=[]; history=[]; outputEl.innerHTML='';
+  try{
+    forest=buildForest(ex, true);
+    selected=[]; renderForest();
+    setStatus('Example loaded. Tap Tag to see the polarities, or Undo to step through it.','ok');
+  }catch(e){ setStatus('Could not build the example: '+e.message,'err'); renderForest(); }
+}
+
+/* the examples shown on the main page: ten test sentences, picked by sentence so that renumbering the test set does not move them */
+const EXAMPLE_SENTENCES = [
+  'mary loves john.', 'every dog is pretty.', 'no man ran quickly.', "tom didn't have a gun.", 'mary is very pretty.',
+  'she said more than three words.', 'some dog in the room ran.', 'i see a man and a woman.', 'some dog and no cat swam quickly.',
+  'fido and no cat swam.', 'every dog ran if john ran.', 'no man but fido ran.', 'every student who kissed every teacher smiled.',
+  'every student whom mary kissed smiled.', 'john chased and mary saw a cat.',
+];
+function showExamples(){
+  const host=$('examples');
+  const picks=EXAMPLE_SENTENCES.map(s=>TEST_CASES.find(c=>c.sentence===s)).filter(Boolean);
+  host.innerHTML='<span class="lab">Examples</span>'
+    + picks.map(ex=>'<span class="exlink" data-ex="T'+ex.id+'">'+escapeHtml(ex.sentence)+'</span>').join('')
+    + '<a class="morelink" href="?view=tests" target="_blank" rel="noopener">Test set ↗</a>';
+  host.querySelectorAll('.exlink').forEach(sp=>{ sp.onclick=()=>loadExample(findExample(sp.dataset.ex)); });
+}
+
+/* ---- lexicon panel (read-only) ---- */
+function typeHtml(sem, cat){
+  return colorPol(escapeHtml(cat==='CONJ' ? sem.replace(/->\+/g,'→+') : showType(parseType(sem))));
+}
+function showLexicon(){
+  const rows=LEX.map(([cls,cat,sem,words])=>{
+    const hay=(cls+'|'+words.map(disp).join(',')).toLowerCase();
+    return '<tr data-hay="'+escapeHtml(hay).replace(/"/g,'&quot;')+'"><td>'+escapeHtml(cls)+'</td><td class="mono">'+escapeHtml(cat)
+      +'</td><td class="mono">'+typeHtml(sem,cat)+'</td><td>'+escapeHtml(words.map(disp).join(', '))+'</td></tr>';
+  }).join('');
+  $('lexTable').innerHTML='<table class="lex"><tr><th>class</th><th>category</th><th>enriched type</th><th>words</th></tr>'+rows+'</table>';
+  $('lexCount').textContent=Object.keys(ENTRIES).length+' words in '+LEX.length+' classes';
+  $('lexFilter').addEventListener('input',()=>{
+    // a row matches if one of its words, or a word of its class name, starts with the query
+    const q=$('lexFilter').value.trim().toLowerCase();
+    $('lexTable').querySelectorAll('tr[data-hay]').forEach(tr=>{
+      const [cls,words]=tr.dataset.hay.split('|');
+      tr.hidden = !!q && !words.split(',').concat(cls.split(/[\s,+-]+/)).some(w=>w.startsWith(q));
+    });
+  });
+}
+
+/* ===================================================================
+   EXAMPLES AND TEST SET VIEW (?view=tests): every example is built,
+   enriched and polarized by the same code as the tagger.
+   =================================================================== */
+function runCase(c){
+  const res={};
+  try{
+    const f=buildForest(c, false);
+    if(f.length!==1) throw new Error('derivation left '+f.length+' cards');
+    const ccg=f[0];
+    res.ccg=ccg;
+    if(!catEq(ccg.cat,'S')) throw new Error('the derivation must reduce to S; its root is '+ccg.cat);
+    const enriched=Enrich(toEnrichTree(ccg), repairFn);
+    if(!eqType(enriched.ty, parseType('t'))) throw new Error('root type is '+showType(enriched.ty)+', not t');
+    polarize(enriched,'up');
+    res.enriched=enriched;
+    const acc=[]; (function walk(n){ if(n.kind==='leaf')acc.push([n.word,n.pol]); else (n.children||[]).forEach(walk); })(enriched);
+    res.polarities=acc;
+  }catch(e){ res.error=e.message+(e.hint?' | '+e.hint:''); }
+  return res;
+}
+function treeBlock(title, node, lab, rn){
+  const r=renderTree(node,lab,rn);
+  const html=colorPol(escapeHtml(r.lines.map(l=>l.replace(/\s+$/,'')).join('\n')));
+  return '<details class="tree"><summary>'+escapeHtml(title)+'</summary><pre class="deriv">'+html+'</pre></details>';
+}
+function renderCases(list, prefix, host){
+  host.innerHTML=list.map(c=>{
+    const r=runCase(c);
+    let body;
+    if(r.error){
+      body='<div class="status err">'+escapeHtml(r.error)+'</div>'
+        +(r.ccg?treeBlock('CCG tree',r.ccg,rawLabelCat,rawRuleName):'');
+    } else {
+      body='<div class="summary"><span class="summary-label">Polarities:</span>'
+        +r.polarities.map(([w,p])=>'<span class="item">'+escapeHtml(w)+'<span class="pol-'+p+'">'+POLSYM[p]+'</span></span>').join(' ')+'</div>'
+        +treeBlock('1. CCG tree',r.ccg,rawLabelCat,rawRuleName)
+        +treeBlock('2. Marking-enriched + polarized tree',r.enriched,enLabel,enRuleName);
+    }
+    let cards='';
+    try{ cards=tokensToForest(exampleTokens(c)).map(l=>'<span class="card"><span class="w">'+escapeHtml(l.word)
+      +'</span><span class="c">'+escapeHtml(l.cat)+'</span></span>').join(''); }catch(e){}
+    return '<section class="case" id="'+prefix+c.id+'"><div class="case-head"><span class="num">'+prefix+c.id+'</span>'
+      +'<span class="sent">'+escapeHtml(c.sentence)+'</span>'
+      +(c.pos?'<span class="pos">'+escapeHtml(c.pos)+'</span>':'')
+      +'<a class="open" href="?ex='+prefix+c.id+'" target="_blank" rel="noopener">open in tagger ↗</a></div>'
+      +'<div class="cards">'+cards+'</div>'+body+'</section>';
+  }).join('');
+  host.querySelectorAll('details.tree').forEach(d=>d.addEventListener('toggle',()=>{ if(d.open) fitTree(d.querySelector('pre.deriv')); }));
+}
+/* shrink the font until the widest line fits the container; never enlarge past 13px */
+function fitTree(pre){
+  pre.style.fontSize='13px';
+  const avail=pre.clientWidth, need=pre.scrollWidth;
+  if(need>avail) pre.style.fontSize=Math.max(4, 13*avail/need*0.98)+'px';
+}
+function showTests(){
+  document.title='Polarity Tagger — test set';
+  $('tagger').hidden=true; $('flowstrip').hidden=true; $('tests').hidden=false;
+  renderCases(TEST_CASES,'T',$('testCases'));
+  window.addEventListener('resize',()=>document.querySelectorAll('details.tree[open] pre.deriv').forEach(fitTree));
+}
+
+/* ---- events ---- */
+$('loadBtn').onclick=loadWords;
+$('resetBtn').onclick=()=>{ forest=[];selected=[];history=[];outputEl.innerHTML='';setStatus('');renderForest();$('sentence').value=''; };
+$('undoBtn').onclick=undo;
+$('tagBtn').onclick=tag;
+document.querySelectorAll('.rule').forEach(b=>b.onclick=()=>doRule(b.dataset.rule));
+$('sentence').addEventListener('keydown',e=>{ if(e.key==='Enter')loadWords(); });
+
+/* ---- init ---- */
+(function init(){
+  const params=new URLSearchParams(location.search);
+  if(params.get('view')==='tests'){ showTests(); return; }
+  showExamples();
+  showLexicon();
+  renderForest();
+  const ex=findExample(params.get('ex'));
+  if(ex) loadExample(ex);
+})();
+
+</script>
+<footer class="ai-note">
+  <strong>AI disclosure.</strong> This program was developed with the help of an AI assistant
+  (Claude, Anthropic). The author takes full responsibility for the content.
+</footer>
+</body>
+</html>
