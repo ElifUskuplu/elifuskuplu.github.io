@@ -169,20 +169,12 @@
   .morelink { font-size: 12.5px; font-weight: 600; color: #1e7fb0; margin-left: 6px; }
   .morelink:hover { color: #9a7616; }
 
-  /* collapsible reference panels at the bottom (lexicon) */
-  details.ref { margin-top: 16px; background: var(--panel); border: 1px solid var(--line);
-    border-radius: 12px; padding: 0 16px; }
-  details.ref:first-of-type { margin-top: 36px; }
-  details.ref > summary { cursor: pointer; padding: 12px 0; font-size: 13.5px; font-weight: 600;
-    list-style: none; display: flex; align-items: center; gap: 8px; }
-  details.ref > summary::-webkit-details-marker { display: none; }
-  details.ref > summary::before { content: '\25B8'; color: var(--accent); font-size: 11px; }
-  details.ref[open] > summary::before { content: '\25BE'; }
-  details.ref > summary .sub { font-weight: 400; color: var(--ink-dim); font-size: 12.5px; }
-  details.ref .body { padding: 2px 0 16px; }
-  details.ref .desc { font-size: 12.5px; color: var(--ink-dim); margin: 0 0 12px; line-height: 1.55; max-width: 90ch; }
-  details.ref .desc code, details.ref li code { font-family: var(--mono); color: var(--ink); background: var(--panel-2);
-    padding: 1px 5px; border-radius: 4px; }
+  /* lexicon view (?view=lexicon) */
+  #lexicon h1 { font-size: 22px; margin: 0 0 6px; }
+  #lexicon h1 .sub { font-weight: 400; color: var(--ink-dim); font-size: 13px; margin-left: 8px; }
+  #lexicon .conv { font-size: 13.5px; color: var(--ink-dim); margin: 0 0 14px; line-height: 1.55; max-width: 90ch; }
+  #lexicon .conv p { margin: 0; }
+  #lexicon .lexfilter { margin-bottom: 12px; }
   .lexfilter { background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 6px;
     padding: 6px 10px; font-size: 12.5px; width: 260px; max-width: 100%; margin-bottom: 10px; }
   .lexfilter:focus { outline: 1.5px solid var(--accent); outline-offset: -1px; }
@@ -280,9 +272,9 @@
     <b>When typing:</b> write the words the grammar needs, even where English leaves them out.
     <ul>
       <li>A bare plural or mass noun takes a determiner: write the one you mean</li>
-      <li>A command takes its subject: <i>you don't leave a tip</i> for <i>don't leave a tip</i></li>
       <li>A bare numeral takes a determiner: write the one you mean</li>
       <li>A generic <i>a</i>, meaning every member of the kind, is written <i>every</i>: <i>every lie has no legs</i> for <i>a lie has no legs</i></li>
+      <li>Only the words of the lexicon can be used: <a class="morelink" href="?view=lexicon" target="_blank" rel="noopener">see the lexicon &#8599;</a></li>
     </ul>
     <b>After loading:</b> a card marked &#8644; has more than one reading; tap it until it shows the one you mean.
     Then tap Parse &amp; Tag. The derivation is built for you, in normal form. If the sentence still has more
@@ -304,16 +296,6 @@
 
   <div id="output" class="out"></div>
 
-  <details class="ref" id="lexPanel">
-    <summary>Lexicon <span class="sub" id="lexCount"></span></summary>
-    <div class="body">
-      <p class="desc">Each class pairs a CCG category with a marking-enriched type; every word in the class gets
-        that pair. A word listed in more than one class loads as a switch card (&#8644;): tap the card to
-        change the reading. The first class listed is the default.</p>
-      <input id="lexFilter" class="lexfilter" type="search" placeholder="find a word or class" autocomplete="off" spellcheck="false">
-      <div class="tablewrap"><div id="lexTable"></div></div>
-    </div>
-  </details>
 </main>
 
 <main id="tests" hidden>
@@ -321,14 +303,37 @@
   <div class="conv">
     <p>Each sentence is shown as its cards: one card per word, after a few fixed changes.</p>
     <ul>
-      <li>Some words are added, because the grammar needs them: <i>some</i> before a bare plural or mass noun (<i>some theorems</i>), <i>you</i> as the subject of a command, <i>exactly</i> before a bare numeral (<i>exactly two bananas</i>).</li>
       <li>A generic <i>a</i> is written as <i>every</i>: <i>every lie has no legs</i>.</li>
-      <li>Some word groups are one card: <i>more than</i>, <i>less than</i>, <i>at least</i>, <i>at most</i>, <i>for free</i>, <i>got in</i>, <i>peanut butter</i>.</li>
-      <li><i>everyone</i> and <i>anyone</i> are two cards: <i>every one</i>, <i>any one</i>.</li>
-      <li><i>did not</i> is the card <i>not</i>; <i>didn't</i>, <i>doesn't</i> and <i>don't</i> are one card each.</li>
+      <li>Some word groups are one card: <i>more than</i>, <i>less than</i>, <i>at least</i>, <i>at most</i>, <i>fewer than</i>.</li>
+      <li><i>everyone</i> is two cards: <i>every one</i>; so are <i>nothing</i>, <i>something</i>, ...: <i>no thing</i>, <i>some thing</i>; <i>nobody</i> and <i>everybody</i> are <i>no one</i> and <i>every one</i>. <i>any</i> is not in the lexicon.</li>
+      <li>A negated auxiliary is two cards: <i>didn't</i> is <i>did not</i>, <i>won't</i> is <i>will not</i>, <i>can't</i> is <i>can not</i>.</li>
     </ul>
   </div>
   <div id="testCases"></div>
+</main>
+
+<main id="lexicon" hidden>
+  <h1>Lexicon <span class="sub" id="lexCount"></span></h1>
+  <div class="conv">
+    <p class="desc">Each class pairs a CCG category with a marking-enriched type; every word in the class gets
+      that pair. A word listed in more than one class loads as a switch card (&#8644;): tap the card to
+      change the reading. The first class listed is the default. The tagger accepts only the words listed here.</p>
+    <p class="desc">Two rows are schemas. In the coordinator row, <span class="mono">x</span> ranges over the
+      conjoinable types: <span class="mono">t</span>, and the function types whose final result is
+      <span class="mono">t</span>. In the negation row, <span class="mono">x</span> ranges over the same types and
+      <span class="mono">x&#772;</span> is <span class="mono">x</span> with every marking along its result spine
+      inverted. Both are instantiated at the type of the argument when the derivation is enriched.</p>
+    <p class="desc">Two categories carry a bracketed label: <span class="mono">S[adj]</span> for predicative
+      adjectives and <span class="mono">S[ng]</span> for present participles. Unlike in CCGbank, the label is
+      not a feature: each is a separate atom that never matches <span class="mono">S</span>. So these cards
+      can only be the argument of a copula. They can't end a sentence, be type-raised into, or follow an
+      auxiliary or a relative pronoun.</p>
+    <p class="desc">The copula (<i>is, are, was, were, be</i>) has three readings: with an adjective, with a
+      noun phrase, and with a present participle. The default is the adjective reading, so for
+      <i>fido is a dog</i> or <i>fido is sleeping</i>, switch the card first.</p>
+  </div>
+  <input id="lexFilter" class="lexfilter" type="search" placeholder="find a word or class" autocomplete="off" spellcheck="false">
+  <div class="tablewrap"><div id="lexTable"></div></div>
 </main>
 
 <script>
@@ -577,13 +582,24 @@ function joinTy(a,b){
   return joinPol(a,b,true);
 }
 // conjoinable types: t, or any marked function type whose final result is t.
-// The connective schema has instances only at these types, so coordination
-// is defined only here (mirrors the conjoinable check in the paper's Phase 1).
+// The connective schema and the negation schema have instances only at these
+// types, so coordination and negation are defined only here (mirrors the
+// conjoinable check in the paper's Phase 1).
 function isConjoinableTy(t){
   if(t.k==='base') return t.name==='t';
   if(t.k==='arr')  return isConjoinableTy(t.cod);
   return false;   // type variables never reach a concrete coordination
 }
+// the type of the Boolean complement of a function of conjoinable type t: the
+// markings along the result spine are inverted, argument types stay as they are
+function negateTy(t){
+  if(t.k!=='arr') return t;
+  const m = t.mark==='+' ? '-' : t.mark==='-' ? '+' : t.mark;
+  return {k:'arr', dom:t.dom, cod:negateTy(t.cod), mark:m};
+}
+// np+ = (e ->. t) ->+ t, the target of the silent raise ML
+const NP_PLUS={k:'arr',dom:{k:'arr',dom:{k:'base',name:'e'},cod:{k:'base',name:'t'},mark:'.'},cod:{k:'base',name:'t'},mark:'+'};
+const isETy=t=>t.k==='base'&&t.name==='e';
 // wrap a node in an 'adapt' node only if the new type differs from the node's
 // own type; an identity rewrite leaves the node untouched (no adapt node in the
 // tree). The node carries the label (shown in the tree) and the polarity rule
@@ -677,8 +693,33 @@ function Enrich(N, repair){
     throw err;
   }
 
+  if(N.rule==='Neg'){
+    // two children: the negator, and the constituent it negates. The schema
+    // x ->- x̄ is instantiated at the argument's type sigma, which must be
+    // Boolean (t, or a function type whose final result is t). The Boolean
+    // complement is pointwise, so the negated function is antitone wherever
+    // the original is monotone: the result type is sigma with every marking
+    // along its result spine inverted (the argument types are unchanged).
+    // The result is an ordinary application, so polarization needs no
+    // separate case.
+    let a=Enrich(N.children[1],repair);
+    // ML (structural): e has no complement, so a bare individual is first
+    // lifted to np+, as in coordination.
+    if(isETy(a.ty)) a={kind:'ML', ty:NP_PLUS, children:[a]};
+    const sigma=a.ty;
+    if(!isConjoinableTy(sigma)){
+      const err=new Error('negation at '+showType(sigma)
+        +' fails: not has instances only at Boolean types '
+        +'(t, or a function type whose final result is t)');
+      err.noAdaptHint=true; throw err;
+    }
+    const negTy={k:'arr',dom:sigma,cod:negateTy(sigma),mark:'-'};
+    const negEnr={kind:'leaf', ty:negTy, word:N.children[0].word, isNegator:true, children:[]};
+    return {kind:'App>', ty:negTy.cod, children:[negEnr, a], fIdx:0};
+  }
+
   if(N.rule==='Phi'){
-    // three children: left conjunct, connector (and/or/but), right conjunct.
+    // three children: left conjunct, connector (and/or), right conjunct.
     return coordinate(Enrich(N.children[0],repair), N.children[1], Enrich(N.children[2],repair), repair);
   }
 
@@ -693,10 +734,8 @@ function Enrich(N, repair){
 function coordinate(x, conn, y, repair){
     // ML (structural): coordination expects np-typed conjuncts, so a bare
     // individual e is lifted to np+ = (e->t)->+t.
-    const NPplus={k:'arr',dom:{k:'arr',dom:{k:'base',name:'e'},cod:{k:'base',name:'t'},mark:'.'},cod:{k:'base',name:'t'},mark:'+'};
-    const isE=t=>t.k==='base'&&t.name==='e';
-    if(isE(x.ty)) x={kind:'ML', ty:NPplus, children:[x]};
-    if(isE(y.ty)) y={kind:'ML', ty:NPplus, children:[y]};
+    if(isETy(x.ty)) x={kind:'ML', ty:NP_PLUS, children:[x]};
+    if(isETy(y.ty)) y={kind:'ML', ty:NP_PLUS, children:[y]};
     // Adapt (e.g. a weakening line): if the conjuncts differ, rewrite both.
     if(!eqType(x.ty,y.ty)){
       const r=repair(x.ty, y.ty, 'coord');
@@ -766,7 +805,7 @@ function polarize(en,d){
     // The Adapt line that fired here attached its own polarity rule. It maps the
     // incoming polarity d to the child's polarity, and may read the marks of this
     // node's rewritten type. The default rule is monotone (the child keeps d).
-    // The core does not know which adaptation this is; H, W, and any user line are
+    // The core does not know which adaptation this is; H, H∩, W, and any user line are
     // all handled the same way, through their declared polarity rule.
     polarize(en.children[0], evalPol(en.polRule||{kind:'d'}, d, en.ty));
     return;
@@ -802,77 +841,164 @@ function polarize(en,d){
    switch card; the first class listed is its default reading.
    =================================================================== */
 const LEX = [
-  ['proper name',                       'NP',   'e',  ['fido','felix','tom','mary','john','nina','jack','jones','smith','anderson','english','japanese']],
-  ['pronoun',                           'NP',   'e',  ['i','he','him','them','we','you','she']],
-  ['common noun',                       'N',    'e->t', ['man','alien','novel','dog','cat','mouse','animal','farmer','race','bath','boy','girl','body','elephant','meeting','business','profit','muscle','rat','hole','lie','leg','hunter','deer','student','teacher','meat','truth','horse','watch','life','hat','house','cap','card','account','knife','name','face','gun','clue','idea','bus','berry','daughter','woman','word','service','tip','contract','car','motorcycle','fee','strawberry','room','banana','fork','theorem','geometry','definition','debate','nature','lexicon','sandwich','representative','client','cold','one']],
-  ['intransitive verb',                 'S\\NP','e->t', ['run','smile','sing','dance','go','drive','swim','kiss','move','miss','gotin']],
-  ['transitive verb',                   '(S\\NP)/NP','e->(e->t)', ['read','chase','follow','enter','refresh','produce','move','chew','have','attack','kiss','speak','need','wear','lead','catch','forget','adore','love','make','pick','eat','see','say','buy','own','pay','sign','leave','shoot','surprise','discuss','state','prove','attend','like']],
-  ['intersective adjective, noun modifier','N/N', '(e->t) ->+ (e->t)', ['red','sci-fi','peanut','blue','peaceful','ripe','vw','golden','algebraic','parking','credit','bank','company','peanutbutter','jelly']],
-  ['relative adjective, noun modifier',  'N/N', '(e->t) -> (e->t)', ['tall','fat','cold','little','great','big','fast','easy','brave','new','full','elegant','large','old']],
-  ['predicative adjective',             'S\\NP','e->t', ['hairy','pink','pretty','delighted','tall','big','large','little','fat','great','fast','cold','easy','elegant','brave','old','new','full','red','blue','ripe','peaceful','golden']],
-  ['degree adverb',                     '(N/N)/(N/N)', '((e->t) -> (e->t)) -> ((e->t) -> (e->t))', ['very']],
-  ['degree adverb, intersective',       '(N/N)/(N/N)', '((e->t) ->+ (e->t)) -> ((e->t) ->+ (e->t))', ['very']],
-  ['universal determiner',              'NP/N', '(e->t) ->- ((e->t) ->+ t)', ['every']],
-  ['NPI any',                           'NP/N', '(e->t) ->+ ((e->t) ->+ t)', ['any']],
-  ['free-choice any',                   'NP/N', '(e->t) ->- ((e->t) ->+ t)', ['any']],
-  ['existential determiner',            'NP/N', '(e->t) ->+ ((e->t) ->+ t)', ['a','an','some']],
-  ['definite determiner',               'NP/N', '(e->t) -> e',  ['the']],
-  ['negative determiner',               'NP/N', '(e->t) ->- ((e->t) ->- t)', ['no']],
-  ['proportional determiner',           'NP/N', '(e->t) -> ((e->t) ->+ t)',  ['most','many']],
-  ['relative pronoun, subject extraction','(N\\N)/(S\\NP)','(e->t) ->+ ((e->t) ->+ (e->t))', ['who','that']],
-  ['relative pronoun, object extraction','(N\\N)/(S/NP)', '(e->t) ->+ ((e->t) ->+ (e->t))', ['who','whom','that']],
-  ['negation',                          '(S\\NP)/(S\\NP)', '(e->t) ->- (e->t)', ['not',"didn't",'never']],
-  ['preverbal adverb, increasing',      '(S\\NP)/(S\\NP)', '(e->t) ->+ (e->t)', ['always','usually','really','even','passionately']],
-  ['preverbal adverb, decreasing',      '(S\\NP)/(S\\NP)', '(e->t) ->- (e->t)', ['seldom','rarely']],
-  ['postverbal adverb',                 '(S\\NP)\\(S\\NP)', '(e->t) ->+ (e->t)', ['quickly','early','well','forfree','fast']],
-  ['copula + adjective',                '(S\\NP)/(S\\NP)', '(e->t) ->+ (e->t)', ['be']],
-  ['copula + NP',                       '(S\\NP)/NP', 'e->(e->t)', ['be']],
-  ['coordinator',                       'CONJ', 'x ->+ (x ->+ x)', ['and','or','but']],
-  ['exceptive',                         '(NP\\NP)/NP', 'e -> (e -> ((e->t) -> t))', ['but']],
-  ['conditional, clause-final',         '(S\\S)/S', 't ->- (t ->+ t)', ['if']],
-  ['conditional, clause-initial',       '(S/S)/S',  't ->- (t ->+ t)', ['if']],
-  ['relational preposition',            '(N\\N)/NP', 'e->((e->t)->(e->t))', ['of']],
-  ['noun-modifying preposition',        '(N\\N)/NP', 'e->(e->t)', ['of','about','in','with']],
-  ['verb-modifying preposition',        '((S\\NP)\\(S\\NP))/NP', 'e->(e->t)', ['in','with']],
-  ['gerund preposition, increasing',    '((S\\NP)\\(S\\NP))/(S\\NP)', '(e->t) ->+ ((e->t) ->+ (e->t))', ['by']],
-  ['gerund preposition, decreasing',    '((S\\NP)\\(S\\NP))/(S\\NP)', '(e->t) ->- ((e->t) ->+ (e->t))', ['before']],
-  ['partitive preposition',             'N/NP', 'e->(e->t)', ['of']],
-  ['numeral',                           'NUM',  'num', ['one','two','three','five','10','12']],
-  ['measure unit',                      'NUM\\NUM', 'num ->+ num', ['minute']],
-  ['measure preposition',               '((S\\NP)\\(S\\NP))/NUM', 'num ->+ ((e->t) ->+ (e->t))', ['in']],
-  ['numeral determiner, decreasing',    '(NP/N)/NUM', 'num ->- ((e->t) ->+ ((e->t) ->+ t))', ['morethan','atleast']],
-  ['numeral determiner, increasing',    '(NP/N)/NUM', 'num ->+ ((e->t) ->- ((e->t) ->- t))', ['lessthan','atmost']],
-  ['numeral determiner, neutral',       '(NP/N)/NUM', 'num -> ((e->t) -> ((e->t) -> t))', ['exactly']],
-  ['degree adverb, predicative',        '(S\\NP)/(S\\NP)', '(e->t) -> (e->t)', ['very']],
+  ['proper name',                            'NP',                  'e',                                [
+      'fido','felix','tom','mary','john','nina','james','robert','michael','william','david','richard','joseph','thomas','charles','christopher',
+      'daniel','matthew','anthony','donald','steven','paul','andrew','joshua','kevin','brian','george','edward','peter','henry','jason','patricia',
+      'jennifer','linda','elizabeth','barbara','susan','jessica','sarah','karen','nancy','lisa','betty','margaret','sandra','ashley','emily','donna',
+      'michelle','dorothy'
+    ]],
+  ['pronoun',                                'NP',                  'e',                                [
+      'i','me','you','he','him','she','her','it','we','us','they','them'
+    ]],
+  ['definite determiner',                    'NP/N',                '(e->t) -> ((e->t) ->+ t)',         [
+      'the','this','these','those','my','your','his','its','our','their'
+    ]],
+  ['decreasing determiner',                  'NP/N',                '(e->t) -> ((e->t) ->- t)',         ['few']],
+  ['preposition, noun modifier',             '(N\\N)/NP',           'e -> ((e->t) ->+ (e->t))',         ['in']],
+  ['preposition, VP modifier',               '((S\\NP)\\(S\\NP))/NP','e -> ((e->t) ->+ (e->t))',         ['in']],
+  ['common noun',                            'N',                   'e->t',                             [
+      'man','alien','dog','cat','mouse','animal','lie','leg','student','teacher','meat','hat','one','person','woman','child','boy','girl','friend',
+      'doctor','mother','father','baby','king','queen','year','day','week','month','hour','night','morning','world','country','city','town','house',
+      'home','room','door','window','car','bus','road','street','school','book','letter','word','story','park','thing'
+    ]],
+  ['intransitive verb',                      'S\\NP',               'e->t',                             [
+      'run','smile','sing','dance','swim','move','sleep','arrive','die','laugh','cry','walk','sit','stand','fall','come','go','wait','work','live',
+      'happen','appear','disappear','rise','talk','listen','jump','fly','shine','bark','sneeze','cough','yawn','exist','vanish','travel','hurry',
+      'stay','remain','kneel','breathe','relax','agree','apologize','complain','succeed','fail','suffer','bleed','faint','lie','park'
+    ]],
+  ['transitive verb',                        '(S\\NP)/NP',          'e->(e->t)',                        [
+      'chase','follow','have','attack','kiss','love','eat','see','like','know','find','take','make','get','give','buy','sell','kill','hit','kick',
+      'carry','hold','build','wear','use','visit','meet','enjoy','own','catch','push','pull','lift','drop','bring','send','teach','hear','touch',
+      'hug','admire','trust','remember','forget','miss','hate','feed','wash','destroy','protect','admired','attacked','carried','chased','destroyed',
+      'dropped','enjoyed','followed','hated','hugged','kicked','killed','kissed','lifted','liked','loved','missed','owned','protected','pulled',
+      'pushed','remembered','touched','trusted','used','visited','washed'
+    ]],
+  ['universal determiner',                   'NP/N',                '(e->t) ->- ((e->t) ->+ t)',        ['every','each','all']],
+  ['existential determiner',                 'NP/N',                '(e->t) ->+ ((e->t) ->+ t)',        ['a','an','some','several']],
+  ['negative determiner',                    'NP/N',                '(e->t) ->- ((e->t) ->- t)',        ['no']],
+  ['proportional determiner',                'NP/N',                '(e->t) -> ((e->t) ->+ t)',         ['most','many']],
+  ['relative pronoun, subject extraction',   '(N\\N)/(S\\NP)',      '(e->t) ->+ ((e->t) ->+ (e->t))',   ['who','that','which']],
+  ['relative pronoun, object extraction',    '(N\\N)/(S/NP)',       '(e->t) ->+ ((e->t) ->+ (e->t))',   ['who','whom','that','which']],
+  ['auxiliary',                              '(S\\NP)/(S\\NP)',     '(e->t) ->+ (e->t)',                [
+      'did','does','do','will','would','can','could','must','should','may','might','shall'
+    ]],
+  ['attributive adjective',                  'N/N',                 '(e->t) ->+ (e->t)',                [
+      'red','blue','black','white','green','yellow','scarlet','crimson','female','male','pregnant','married','dead','alive','naked','asleep','awake',
+      'purple','pink','brown','grey','blonde','human','raw','unmarried','mortal','blind','broken','fried','cooked','smoked','rotten','poisoned',
+      'decapitated','sterilized','distilled','powdered','multicolored','handicapped'
+    ]],
+  ['predicative adjective',                  'S[adj]\\NP',          'e->t',                             [
+      'red','blue','black','white','green','yellow','scarlet','crimson','female','male','pregnant','married','dead','alive','naked','asleep','awake',
+      'hungry','sick','purple','pink','brown','grey','blonde','human','raw','unmarried','mortal','blind','broken','fried','cooked','smoked','rotten',
+      'poisoned','decapitated','sterilized','distilled','powdered','multicolored','handicapped'
+    ]],
+  ['copula, adjective',                      '(S\\NP)/(S[adj]\\NP)','(e->t) ->+ (e->t)',                ['is','are','was','were','be','am']],
+  ['copula, noun phrase',                    '(S\\NP)/NP',          'e->(e->t)',                        ['is','are','was','were','be','am']],
+  ['copula, progressive',                    '(S\\NP)/(S[ng]\\NP)', '(e->t) ->+ (e->t)',                ['is','are','was','were','be','am']],
+  ['present participle, intransitive',       'S[ng]\\NP',           'e->t',                             [
+      'sleeping','running','swimming','dancing','singing','moving','barking','abating','according','asking','being','birdcatching','bling','blowing',
+      'brainwashing','buzzing','chirping','climbing','coming','conforming','cooking','crying','demanding','driving','eating','ending','flooding',
+      'flying','going','having','interacting','jogging','leading','living','looking','losing','missing','playing','revolving','speaking','standing',
+      'steering','studying','suffering','talking','tracking','translating','trying','understanding','waiting'
+    ]],
+  ['present participle, transitive',         '(S[ng]\\NP)/NP',      'e->(e->t)',                        [
+      'chasing','following','seeing','altering','annoying','approaching','asking','being','boring','buying','carrying','changing','charming',
+      'choosing','comprising','connecting','considering','defending','dialling','digging','distracting','drinking','driving','eating','ensuing',
+      'ensuring','expecting','facing','finding','flying','going','having','holding','interesting','lasting','laughing','leading','looking','meaning',
+      'memorizing','overwhelming','planting','playing','possessing','running','shining','taking','using','washing','wearing'
+    ]],
+  ['VP adverb, post-verbal',                 '(S\\NP)\\(S\\NP)',    '(e->t) ->+ (e->t)',                [
+      'yesterday','today','tonight','here','tomorrow','now','abroad','upstairs','downstairs','nearby','overtime'
+    ]],
+  ['VP adverb, pre-verbal, increasing',      '(S\\NP)/(S\\NP)',     '(e->t) ->+ (e->t)',                [
+      'always','sometimes','often','usually','frequently','occasionally','generally','typically','normally','probably'
+    ]],
+  ['VP adverb, pre-verbal, decreasing',      '(S\\NP)/(S\\NP)',     '(e->t) ->- (e->t)',                ['never','rarely','seldom','hardly','scarcely']],
+  ['copula, passive',                        '(S\\NP)/(S[pss]\\NP)','(e->t) ->+ (e->t)',                ['is','are','was','were','be','am']],
+  ['passive participle',                     'S[pss]\\NP',          'e->t',                             [
+      'abhorred','accepted','added','admired','afforded','answered','approached','asked','assembled','assumed','attacked','attended','avoided',
+      'beaten','believed','bitten','blinded','blocked','born','borrowed','bought','boycotted','broken','brought','brushed','carried','chased',
+      'destroyed','dropped','enjoyed','followed','hated','hugged','kicked','killed','kissed','lifted','liked','loved','missed','owned','protected',
+      'pulled','pushed','remembered','touched','trusted','used','visited','washed'
+    ]],
+  ['negation',                               'NEG',                 'x ->- x̄',                         ['not']],
+  ['coordinator',                            'CONJ',                'x ->+ (x ->+ x)',                  ['and','or']],
+  ['conditional, clause-final',              '(S\\S)/S',            't ->- (t ->+ t)',                  ['if','whenever']],
+  ['conditional, clause-initial',            '(S/S)/S',             't ->- (t ->+ t)',                  ['if','whenever']],
+  ['numeral',                                'NUM',                 'num',                              [
+      'one','two','three','five','12','four','six','seven','eight','nine','ten','1','2','3','4','5','6','7','8','9','10','15','18','24','50','70',
+      '90','95','500'
+    ]],
+  ['numeral determiner, decreasing',         '(NP/N)/NUM',          'num ->- ((e->t) ->+ ((e->t) ->+ t))',['morethan','atleast']],
+  ['numeral determiner, increasing',         '(NP/N)/NUM',          'num ->+ ((e->t) ->- ((e->t) ->- t))',['lessthan','atmost','fewerthan']],
+  ['numeral determiner, neutral',            '(NP/N)/NUM',          'num -> ((e->t) -> ((e->t) -> t))', ['exactly']],
 ];
 
 /* word -> entries [{cls, cat, sem}], and the parsed semantic types keyed by word@class */
 const ENTRIES = {}, SEM = {};
 for(const [cls,cat,sem,words] of LEX) for(const w of words){
   (ENTRIES[w]=ENTRIES[w]||[]).push({cls,cat,sem});
-  if(cat!=='CONJ') SEM[w+'@'+cls]=parseType(sem);
+  if(cat!=='CONJ'&&cat!=='NEG') SEM[w+'@'+cls]=parseType(sem);   // schematic types are instantiated in Enrich
 }
 
 /* multi-word items that load as one card, and how their cards are shown */
-const MULTI = { 'more than':'morethan', 'less than':'lessthan', 'at least':'atleast', 'at most':'atmost',
-                'for free':'forfree', 'got in':'gotin', 'peanut butter':'peanutbutter' };
+const MULTI = { 'more than':'morethan', 'less than':'lessthan', 'at least':'atleast', 'at most':'atmost', 'fewer than':'fewerthan' };
 const DISPLAY = {};
 for(const k in MULTI) DISPLAY[MULTI[k]]=k;
 function disp(w){ return DISPLAY[w] || w; }
 
 /* irregular and listed inflected forms -> base form */
 const LEMMA = {
-  'novels':'novel','farmers':'farmer','elephants':'elephant','legs':'leg','words':'word','aliens':'alien','girls':'girl',
-  'cats':'cat','dogs':'dog','mice':'mouse','animals':'animal','berries':'berry','minutes':'minute','bananas':'banana',
-  'theorems':'theorem','definitions':'definition','men':'man','women':'woman',
-  'ran':'run','runs':'run','swam':'swim','swims':'swim','chased':'chase','chases':'chase','follows':'follow','followed':'follow',
-  'sees':'see','saw':'see','entered':'enter','refreshed':'refresh','smiled':'smile','sang':'sing','danced':'dance',
-  'is':'be','are':'be','was':'be','were':'be','am':'be',
-  'chewed':'chew','has':'have','had':'have','attacked':'attack','kissed':'kiss','speaks':'speak','needs':'need','leads':'lead','wears':'wear',
-  'moves':'move','moved':'move','forgets':'forget','adores':'adore','loves':'love','made':'make','picked':'pick','ate':'eat',
-  'bought':'buy','said':'say','left':'leave','signed':'sign','attended':'attend','owns':'own','paid':'pay','surprised':'surprise',
-  'eating':'eat','making':'make','proving':'prove','missed':'miss','shot':'shoot',
-  "doesn't":"didn't","don't":"didn't",
+  'legs':'leg',
+  'aliens':'alien',
+  'cats':'cat',
+  'dogs':'dog',
+  'mice':'mouse',
+  'animals':'animal',
+  'men':'man',
+  'ran':'run',
+  'runs':'run',
+  'swam':'swim',
+  'swims':'swim',
+  'chases':'chase',
+  'follows':'follow',
+  'sees':'see',
+  'saw':'see',
+  'smiled':'smile',
+  'sang':'sing',
+  'danced':'dance',
+  'has':'have',
+  'moves':'move',
+  'moved':'move',
+  'loves':'love',
+  'ate':'eat',
+  'sung':'sing',
+  'people':'person',
+  'women':'woman',
+  'children':'child',
+  'slept':'sleep',
+  'sat':'sit',
+  'stood':'stand',
+  'fell':'fall',
+  'fallen':'fall',
+  'came':'come',
+  'went':'go',
+  'gone':'go',
+  'rose':'rise',
+  'risen':'rise',
+  'flew':'fly',
+  'flown':'fly',
+  'shone':'shine',
+  'knelt':'kneel',
+  'bled':'bleed',
+  'knew':'know',
+  'took':'take',
+  'got':'get',
+  'gave':'give',
+  'wore':'wear',
+  'forgot':'forget',
+  'lives':'live',
+  'lived':'live',
 };
 /* Regular inflection: strip a suffix, and accept the stem only if it is a
    noun or verb in the lexicon (so that e.g. "as" never becomes "a"). */
@@ -880,7 +1006,7 @@ const NOUN=['common noun'], VERB=['intransitive verb','transitive verb'];
 function stemCandidates(w){
   const c=[];
   if(/ies$/.test(w)) c.push([w.slice(0,-3)+'y', NOUN.concat(VERB)]);
-  if(/es$/.test(w))  c.push([w.slice(0,-2), NOUN.concat(VERB)]);
+  if(/(s|x|z|ch|sh|o)es$/.test(w)) c.push([w.slice(0,-2), NOUN.concat(VERB)]);
   if(/[^s]s$/.test(w)) c.push([w.slice(0,-1), NOUN.concat(VERB)]);
   if(/ied$/.test(w)) c.push([w.slice(0,-3)+'y', VERB]);
   if(/ed$/.test(w)){
@@ -894,33 +1020,41 @@ function stemCandidates(w){
   }
   return c.filter(([s])=>s.length>=2);
 }
-/* the lexicon key of a surface word, or null if the word is not in the lexicon */
-function lookupKey(w){
+/* the lexicon key of a surface word, or null if the word is not in the lexicon;
+   classes lists the classes a regular inflection allows (null when the word
+   or an irregular form is listed as is), so that the default reading of
+   e.g. 'lied' is the verb, not the noun 'lie' */
+function lookup(w){
   const lo=w.toLowerCase();
-  if(LEMMA[lo]) return LEMMA[lo];
-  if(ENTRIES[lo]) return lo;
+  if(LEMMA[lo]) return {key:LEMMA[lo], classes:null, own: ENTRIES[lo] ? lo : null};
+  if(ENTRIES[lo]) return {key:lo, classes:null};
   for(const [s,classes] of stemCandidates(lo))
-    if((ENTRIES[s]||[]).some(e=>classes.includes(e.cls))) return s;
+    if((ENTRIES[s]||[]).some(e=>classes.includes(e.cls))) return {key:s, classes};
   return null;
 }
+function lookupKey(w){ const hit=lookup(w); return hit ? hit.key : null; }
 
 /* Sentence -> card tokens (surface strings). Drops punctuation, merges
-   multi-word items, drops the auxiliary do/does/did before not, splits
-   isn't/aren't/wasn't/weren't into be + not, and everyone/anybody/... into
-   determiner + noun. */
+   multi-word items, splits a negated auxiliary (didn't, won't, can't, ...)
+   into auxiliary + not, and everyone/nobody/something/... into
+   determiner + noun (body is written one). any is not in the lexicon. */
 function normalize(raw){
   const words=raw.replace(/[‘’]/g,"'").replace(/[“”"]/g,' ')
     .replace(/[.,;:!?]+/g,' ').trim().split(/\s+/).filter(Boolean);
   const out=[];
   for(let i=0;i<words.length;i++){
     const w=words[i], lo=w.toLowerCase(), nx=(words[i+1]||'').toLowerCase();
+    const nx2=(words[i+2]||'').toLowerCase();
+    if(MULTI[lo+' '+nx+' '+nx2]){ out.push(MULTI[lo+' '+nx+' '+nx2]); i+=2; continue; }
     if(MULTI[lo+' '+nx]){ out.push(MULTI[lo+' '+nx]); i++; continue; }
-    if(/^(do|does|did)$/.test(lo) && nx==='not'){ out.push(words[i+1]); i++; continue; }
-    if(/^(do|does|did)$/.test(lo) && nx==="n't"){ out.push(w+"n't"); i++; continue; }
-    const neg=w.match(/^(is|are|was|were)n't$/i);
-    if(neg){ out.push(neg[1], 'not'); continue; }
-    const q=w.match(/^(every|any|some|no)(one|body)$/i);
-    if(q){ out.push(q[1], q[2]); continue; }
+    const nt=lo.match(/^([a-z]+)n't$/);
+    if(nt){ out.push(nt[1]==='wo'?'will':nt[1]==='ca'?'can':nt[1], 'not'); continue; }
+    if(lo==="n't"){ out.push('not'); continue; }
+    const ct=lo.match(/^(i|you|we|they)'(m|re|ve|ll|d)$/) ||
+             lo.match(/^(it|that)'(s)$/);
+    if(ct){ out.push(ct[1], {m:'am',re:'are',s:'is',ve:'have',ll:'will',d:'would'}[ct[2]]); continue; }
+    const q=w.match(/^(every|some|no)(one|body|thing)$/i);
+    if(q){ out.push(q[1], q[2]==='body'?'one':q[2]); continue; }
     out.push(w);
   }
   return out;
@@ -930,10 +1064,15 @@ function normalize(raw){
    current reading. tok is a string, or {w, cat} / {w, cls} to pick a reading. */
 function tokenToLeaf(tok){
   const w = typeof tok==='string' ? tok : tok.w;
-  const key = lookupKey(w);
-  if(!key){ const err=new Error("'"+w+"' is not in the lexicon."); err.notInLexicon=true; throw err; }
-  const entries = ENTRIES[key];
+  const hit = lookup(w);
+  if(!hit){ const err=new Error("'"+w+"' is not in the lexicon."); err.notInLexicon=true; throw err; }
+  const key = hit.key;
+  const base = ENTRIES[key];
+  const entries = hit.own
+    ? base.concat(ENTRIES[hit.own].filter(e => !base.some(b => b.cls === e.cls)))
+    : base;
   let ei = 0;
+  if(hit.classes){ const k=entries.findIndex(e=>hit.classes.includes(e.cls)); if(k>=0) ei=k; }
   if(typeof tok!=='string' && tok.cat){
     ei = entries.findIndex(e=>catEq(e.cat,tok.cat));
     if(ei<0) throw new Error("'"+w+"' has no entry "+tok.cat);
@@ -942,25 +1081,34 @@ function tokenToLeaf(tok){
     ei = entries.findIndex(e=>e.cls.indexOf(tok.cls)>=0);
     if(ei<0) throw new Error("'"+w+"' has no entry in class "+tok.cls);
   }
-  return {rule:'leaf', kind:'leaf', word:DISPLAY[key]||w, key, entries, ei, cat:entries[ei].cat, span:null};
+  return {rule:'leaf', kind:'leaf', word:DISPLAY[key]||w, key, own:hit.own||null, entries, ei, cat:entries[ei].cat, span:null};
 }
 function tokensToForest(tokens){
-  return tokens.map((t,i)=>{ const leaf=tokenToLeaf(t); leaf.span=[i,i+1]; return leaf; });
+  const leaves=tokens.map((t,i)=>{ const leaf=tokenToLeaf(t); leaf.span=[i,i+1]; return leaf; });
+  // Default readings from position; a reading given explicitly ({w, cat} or {w, cls}) is kept.
+  // Sentence-initial if is clause-initial; a copula followed by an -ing card is progressive.
+  const pick=(leaf,cls)=>{ const k=leaf.entries.findIndex(e=>e.cls===cls); if(k>=0){ leaf.ei=k; leaf.cat=leaf.entries[k].cat; } };
+  for(let i=0;i<leaves.length;i++){
+    if(typeof tokens[i]!=='string') continue;
+    const L=leaves[i];
+    if(i===0 && L.entries.some(e=>e.cls==='conditional, clause-initial')) pick(L,'conditional, clause-initial');
+    const nx=leaves[i+1] && leaves[i+1].key==='not' ? leaves[i+2] : leaves[i+1];
+    if(nx && L.entries[0].cls==='copula, adjective'
+       && nx.entries.some(e=>e.cls.startsWith('present participle'))) pick(L,'copula, progressive');
+  }
+  return leaves;
 }
 function tokenText(t){ const w = typeof t==='string' ? t : t.w; return disp(w); }
 
-/* Adapt: H (argument lift), PM (predicate modification), W (weakening). Built in; the user does not edit them. */
+/* Adapt: H (argument lift), H∩ (argument lift of an intersective modifier), W (weakening). Built in; the user does not edit them. */
 const ADAPT_TEXT = [
-'# H: lift an argument slot from e to a quantifier np^m; one line per result type',
+'# H: lift an argument slot from e to a quantifier np^m; one line per result type tau, with tau = t or tau = e->t',
 'app : e -> t      , (e->t) ->m t => ((e->t) ->m t) ->+ t      , (e->t) ->m t :: md(d, dom), d :: H',
 'app : e -> (e->t) , (e->t) ->m t => ((e->t) ->m t) ->+ (e->t) , (e->t) ->m t :: md(d, dom), d :: H',
-'app : e -> ((e->t) -> (e->t)) , (e->t) ->m t => ((e->t) ->m t) ->+ ((e->t) -> (e->t)) , (e->t) ->m t :: md(d, dom), d :: H',
-'app : e -> ((e->t) -> t) , (e->t) ->m t => ((e->t) ->m t) ->+ ((e->t) -> t) , (e->t) ->m t :: md(d, dom), d :: H',
-'app : e -> (e -> ((e->t) -> t)) , (e->t) ->m t => ((e->t) ->m t) ->+ (e -> ((e->t) -> t)) , (e->t) ->m t :: md(d, dom), d :: H',
-'# PM: an e->t modifier meets an e->t noun or verb phrase, or is coordinated with an n ->m n modifier',
-'app : e -> t , e -> t => (e->t) ->+ (e->t) , e -> t :: d, d :: PM',
-'coord : e -> t , (e->t) ->m (e->t) => Join((e->t) ->+ (e->t), (e->t) ->m (e->t)) , Join((e->t) ->+ (e->t), (e->t) ->m (e->t)) :: d, d :: PM',
-'coord : (e->t) ->m (e->t) , e -> t => Join((e->t) ->m (e->t), (e->t) ->+ (e->t)) , Join((e->t) ->m (e->t), (e->t) ->+ (e->t)) :: d, d :: PM',
+'# H∩: the same lift for a word whose result is an intersective modifier M = λP. P ∩ L (prepositions). The lift is',
+'# H applied to the relation L recovered as M(⊤), followed by intersection: (h∩ F)(Q) = λP λx. P(x) ∧ Q(λy. F(y)(⊤)(x)).',
+'# Sound only for intersective entries; the lexicon lists such entries with the result type (e->t) ->+ (e->t).',
+'app : e -> ((e->t) ->+ (e->t)) , (e->t) ->m t => ((e->t) ->m t) ->+ ((e->t) ->+ (e->t)) , (e->t) ->m t :: md(d, dom), d :: H∩',
 '# W: weaken two conjuncts to their join',
 'coord : A , B => Join(A, B) , Join(A, B) :: d, d :: W',
 ].join('\n');
@@ -999,7 +1147,7 @@ function catEq(a,b){
 }
 
 const RULE_NAME = {'App>':'>','App<':'<','B':'>B','Bx':'<B',
-                   'T':'T','Coord':'\u0026','Phi':'\u0026','leaf':''};
+                   'T':'T','Coord':'\u0026','Phi':'\u0026','Neg':'\u00ac','leaf':''};
 
 
 function ccgStep(rule, picks){
@@ -1044,11 +1192,62 @@ function ccgStep(rule, picks){
 function ccgCoord(picks){
   const [left, conn, right]=picks;
   if(!conn || conn.kind!=='leaf' || conn.cat!=='CONJ')
-    throw new Error('the middle card must be a connector (and, or, but)');
+    throw new Error('the middle card must be a connector (and, or)');
   if(!catEq(left.cat,right.cat))
     throw new Error('coordination needs equal conjunct categories; got '+left.cat+' and '+right.cat);
   const span=[left.span[0], right.span[1]];
-  return {rule:'Phi', cat:left.cat, children:[left,conn,right], span, kind:'Phi'};
+  // a coordination of composition-like conjuncts (a negated transitive verb) keeps their normal-form status
+  return {rule:'Phi', cat:left.cat, children:[left,conn,right], span, kind:'Phi', nfAsB:!!(left.nfAsB||right.nfAsB)};
+}
+
+/* negation is a binary step: the not card, then the constituent it negates.
+   The category is the argument's own (not acts as X/X); the type is fixed in
+   Enrich, where x in x ->- x̄ is instantiated at the argument's type. The
+   constituents not may negate: a verb phrase, a transitive verb, a noun
+   phrase, a determiner, and the three copula complements: a predicative
+   adjective phrase (S[adj]\NP), a progressive phrase (S[ng]\NP) and a
+   passive phrase (S[pss]\NP), so that Fido is not hungry, Fido is not
+   sleeping and Fido was not chased parse. English has no bare not over a
+   whole clause, so S is not a target. Three further conditions keep the
+   derivations in a normal form; all three are stipulations of this tagger,
+   not consequences of Eisner's (1996) conditions, which concern composition
+   and raising only.
+   (a) A negated transitive verb exists for the sake of object extraction
+   (every cat who Fido did not chase ran). It is flagged nfAsB and then
+   handled like the output of a composition: it cannot be the primary functor
+   of a forward application or composition, and a coordination of flagged
+   conjuncts inherits the flag. So Fido did not chase a cat gets only the
+   verb-phrase negation. The flag does not reach right-node raising, where
+   the composition is forced anyway: Fido did not chase and Felix chased a
+   cat gets the object above the negation (cat up), as it should.
+   (b) not does not attach to a noun phrase built by a determiner: the same
+   reading comes from negating the determiner ([not every] student rather
+   than not [every student]), and keeping both only doubles the derivations.
+   (c) A negated bare name (not Felix) is licensed only as a conjunct (Fido
+   and not Felix); parseForest filters the others and reports it. */
+const NEG_TARGETS=['S\\NP','(S\\NP)/NP','NP','NP/N','S[adj]\\NP','S[ng]\\NP','S[pss]\\NP'];
+const TV_CAT='(S\\NP)/NP';
+function ccgNeg(picks){
+  const [neg, right]=picks;
+  if(!neg || neg.kind!=='leaf' || neg.cat!=='NEG')
+    throw new Error('the left card must be not');
+  if(!NEG_TARGETS.some(c=>catEq(parseCat(right.cat),parseCat(c))))
+    throw new Error('not negates a verb phrase, a transitive verb, a noun phrase, a determiner, or an adjective, progressive or passive phrase; got '+right.cat);
+  if(isRaised(right)) throw new Error('not cannot negate a type-raised constituent');
+  if(right.kind==='App>' && catEq(parseCat(right.children[0].cat),parseCat('NP/N')))
+    throw new Error('not attaches to the determiner, not to the noun phrase it builds');
+  const span=[neg.span[0], right.span[1]];
+  const asB=catEq(parseCat(right.cat),parseCat(TV_CAT));
+  return {rule:'Neg', cat:right.cat, children:[neg,right], span, kind:'Neg', nfAsB:asB};
+}
+function negatesBareName(n){
+  if(n.kind!=='Neg') return false;
+  const a=n.children[1];
+  return a.kind==='leaf' && (a.entries[a.ei].cls==='proper name' || a.entries[a.ei].cls==='pronoun');
+}
+function nameNegationLicensed(n, underPhi){
+  if(negatesBareName(n) && !underPhi) return false;
+  return (n.children||[]).every(c=>nameNegationLicensed(c, n.kind==='Phi'));
 }
 
 /* ===================================================================
@@ -1066,17 +1265,18 @@ function ccgCoord(picks){
    =================================================================== */
 const PARSE_CAP = 400;   // derivations kept per span and category
 
-function isRaised(n){ return n.kind==='T' || (n.kind==='Phi' && n.children[0].kind==='T'); }
+function isRaised(n){ return n.kind==='T' || (n.kind==='Phi' && isRaised(n.children[0])); }
 function raiseDirOf(n){ return n.kind==='T' ? n.raiseDir : n.children[0].raiseDir; }
 function nfAllowed(rule, l, r){
   if(isRaised(l) && !(rule==='Bf' && raiseDirOf(l)==='f')) return false;
   if(isRaised(r) && !(rule==='Bb' && raiseDirOf(r)==='b')) return false;
-  if((rule==='>'||rule==='Bf') && l.kind==='B')  return false;
+  if((rule==='>'||rule==='Bf') && (l.kind==='B'||l.nfAsB))  return false;
   if((rule==='<'||rule==='Bb') && r.kind==='Bx') return false;
   return true;
 }
 function tryStep(rule, picks){ try{ return ccgStep(rule, picks); }catch(e){ return null; } }
 function tryCoord(picks){ try{ return ccgCoord(picks); }catch(e){ return null; } }
+function tryNeg(picks){ try{ return ccgNeg(picks); }catch(e){ return null; } }
 
 /* leaves: the cards, in order, each with its reading fixed. Returns
    {parses: [S-derivations], longest: [i,j], capped} where longest is the
@@ -1114,14 +1314,27 @@ function parseForest(leaves){
         const o=tryCoord([l,C[0],r]); if(o) add(i,j,o);
       }
     }
+    const NG=(chart[key(i,i+1)]||{})['NEG'];
+    if(NG){
+      const R=chart[key(i+1,j)]||{};
+      for(const rc in R) for(const r of R[rc].slice()){ const o=tryNeg([NG[0],r]); if(o) add(i,j,o); }
+    }
     const cell=chart[key(i,j)]||{};
     if(cell['NP']) for(const nd of cell['NP'].slice()) raise(i,j,nd);
   }
-  return {parses: ((chart[key(0,n)]||{})['S'])||[], longest, capped};
+  const all=((chart[key(0,n)]||{})['S'])||[];
+  const parses=all.filter(p=>nameNegationLicensed(p,false));
+  // nameNegationOnly: every derivation was dropped for negating a bare name outside a coordination
+  return {parses, longest, capped, nameNegationOnly: all.length>0 && parses.length===0};
 }
 
-/* Order of readings: the fewer compositions and raises, and the lower
-   every modifier and every coordination attaches, the earlier the reading. */
+/* Order of readings: the fewer compositions and raises, the lower every
+   modifier and every coordination attaches, and the fewer auxiliaries a
+   negation scopes over, the earlier the reading. */
+function hasAuxLeaf(n){
+  if(n.kind==='leaf'){ const cat=n.entries[n.ei].cat; return cat==='NEG' || catEq(parseCat(cat),parseCat('(S\\NP)/(S\\NP)')); }
+  return (n.children||[]).some(hasAuxLeaf);
+}
 function derivationCost(node){
   let c=0;
   const span=x=>x.span[1]-x.span[0];
@@ -1131,6 +1344,10 @@ function derivationCost(node){
     if(x.kind==='App<'){ const f=parseCat(x.children[1].cat); if(f.atom===undefined&&catEq(f.res,f.arg)) c+=span(x.children[0]); }
     if(x.kind==='App>'){ const f=parseCat(x.children[0].cat); if(f.atom===undefined&&catEq(f.res,f.arg)&&f.arg.atom!==undefined) c+=span(x.children[1]); }
     if(x.kind==='Phi') c+=span(x.children[0])+span(x.children[2]);
+    // a negation prefers the widest constituent that holds no further auxiliary
+    // or negation: did not [run or swim] before [did not run] or swim, and
+    // [did not run] and [did not swim] before did not [run and did not swim].
+    if(x.kind==='Neg' && hasAuxLeaf(x.children[1])) c+=10;
     (x.children||[]).forEach(walk);
   })(node);
   return c;
@@ -1143,13 +1360,15 @@ function toEnrichTree(N){
     const ent=N.entries[N.ei];
     if(ent.cat==='CONJ')
       return {rule:'leaf', word:N.word, connector:true};   // type set in Enrich
-    const ty = SEM[N.key+'@'+ent.cls];
+    if(ent.cat==='NEG')
+      return {rule:'leaf', word:N.word, negator:true};     // type set in Enrich
+    const ty = SEM[N.key+'@'+ent.cls] || (N.own && SEM[N.own+'@'+ent.cls]);   // an inflected form's own entry is typed under its surface form
     if(!ty) throw new Error("no semantic type for '"+N.word+"'");
     return {rule:'leaf', word:N.word, lty:ty};
   }
   if(N.rule==='T') return {rule:'T', children:[toEnrichTree(N.children[0])], raiseDir:N.raiseDir};
   const kids = N.children.map(toEnrichTree);
-  const rule = ({'App>':'App>','App<':'App<','B':'Bf','Bx':'Bb','Phi':'Phi'})[N.rule];
+  const rule = ({'App>':'App>','App<':'App<','B':'Bf','Bx':'Bb','Phi':'Phi','Neg':'Neg'})[N.rule];
   return {rule, children:kids};
 }
 
@@ -1222,9 +1441,8 @@ function loadWords(){
     if(e.notInLexicon){
       statusEl.innerHTML=escapeHtml(e.message)
         +'<br><span style="color:var(--ink-dim)">This means one of two things: the lexicon has another word of the '
-        +'same class that you can use instead (see the <a href="#lexPanel" id="seeLex">Lexicon</a> below), '
+        +'same class that you can use instead (see the <a href="?view=lexicon" target="_blank" rel="noopener">Lexicon</a>), '
         +'or the word belongs to a class this tagger does not cover.</span>';
-      $('seeLex').onclick=ev=>{ ev.preventDefault(); $('lexPanel').open=true; $('lexPanel').scrollIntoView({behavior:'smooth'}); };
     }
     return;
   }
@@ -1264,24 +1482,30 @@ function polKey(en){ const acc=[]; (function walk(n){ if(n.kind==='leaf')acc.pus
 function parseAndTag(){
   if(!forest.length){ setStatus('Load a sentence first.','err'); return false; }
   outputEl.innerHTML='';
-  const {parses, longest, capped}=parseForest(forest);
+  const {parses, longest, capped, nameNegationOnly}=parseForest(forest);
+  if(!parses.length && nameNegationOnly){
+    statusEl.className='status err';
+    statusEl.innerHTML='Every derivation of this sentence negates a bare name.'
+      +'<br><span style="color:var(--ink-dim)">English allows <i>not</i> before a name only as a conjunct, as in <i>Fido and not Felix ran</i>, '
+      +'so the tagger does not accept it here.</span>';
+    return false;
+  }
   if(!parses.length){
     const words=forest.slice(longest[0],longest[1]).map(l=>l.word).join(' ');
     statusEl.className='status err';
     statusEl.innerHTML='No derivation of this sentence reaches S with the readings shown.'
       +'<br><span style="color:var(--ink-dim)">The longest stretch that combines is <i>'+escapeHtml(words)+'</i>. '
-      +'Try another reading on a card marked \u21c4, or check the <a href="#lexPanel" id="seeLex2">Lexicon</a> for the categories a word can take.</span>';
-    $('seeLex2').onclick=ev=>{ ev.preventDefault(); $('lexPanel').open=true; $('lexPanel').scrollIntoView({behavior:'smooth'}); };
+      +'Try another reading on a card marked \u21c4, or check the <a href="?view=lexicon" target="_blank" rel="noopener">Lexicon</a> for the categories a word can take.</span>';
     return false;
   }
-  const readings=[], byKey={}; let lastErr=null;
+  const readings=[], byKey={}; let lastErr=null, dropped=0;
   for(const ccg of parses){
     let enriched;
     try{
       enriched=Enrich(toEnrichTree(ccg), repairFn);
       if(!eqType(enriched.ty, parseType('t'))) throw new Error('root type is '+showType(enriched.ty)+', not t');
       polarize(enriched,'up');
-    }catch(e){ lastErr=e; continue; }
+    }catch(e){ lastErr=e; dropped++; continue; }
     const k=polKey(enriched), cost=derivationCost(ccg);
     if(byKey[k]){ if(cost<byKey[k].cost) Object.assign(byKey[k],{ccg,enriched,cost}); continue; }
     const r={ccg,enriched,cost}; byKey[k]=r; readings.push(r);
@@ -1289,14 +1513,15 @@ function parseAndTag(){
   if(!readings.length){
     statusEl.className='status err';
     statusEl.innerHTML=escapeHtml(lastErr?lastErr.message:'no reading')
-      +'<br><span style="color:var(--ink-dim)">The sentence parses, but no derivation could be adapted: none of the built-in Adapt rules (H, PM, W) fits. '
+      +'<br><span style="color:var(--ink-dim)">The sentence parses, but no derivation could be adapted: none of the built-in Adapt rules (H, H∩, W) fits. '
       +'Try another reading on a card marked \u21c4.</span>';
     return false;
   }
   readings.sort((a,b)=>a.cost-b.cost);
   renderReadings(readings);
   setStatus((readings.length===1 ? 'Tagged.' : 'Tagged. This sentence has '+readings.length+' readings; the most likely one is shown first.')
-    +(capped ? ' The sentence has more derivations than the parser keeps, so some readings may be missing.' : ''),'ok');
+    +(capped ? ' The sentence has more derivations than the parser keeps, so some readings may be missing.' : '')
+    +(dropped ? ' '+dropped+' of '+parses.length+' derivations could not be adapted ('+escapeHtml(lastErr.message)+').' : ''),'ok');
   return true;
 }
 
@@ -1382,7 +1607,8 @@ function renderOutput(host, ccg, enriched){
    EXAMPLES. Each example records one derivation as a script, used by the
    test-set view (?view=tests): a binary rule {rule, at} combining cards
    at, at+1; a unary raise {rule:'Tf'|'Tb', at}; a coordination
-   {rule:'Phi', at} of cards at..at+2; or a reading switch {switch:i, to:cat}.
+   {rule:'Phi', at} of cards at..at+2; a negation {rule:'Neg', at} of the
+   not card at with the card at+1; or a reading switch {switch:i, to:cat}.
    'at' indexes the current forest. Paper examples are loaded from their
    sentence; test cases list their cards (tokens), where {w, cat} or
    {w, cls} picks a reading of a switch card. In the tagger, an example
@@ -1399,10 +1625,10 @@ const PAPER_EXAMPLES = [
     {rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
   {id:5, sentence:'more than two dogs swam', steps:[
     {rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:6, sentence:"Fido didn't chase Felix", steps:[
-    {rule:'Bf',at:1},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:7, sentence:"Fido didn't chase a cat", steps:[
-    {rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:6, sentence:"Fido did not chase Felix", steps:[
+    {rule:'>',at:3},{rule:'Neg',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:7, sentence:"Fido did not chase a cat", steps:[
+    {rule:'>',at:4},{rule:'>',at:3},{rule:'Neg',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
   {id:8, sentence:'every dog chased some cat', steps:[
     {rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
   {id:9, sentence:'every dog chased no cat', steps:[
@@ -1434,390 +1660,231 @@ const PAPER_EXAMPLES = [
 
 /* Test set: word cards are the tokens after preprocessing; ordered from simple to complex. */
 const TEST_CASES = [
-  {id:1, pos:'NAME IV', sentence:'john moves.',
-   tokens:['john','moves'],
+  {id:1, pos:'NAME IV', sentence:'mary smiled.',
+   tokens:['mary','smiled'],
    steps:[{rule:'<',at:0}]},
   {id:2, pos:'NAME TV NAME', sentence:'mary loves john.',
    tokens:['mary','loves','john'],
    steps:[{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:3, pos:'NAME ADV IV', sentence:'tom seldom swims.',
-   tokens:['tom','seldom','swims'],
+  {id:3, pos:'PRON TV PRON', sentence:'she loves him.',
+   tokens:['she','loves','him'],
    steps:[{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:4, pos:'NAME COP ADJ', sentence:'john is tall.',
-   tokens:['john','is',{w:'tall',cat:'S\\NP'}],
-   steps:[{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:5, pos:'DET N IV', sentence:'no man ran.',
-   tokens:['no','man','ran'],
+  {id:4, pos:'DET N IV', sentence:'every man walked.',
+   tokens:['every','man','walked'],
    steps:[{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:6, pos:'NAME NEG IV', sentence:'we never kissed.',
-   tokens:['we','never','kissed'],
-   steps:[{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:7, pos:'DET ADJ N IV', sentence:'some tall man ran.',
-   tokens:['some','tall','man','ran'],
-   steps:[{rule:'>',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:8, pos:'DET N TV NAME', sentence:'a dog attacked nina.',
-   tokens:['a','dog','attacked','nina'],
-   steps:[{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:9, pos:'NAME TV DET N', sentence:'nina has a dog.',
-   tokens:['nina','has','a','dog'],
-   steps:[{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:10, pos:'DET N COP ADJ', sentence:'every dog is pretty.',
-   tokens:['every','dog',{w:'is',cat:'(S\\NP)/(S\\NP)'},'pretty'],
-   steps:[{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:11, pos:'DET N COP ADJ', sentence:'every man is tall.',
-   tokens:['every','man','is',{w:'tall',cat:'S\\NP'}],
-   steps:[{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:12, pos:'DET N COP ADJ', sentence:'some car is red.',
-   tokens:['some','car','is',{w:'red',cat:'S\\NP'}],
-   steps:[{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:13, pos:'NAME COP DEG ADJ', sentence:'mary is very pretty.',
-   tokens:['mary','is',{w:'very',cat:'(S\\NP)/(S\\NP)'},'pretty'],
-   steps:[{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:14, pos:'DET N IV ADV', sentence:'no man ran quickly.',
-   tokens:['no','man','ran','quickly'],
-   steps:[{rule:'<',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:15, pos:'NAME NEG IV ADV', sentence:"jack doesn't drive fast.",
-   tokens:['jack',"doesn't",'drive',{w:'fast',cat:'(S\\NP)\\(S\\NP)'}],
-   steps:[{rule:'<',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:16, pos:'NAME NEG TV NAME', sentence:'she never kissed him.',
-   tokens:['she','never',{w:'kissed',cat:'(S\\NP)/NP'},'him'],
-   steps:[{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:17, pos:'NUMDET N IV', sentence:'exactly one man ran.',
+  {id:5, pos:'DET N IV', sentence:'no child cried.',
+   tokens:['no','child','cried'],
+   steps:[{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:6, pos:'DET N IV', sentence:'few students agreed.',
+   tokens:['few','students','agreed'],
+   steps:[{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:7, pos:'DET N IV', sentence:'most dogs barked.',
+   tokens:['most','dogs','barked'],
+   steps:[{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:8, pos:'DET N IV', sentence:'the king died.',
+   tokens:['the','king','died'],
+   steps:[{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:9, pos:'NUMDET N IV', sentence:'exactly one man ran.',
    tokens:['exactly',{w:'one',cat:'NUM'},'man','ran'],
    steps:[{rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:18, pos:'NAME COP NEG ADJ', sentence:'john is not tall.',
-   tokens:['john','is','not',{w:'tall',cat:'S\\NP'}],
-   steps:[{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:19, pos:'DET ADJ N IV ADV', sentence:'every tall man ran quickly.',
-   tokens:['every','tall','man','ran','quickly'],
-   steps:[{rule:'<',at:3},{rule:'>',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:20, pos:'DET ADJ N TV NAME', sentence:'a cold bath refreshed him.',
-   tokens:['a',{w:'cold',cat:'N/N'},'bath','refreshed','him'],
-   steps:[{rule:'>',at:3},{rule:'>',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:21, pos:'NAME ADV TV DET N', sentence:'i rarely catch a cold.',
-   tokens:['i','rarely','catch','a','cold'],
-   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:22, pos:'NAME TV DET ADJ N', sentence:'i bought a vw bus.',
-   tokens:['i','bought','a','vw','bus'],
-   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:23, pos:'NAME TV DET N ADV', sentence:'john entered the race early.',
-   tokens:['john','entered','the','race','early'],
-   steps:[{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:1},{rule:'<',at:0}]},
-  {id:24, pos:'DET DEG ADJ N IV', sentence:'a very tall man ran.',
-   tokens:['a','very','tall','man','ran'],
-   steps:[{rule:'>',at:1},{rule:'>',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:25, pos:'DET DEG ADJ N IV', sentence:'a very red car ran.',
-   tokens:['a',{w:'very',cls:'intersective'},'red','car','ran'],
-   steps:[{rule:'>',at:1},{rule:'>',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:26, pos:'DET N NEG IV', sentence:'some elephants are not pink.',
-   tokens:['some','elephants','are','not','pink'],
-   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:27, pos:'DET N NEG IV ADV', sentence:"the meeting didn't go well.",
-   tokens:['the','meeting',"didn't",'go','well'],
-   steps:[{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:28, pos:'DET N TV DET N', sentence:'every lie has no legs.',
+  {id:10, pos:'NUMDET N IV', sentence:'more than two dogs barked.',
+   tokens:['morethan','two','dogs','barked'],
+   steps:[{rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:11, pos:'NUMDET N IV', sentence:'less than five men ran.',
+   tokens:['lessthan','five','men','ran'],
+   steps:[{rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:12, pos:'DET N TV DET N', sentence:'every teacher loves some student.',
+   tokens:['every','teacher','loves','some','student'],
+   steps:[{rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:13, pos:'DET N TV DET N', sentence:'no boy kissed every girl.',
+   tokens:['no','boy','kissed','every','girl'],
+   steps:[{rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:14, pos:'DET N TV DET N', sentence:'every lie has no legs.',
    tokens:['every','lie','has','no','legs'],
-   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:29, pos:'NAME NEG TV DET N', sentence:"tom didn't have a gun.",
-   tokens:['tom',"didn't",'have','a','gun'],
+   steps:[{rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:15, pos:'NUMDET N TV NUMDET N', sentence:'more than two dogs chased less than three cats.',
+   tokens:['morethan','two','dogs','chased','lessthan','three','cats'],
+   steps:[{rule:'>',at:0},{rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:16, pos:'DET N TV DET N', sentence:'someone kissed everyone.',
+   tokens:['some','one','kissed','every','one'],
+   steps:[{rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:17, pos:'NAME AUX NEG IV', sentence:'mary did not laugh.',
+   tokens:['mary','did','not','laugh'],
+   steps:[{rule:'Neg',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:18, pos:'NAME AUX NEG TV DET N', sentence:'fido didn\'t chase a cat.',
+   tokens:['fido','did','not','chase','a','cat'],
+   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'Neg',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:19, pos:'NAME AUX NEG TV DET N', sentence:'john did not kiss every girl.',
+   tokens:['john','did','not','kiss','every','girl'],
+   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'Neg',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:20, pos:'NEG DET N IV', sentence:'not every boy sang.',
+   tokens:['not','every','boy','sang'],
+   steps:[{rule:'Neg',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:21, pos:'DET N AUX NEG IV', sentence:'no dog did not run.',
+   tokens:['no','dog','did','not','run'],
+   steps:[{rule:'>',at:0},{rule:'Neg',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:22, pos:'NAME ADV IV', sentence:'fido never barked.',
+   tokens:['fido','never','barked'],
+   steps:[{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:23, pos:'DET N ADV IV', sentence:'every dog often swims.',
+   tokens:['every','dog','often','swims'],
+   steps:[{rule:'>',at:0},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:24, pos:'DET N IV ADV', sentence:'no dog barked yesterday.',
+   tokens:['no','dog','barked','yesterday'],
+   steps:[{rule:'>',at:0},{rule:'<',at:1},{rule:'<',at:0}]},
+  {id:25, pos:'DET ADJ N IV', sentence:'every red dog barked.',
+   tokens:['every','red','dog','barked'],
+   steps:[{rule:'>',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:26, pos:'DET ADJ N TV DET ADJ N', sentence:'some white dog chased every brown cat.',
+   tokens:['some','white','dog','chased','every','brown','cat'],
+   steps:[{rule:'>',at:1},{rule:'>',at:0},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:27, pos:'DET ADJ CONJ ADJ N IV', sentence:'every dead and black dog ran.',
+   tokens:['every','dead','and','black','dog','ran'],
+   steps:[{rule:'Phi',at:1},{rule:'>',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:28, pos:'DET N COP ADJ', sentence:'no cat is black.',
+   tokens:['no','cat','is',{w:'black',cat:'S[adj]\\NP'}],
+   steps:[{rule:'>',at:0},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:29, pos:'DET N COP DET N', sentence:'no dog is a cat.',
+   tokens:['no','dog',{w:'is',cat:'(S\\NP)/NP'},'a','cat'],
+   steps:[{rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:30, pos:'NAME COP NEG ADJ', sentence:'fido is not hungry.',
+   tokens:['fido','is','not','hungry'],
+   steps:[{rule:'Neg',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:31, pos:'DET N COP PART DET N', sentence:'no dog is chasing a cat.',
+   tokens:['no','dog','is','chasing','a','cat'],
+   steps:[{rule:'>',at:0},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:32, pos:'NAME COP NEG PART', sentence:'fido is not sleeping.',
+   tokens:['fido','is','not','sleeping'],
+   steps:[{rule:'Neg',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:33, pos:'NAME COP PART DET N', sentence:'fido is eating some meat.',
+   tokens:['fido','is',{w:'eating',cat:'(S[ng]\\NP)/NP'},'some','meat'],
    steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:30, pos:'NAME TV NUMDET N', sentence:'she said more than three words.',
-   tokens:['she','said','morethan','three','words'],
-   steps:[{rule:'>',at:2},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:31, pos:'NUMDET ADJ N IV', sentence:'exactly one tall man ran.',
-   tokens:['exactly',{w:'one',cat:'NUM'},'tall','man','ran'],
-   steps:[{rule:'>',at:0},{rule:'>',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:32, pos:'NUMDET N IV ADV', sentence:'exactly one man ran quickly.',
-   tokens:['exactly',{w:'one',cat:'NUM'},'man','ran','quickly'],
-   steps:[{rule:'<',at:3},{rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:33, pos:'DET N TV ANY N', sentence:'no dog chased any cat.',
-   tokens:['no','dog','chased','any','cat'],
-   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:34, pos:'DET N COP DEG ADJ', sentence:'no man is very tall.',
-   tokens:['no','man','is',{w:'very',cat:'(S\\NP)/(S\\NP)'},{w:'tall',cat:'S\\NP'}],
-   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:35, pos:'DET ADJ N TV DET N', sentence:'a fat dog chased a cat.',
-   tokens:['a','fat','dog','chased','a','cat'],
-   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:36, pos:'DET N TV DET ADJ N', sentence:'a rat chewed a big hole.',
-   tokens:['a','rat','chewed','a','big','hole'],
-   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:37, pos:'DET N TV DET N ADV', sentence:'many men entered the race early.',
-   tokens:['many','men','entered','the','race','early'],
-   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:38, pos:'NAME ADV TV DET ADJ N', sentence:'tom seldom wears a big hat.',
-   tokens:['tom','seldom','wears','a','big','hat'],
-   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:39, pos:'DET N EXC NAME IV', sentence:'every body but tom smiled.',
-   tokens:['every','body',{w:'but',cat:'(NP\\NP)/NP'},'tom','smiled'],
-   steps:[{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0},{rule:'<',at:0}]},
-  {id:40, pos:'DET N IV CONJ IV', sentence:'every man sang or danced.',
-   tokens:['every','man','sang','or','danced'],
-   steps:[{rule:'Phi',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:41, pos:'NUMDET N NEG IV', sentence:'at most three girls did not move.',
-   tokens:['atmost','three','girls','not','move'],
-   steps:[{rule:'>',at:3},{rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:42, pos:'NAME IV P MEAS', sentence:'john swam in 10 minutes.',
-   tokens:['john','swam',{w:'in',cat:'((S\\NP)\\(S\\NP))/NUM'},'10','minutes'],
-   steps:[{rule:'<',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'<',at:0}]},
-  {id:43, pos:'NAME IV CONJ NAME IV', sentence:'john ran and mary smiled.',
+  {id:34, pos:'DET N COP PASS', sentence:'no cat was loved.',
+   tokens:['no','cat',{w:'was',cat:'(S\\NP)/(S[pss]\\NP)'},{w:'loved',cat:'S[pss]\\NP'}],
+   steps:[{rule:'>',at:0},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:35, pos:'DET N COP ADJ CONJ ADJ', sentence:'every dog is red or black.',
+   tokens:['every','dog','is',{w:'red',cat:'S[adj]\\NP'},'or',{w:'black',cat:'S[adj]\\NP'}],
+   steps:[{rule:'>',at:0},{rule:'Phi',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:36, pos:'NAME IV', sentence:'john lied.',
+   tokens:['john',{w:'lied',cat:'S\\NP'}],
+   steps:[{rule:'<',at:0}]},
+  {id:37, pos:'DET N IV CONJ IV', sentence:'every boy sang or danced.',
+   tokens:['every','boy','sang','or','danced'],
+   steps:[{rule:'>',at:0},{rule:'Phi',at:1},{rule:'<',at:0}]},
+  {id:38, pos:'DET N IV CONJ IV', sentence:'no dog ran or barked.',
+   tokens:['no','dog','ran','or','barked'],
+   steps:[{rule:'>',at:0},{rule:'Phi',at:1},{rule:'<',at:0}]},
+  {id:39, pos:'NAME IV CONJ NAME IV', sentence:'john ran and mary smiled.',
    tokens:['john','ran','and','mary','smiled'],
    steps:[{rule:'<',at:0},{rule:'<',at:2},{rule:'Phi',at:0}]},
-  {id:44, pos:'DET N NEG TV DET N', sentence:"the cat didn't move a muscle.",
-   tokens:['the','cat',"didn't",{w:'move',cat:'(S\\NP)/NP'},'a','muscle'],
-   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:45, pos:'NAME ADV NEG TV DET N', sentence:"i usually don't wear a watch.",
-   tokens:['i','usually',"don't",'wear','a','watch'],
-   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:46, pos:'NAME NEG ADV TV DET N', sentence:"i don't even have a house.",
-   tokens:['i',"don't",'even','have','a','house'],
-   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:47, pos:'NAME NEG TV DET ADJ N', sentence:"i don't have a new knife.",
-   tokens:['i',"don't",'have','a','new','knife'],
-   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:48, pos:'NUMDET N TV DET N', sentence:'exactly 12 aliens ate some meat.',
-   tokens:['exactly','12','aliens','ate','some','meat'],
-   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:49, pos:'NAME TV NUMDET ADJ N', sentence:'jones has more than one company car.',
-   tokens:['jones','has','morethan',{w:'one',cat:'NUM'},'company','car'],
-   steps:[{rule:'>',at:4},{rule:'>',at:2},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:50, pos:'DET N TV NUMDET N', sentence:'every student read at most three novels.',
-   tokens:['every','student','read','atmost',{w:'three',cat:'NUM'},'novels'],
-   steps:[{rule:'>',at:3},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:51, pos:'DET ADJ N TV DET ADJ N', sentence:'the red alien read some sci-fi novels.',
-   tokens:['the','red','alien','read','some','sci-fi','novels'],
-   steps:[{rule:'>',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:52, pos:'DET ADJ N TV DET N ADV', sentence:'most peanut farmers entered the race early.',
-   tokens:['most','peanut','farmers','entered','the','race','early'],
-   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'<',at:3},{rule:'>',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:53, pos:'NAME ADV TV DET DEG ADJ N', sentence:'tom seldom wears a very big hat.',
-   tokens:['tom','seldom',{w:'wears',cat:'(S\\NP)/NP'},'a','very','big','hat'],
-   steps:[{rule:'>',at:4},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:54, pos:'NAME CONJ DET N IV', sentence:'fido and no cat swam.',
-   tokens:['fido','and','no','cat','swam'],
-   steps:[{rule:'>',at:2},{rule:'Phi',at:0},{rule:'<',at:0}]},
-  {id:55, pos:'DET N EXC NAME IV', sentence:'no man but fido ran.',
-   tokens:['no','man',{w:'but',cat:'(NP\\NP)/NP'},'fido','ran'],
-   steps:[{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0},{rule:'<',at:0}]},
-  {id:56, pos:'NAME TV CONJ ADV TV NAME', sentence:'mary adores and passionately loves john.',
-   tokens:['mary','adores','and','passionately','loves','john'],
-   steps:[{rule:'Bf',at:3},{rule:'Phi',at:1},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:57, pos:'NAME CONJ NAME TV DET N', sentence:'smith and jones left the meeting.',
-   tokens:['smith','and','jones','left','the','meeting'],
-   steps:[{rule:'Phi',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:58, pos:'NAME TV DET N EXC NAME', sentence:'john kissed every girl but mary.',
-   tokens:['john',{w:'kissed',cat:'(S\\NP)/NP'},'every','girl',{w:'but',cat:'(NP\\NP)/NP'},'mary'],
-   steps:[{rule:'>',at:4},{rule:'>',at:2},{rule:'<',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:59, pos:'DET N EXC DET N IV', sentence:'every man but the teacher smiled.',
-   tokens:['every','man',{w:'but',cat:'(NP\\NP)/NP'},'the','teacher','smiled'],
-   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0},{rule:'<',at:0}]},
-  {id:60, pos:'DET N CONJ DET N IV', sentence:'the man and every boy ran.',
-   tokens:['the','man','and','every','boy','ran'],
-   steps:[{rule:'>',at:3},{rule:'>',at:0},{rule:'Phi',at:0},{rule:'<',at:0}]},
-  {id:61, pos:'DET N Pn DET N IV', sentence:'some dog in the room ran.',
-   tokens:['some','dog','in','the','room','ran'],
-   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:62, pos:'DET N NEG TV DET ADJ N', sentence:"the business didn't produce a great profit.",
-   tokens:['the','business',"didn't",'produce','a','great','profit'],
-   steps:[{rule:'>',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:63, pos:'NAME ADV NEG TV DET ADJ N', sentence:"i usually don't wear a blue watch.",
-   tokens:['i','usually',"don't",'wear','a','blue','watch'],
-   steps:[{rule:'>',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:64, pos:'NAME NEG ADV TV DET ADJ N', sentence:"tom doesn't usually wear a big hat.",
-   tokens:['tom',"doesn't",'usually','wear','a','big','hat'],
-   steps:[{rule:'>',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:65, pos:'NUMDET N TV DET ADJ N', sentence:'exactly 12 aliens read some sci-fi novels.',
-   tokens:['exactly','12','aliens','read','some','sci-fi','novels'],
-   steps:[{rule:'>',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:66, pos:'DET N who NAME TV IV', sentence:'every student whom mary kissed smiled.',
-   tokens:['every','student','whom','mary',{w:'kissed',cat:'(S\\NP)/NP'},'smiled'],
-   steps:[{rule:'Tf',at:3},{rule:'Bf',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:67, pos:'NAME NEG TV NAME CONJ NAME', sentence:"you don't speak english and japanese.",
-   tokens:['you',"don't",'speak','english','and','japanese'],
-   steps:[{rule:'Phi',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:68, pos:'NUMDET N IV CONJ IV', sentence:'exactly one man sang or danced.',
-   tokens:['exactly',{w:'one',cat:'NUM'},'man','sang','or','danced'],
-   steps:[{rule:'Phi',at:3},{rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:69, pos:'DET N IV CONJ NEG IV', sentence:'every dog ran and never swam.',
-   tokens:['every','dog','ran','and','never','swam'],
-   steps:[{rule:'>',at:4},{rule:'Phi',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:70, pos:'NAME TV DET N EXC NAME', sentence:'john kissed no girl but mary.',
-   tokens:['john',{w:'kissed',cat:'(S\\NP)/NP'},'no','girl',{w:'but',cat:'(NP\\NP)/NP'},'mary'],
-   steps:[{rule:'>',at:4},{rule:'>',at:2},{rule:'<',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:71, pos:'NUMDET N EXC NAME IV', sentence:'exactly one man but fido ran.',
-   tokens:['exactly',{w:'one',cat:'NUM'},'man',{w:'but',cat:'(NP\\NP)/NP'},'fido','ran'],
-   steps:[{rule:'>',at:3},{rule:'>',at:0},{rule:'>',at:0},{rule:'<',at:0},{rule:'<',at:0}]},
-  {id:72, pos:'NAME TV NUMDET PART NAME', sentence:'john kissed more than two of them.',
-   tokens:['john',{w:'kissed',cat:'(S\\NP)/NP'},'morethan','two',{w:'of',cat:'N/NP'},'them'],
-   steps:[{rule:'>',at:4},{rule:'>',at:2},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:73, pos:'NAME TV NUMDET PART NAME', sentence:'john kissed at most two of them.',
-   tokens:['john',{w:'kissed',cat:'(S\\NP)/NP'},'atmost','two',{w:'of',cat:'N/NP'},'them'],
-   steps:[{rule:'>',at:4},{rule:'>',at:2},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:74, pos:'DET N CONJ DET N IV', sentence:'every boy and every girl was delighted.',
-   tokens:['every','boy','and','every','girl','was','delighted'],
-   steps:[{rule:'>',at:3},{rule:'>',at:0},{rule:'Phi',at:0},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:75, pos:'DET N TV DET N CONJ IV', sentence:'the hunter shot a deer but missed.',
-   tokens:['the','hunter','shot','a','deer','but','missed'],
-   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'Phi',at:2},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:76, pos:'NAME TV DET ADJ CONJ ADJ N', sentence:'tom made a peanut butter and jelly sandwich.',
-   tokens:['tom','made','a','peanutbutter','and','jelly','sandwich'],
-   steps:[{rule:'Phi',at:3},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:77, pos:'NAME TV DET N CONJ DET N', sentence:'i see a man and a woman.',
-   tokens:['i','see','a','man','and','a','woman'],
-   steps:[{rule:'>',at:5},{rule:'>',at:2},{rule:'Phi',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:78, pos:'NAME TV DET N CONJ TV NAME', sentence:'tom picked some berries and ate them.',
-   tokens:['tom','picked','some','berries','and','ate','them'],
-   steps:[{rule:'>',at:5},{rule:'>',at:2},{rule:'>',at:1},{rule:'Phi',at:1},{rule:'<',at:0}]},
-  {id:79, pos:'DET N CONJ N TV DET N', sentence:'every representative or client attended the meeting.',
-   tokens:['every','representative','or','client','attended','the','meeting'],
-   steps:[{rule:'Phi',at:1},{rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:80, pos:'NAME TV DET N Pn DET N', sentence:'mary read a novel about every alien.',
-   tokens:['mary','read','a','novel','about','every','alien'],
-   steps:[{rule:'>',at:5},{rule:'>',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:81, pos:'NAME TV CONJ NAME TV DET N', sentence:'john chased and mary saw a cat.',
-   tokens:['john',{w:'chased',cat:'(S\\NP)/NP'},'and','mary',{w:'saw',cat:'(S\\NP)/NP'},'a','cat'],
-   steps:[{rule:'Tf',at:0},{rule:'Bf',at:0},{rule:'Tf',at:2},{rule:'Bf',at:2},{rule:'Phi',at:0},{rule:'>',at:1},{rule:'>',at:0}]},
-  {id:82, pos:'DET N IV if NAME IV', sentence:'every dog ran if john ran.',
-   tokens:['every','dog','ran',{w:'if',cat:'(S\\S)/S'},'john','ran'],
-   steps:[{rule:'<',at:4},{rule:'>',at:3},{rule:'>',at:0},{rule:'<',at:0},{rule:'<',at:0}]},
-  {id:83, pos:'DET N who TV DET N IV', sentence:'every student who kissed every teacher smiled.',
-   tokens:['every','student',{w:'who',cat:'(N\\N)/(S\\NP)'},{w:'kissed',cat:'(S\\NP)/NP'},'every','teacher','smiled'],
-   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:84, pos:'NAME NEG TV DET N CONJ N', sentence:"i don't have a clue or idea.",
-   tokens:['i',"don't",'have','a','clue','or','idea'],
-   steps:[{rule:'Phi',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:85, pos:'NAME TV DET N who IV', sentence:'he has a daughter who is pretty.',
-   tokens:['he','has','a','daughter',{w:'who',cat:'(N\\N)/(S\\NP)'},'is','pretty'],
-   steps:[{rule:'>',at:5},{rule:'>',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:86, pos:'DET N CONJ DET N IV ADV', sentence:'some dog and no cat swam quickly.',
-   tokens:['some','dog','and','no','cat','swam','quickly'],
-   steps:[{rule:'>',at:3},{rule:'>',at:0},{rule:'Phi',at:0},{rule:'<',at:1},{rule:'<',at:0}]},
-  {id:87, pos:'NUMDET N CONJ DET N IV', sentence:'exactly three cats and some dogs swam.',
-   tokens:['exactly','three','cats','and','some','dogs','swam'],
-   steps:[{rule:'>',at:4},{rule:'>',at:0},{rule:'>',at:0},{rule:'Phi',at:0},{rule:'<',at:0}]},
-  {id:88, pos:'NAME ADV CONJ ADV TV DET N', sentence:'tom always or never wears a hat.',
-   tokens:['tom','always','or','never','wears','a','hat'],
-   steps:[{rule:'Phi',at:1},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:89, pos:'DET N who IV TV DET N', sentence:'every dog who swam chased a cat.',
-   tokens:['every','dog',{w:'who',cat:'(N\\N)/(S\\NP)'},'swam','chased','a','cat'],
-   steps:[{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:90, pos:'NAME TV DET N who NAME TV', sentence:'mary loves every dog whom john chased.',
-   tokens:['mary','loves','every','dog','whom','john',{w:'chased',cat:'(S\\NP)/NP'}],
-   steps:[{rule:'Tf',at:5},{rule:'Bf',at:5},{rule:'>',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:91, pos:'NAME TV DET N Pn DET N', sentence:'mary read a novel about no alien.',
-   tokens:['mary',{w:'read',cat:'(S\\NP)/NP'},'a','novel','about','no','alien'],
-   steps:[{rule:'>',at:5},{rule:'>',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:92, pos:'DET N CONJ DET ADJ N IV', sentence:'every boy and every little girl was delighted.',
-   tokens:['every','boy','and','every','little','girl','was','delighted'],
-   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:0},{rule:'Phi',at:0},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:93, pos:'NAME TV DET ADJ N CONJ TV NAME', sentence:'tom picked some ripe berries and ate them.',
-   tokens:['tom','picked','some','ripe','berries','and','ate','them'],
-   steps:[{rule:'>',at:6},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'Phi',at:1},{rule:'<',at:0}]},
-  {id:94, pos:'NAME TV DET N CONJ DET ADJ N', sentence:'i see a man and an elegant woman.',
-   tokens:['i','see','a','man','and','an','elegant','woman'],
-   steps:[{rule:'>',at:6},{rule:'>',at:5},{rule:'>',at:2},{rule:'Phi',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:95, pos:'NUMDET CONJ NUMDET N IV', sentence:'more than two and less than five dogs swam.',
+  {id:40, pos:'DET N CONJ DET N IV', sentence:'every dog and some cat swam.',
+   tokens:['every','dog','and','some','cat','swam'],
+   steps:[{rule:'>',at:0},{rule:'>',at:2},{rule:'Phi',at:0},{rule:'<',at:0}]},
+  {id:41, pos:'DET N CONJ DET N IV', sentence:'no dog and every cat slept.',
+   tokens:['no','dog','and','every','cat','slept'],
+   steps:[{rule:'>',at:0},{rule:'>',at:2},{rule:'Phi',at:0},{rule:'<',at:0}]},
+  {id:42, pos:'NUMDET CONJ NUMDET N IV', sentence:'more than two and less than five dogs swam.',
    tokens:['morethan','two','and','lessthan','five','dogs','swam'],
-   steps:[{rule:'>',at:3},{rule:'>',at:0},{rule:'Phi',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:96, pos:'NUMDET CONJ NUMDET N IV', sentence:'at least two or at least three dogs ran.',
-   tokens:['atleast','two','or','atleast','three','dogs','ran'],
-   steps:[{rule:'>',at:3},{rule:'>',at:0},{rule:'Phi',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:97, pos:'DET N who DET N TV IV', sentence:'every student whom no teacher kissed smiled.',
-   tokens:['every','student',{w:'whom',cat:'(N\\N)/(S/NP)'},'no','teacher',{w:'kissed',cat:'(S\\NP)/NP'},'smiled'],
+   steps:[{rule:'>',at:0},{rule:'>',at:2},{rule:'Phi',at:0},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:43, pos:'NAME CONJ NEG NAME IV', sentence:'fido and not felix ran.',
+   tokens:['fido','and','not','felix','ran'],
+   steps:[{rule:'Neg',at:2},{rule:'Phi',at:0},{rule:'<',at:0}]},
+  {id:44, pos:'NAME AUX NEG TV CONJ TV NAME', sentence:'john did not kiss or hug mary.',
+   tokens:['john','did','not','kiss','or','hug','mary'],
+   steps:[{rule:'Phi',at:3},{rule:'>',at:3},{rule:'Neg',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:45, pos:'NAME TV CONJ NAME TV DET N', sentence:'john chased and mary saw a cat.',
+   tokens:['john','chased','and','mary','saw','a','cat'],
+   steps:[{rule:'Tf',at:0},{rule:'Bf',at:0},{rule:'Tf',at:2},{rule:'Bf',at:2},{rule:'Phi',at:0},{rule:'>',at:1},{rule:'>',at:0}]},
+  {id:46, pos:'NAME TV CONJ NAME TV DET N', sentence:'john kissed and mary hugged every girl.',
+   tokens:['john','kissed','and','mary','hugged','every','girl'],
+   steps:[{rule:'Tf',at:0},{rule:'Bf',at:0},{rule:'Tf',at:2},{rule:'Bf',at:2},{rule:'Phi',at:0},{rule:'>',at:1},{rule:'>',at:0}]},
+  {id:47, pos:'DET N PREP DET N IV', sentence:'every dog in the park barked.',
+   tokens:['every','dog','in','the','park','barked'],
+   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:48, pos:'DET N PREP DET N IV', sentence:'a dog in no park ran.',
+   tokens:['a','dog','in','no','park','ran'],
+   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:49, pos:'NAME IV PREP DET N', sentence:'fido slept in no park.',
+   tokens:['fido','slept',{w:'in',cat:'((S\\NP)\\(S\\NP))/NP'},'no','park'],
+   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'<',at:0}]},
+  {id:50, pos:'DET N PREP DET N IV', sentence:'every man in every city slept.',
+   tokens:['every','man','in','every','city','slept'],
+   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:51, pos:'NAME TV DET N PREP DET N', sentence:'fido chased a cat in the park.',
+   tokens:['fido','chased','a','cat','in','the','park'],
+   steps:[{rule:'>',at:5},{rule:'>',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:52, pos:'DET N who IV IV', sentence:'every woman who smiled laughed.',
+   tokens:['every','woman','who','smiled','laughed'],
+   steps:[{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:53, pos:'DET N who NAME TV IV', sentence:'every cat who fido chased ran.',
+   tokens:['every','cat',{w:'who',cat:'(N\\N)/(S/NP)'},'fido','chased','ran'],
+   steps:[{rule:'Tf',at:3},{rule:'Bf',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:54, pos:'DET N who DET N TV IV', sentence:'every student whom no teacher kissed smiled.',
+   tokens:['every','student','whom','no','teacher','kissed','smiled'],
    steps:[{rule:'>',at:3},{rule:'Tf',at:3},{rule:'Bf',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:98, pos:'DET N who TV DET ADJ N IV', sentence:'every student who kissed every tall teacher smiled.',
-   tokens:['every','student',{w:'who',cat:'(N\\N)/(S\\NP)'},{w:'kissed',cat:'(S\\NP)/NP'},'every','tall','teacher','smiled'],
-   steps:[{rule:'>',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:99, pos:'NAME ADV TV DET ADJ CONJ ADJ N', sentence:'tom really leads no easy and peaceful life.',
-   tokens:['tom','really','leads','no','easy','and','peaceful','life'],
-   steps:[{rule:'Phi',at:4},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:100, pos:'NAME NEG TV DET N CONJ DET N', sentence:'tom never forgets a name or a face.',
-   tokens:['tom','never','forgets','a','name','or','a','face'],
-   steps:[{rule:'>',at:6},{rule:'>',at:3},{rule:'Phi',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:101, pos:'NAME TV DET ADJ N who IV', sentence:'he has a brave daughter who is pretty.',
-   tokens:['he','has','a','brave','daughter',{w:'who',cat:'(N\\N)/(S\\NP)'},'is','pretty'],
-   steps:[{rule:'>',at:6},{rule:'>',at:5},{rule:'>',at:3},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:102, pos:'NAME NEG TV DET N P MEAS', sentence:"john didn't eat every strawberry in 10 minutes.",
-   tokens:['john',"didn't",'eat','every','strawberry',{w:'in',cat:'((S\\NP)\\(S\\NP))/NUM'},'10','minutes'],
-   steps:[{rule:'<',at:6},{rule:'>',at:5},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:103, pos:'DET N who TV DET N COP ADJ', sentence:'the man who loves every woman is tall.',
-   tokens:['the','man',{w:'who',cat:'(N\\N)/(S\\NP)'},{w:'loves',cat:'(S\\NP)/NP'},'every','woman','is',{w:'tall',cat:'S\\NP'}],
-   steps:[{rule:'>',at:6},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:104, pos:'NAME NEG ADV TV DET N CONJ DET N', sentence:"tom doesn't usually wear a hat or a cap.",
-   tokens:['tom',"doesn't",'usually','wear','a','hat','or','a','cap'],
-   steps:[{rule:'>',at:7},{rule:'>',at:4},{rule:'Phi',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:105, pos:'NAME NEG TV DET ADJ N CONJ DET N', sentence:'tom never forgets a full name or a face.',
-   tokens:['tom','never','forgets','a','full','name','or','a','face'],
-   steps:[{rule:'>',at:7},{rule:'>',at:4},{rule:'>',at:3},{rule:'Phi',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:106, pos:'DET N who TV DET N TV DET N', sentence:'everyone who loves everyone loves everyone.',
-   tokens:['every','one',{w:'who',cat:'(N\\N)/(S\\NP)'},'loves','every','one','loves','every','one'],
-   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:107, pos:'ANY N who TV ANY N TV ANY N', sentence:'anyone who loves anyone loves anyone.',
-   tokens:[{w:'any',cls:'free-choice'},'one',{w:'who',cat:'(N\\N)/(S\\NP)'},'loves','any','one','loves',{w:'any',cls:'free-choice'},'one'],
-   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:108, pos:'DET N who NAME CONJ NAME TV IV', sentence:'every man whom fido and felix chased ran.',
-   tokens:['every','man',{w:'whom',cat:'(N\\N)/(S/NP)'},'fido','and','felix',{w:'chased',cat:'(S\\NP)/NP'},'ran'],
-   steps:[{rule:'Tf',at:3},{rule:'Tf',at:5},{rule:'Phi',at:3},{rule:'Bf',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:109, pos:'DET N who NEG TV DET N IV', sentence:'every alien who did not eat some meat is hairy.',
-   tokens:['every','alien',{w:'who',cat:'(N\\N)/(S\\NP)'},'not','eat','some','meat','is','hairy'],
-   steps:[{rule:'>',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:110, pos:'DET N who TV DET N TV DET ADJ N', sentence:'every man who speaks the truth needs a fast horse.',
-   tokens:['every','man',{w:'who',cat:'(N\\N)/(S\\NP)'},'speaks','the','truth','needs','a','fast','horse'],
-   steps:[{rule:'>',at:8},{rule:'>',at:7},{rule:'>',at:6},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:111, pos:'NAME NEG TV DET ADJ CONJ DET ADJ N', sentence:"tom doesn't have a credit card or a bank account.",
-   tokens:['tom',"doesn't",'have','a','credit','card','or','a','bank','account'],
-   steps:[{rule:'>',at:8},{rule:'>',at:7},{rule:'>',at:4},{rule:'>',at:3},{rule:'Phi',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:112, pos:'DET N who NEG TV DET ADJ N IV', sentence:'every alien who did not read some sci-fi novels is hairy.',
-   tokens:['every','alien',{w:'who',cat:'(N\\N)/(S\\NP)'},'not','read','some','sci-fi','novels','is','hairy'],
-   steps:[{rule:'>',at:6},{rule:'>',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:113, pos:'NAME TV N+ Pn ADJ N+ PG TV NAME', sentence:'we state theorems of algebraic geometry before proving them.',
-   tokens:['we','state','some','theorems','of','some','algebraic','geometry','before','proving','them'],
-   steps:[{rule:'>',at:9},{rule:'>',at:8},
-          {rule:'>',at:6},{rule:'>',at:5},{rule:'>',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:1},{rule:'<',at:0}]},
-  {id:114, pos:'DET N who NAME CONJ NAME CONJ NAME TV IV', sentence:'every man whom fido and felix and tom chased ran.',
-   tokens:['every','man',{w:'whom',cat:'(N\\N)/(S/NP)'},'fido','and','felix','and','tom',{w:'chased',cat:'(S\\NP)/NP'},'ran'],
-   steps:[{rule:'Tf',at:3},{rule:'Tf',at:5},{rule:'Tf',at:7},{rule:'Phi',at:3},{rule:'Phi',at:3},{rule:'Bf',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:115, pos:'if NAME NEG IV , DET N NEG TV DET N', sentence:"if you don't like the service, don't leave a tip.",
-   tokens:[{w:'if',cat:'(S/S)/S'},'you',"don't",'like','the','service','you',"don't",'leave','a','tip'],
-   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},
-          {rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0}]},
-  {id:116, pos:'DET N who NEG TV DET N CONJ N IV ADV', sentence:'everyone who does not own a car or motorcycle got in for free.',
-   tokens:['every','one',{w:'who',cat:'(N\\N)/(S\\NP)'},'not','own','a','car','or','motorcycle','gotin','forfree'],
-   steps:[{rule:'Phi',at:6},{rule:'>',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:1},{rule:'<',at:0}]},
-  {id:117, pos:'DET N who TV DET N who TV DET N IV', sentence:'every dog who chased a cat who ate some meat ran.',
-   tokens:['every','dog',{w:'who',cat:'(N\\N)/(S\\NP)'},'chased','a','cat',{w:'who',cat:'(N\\N)/(S\\NP)'},'ate','some','meat','ran'],
+  {id:55, pos:'DET N who TV DET N IV', sentence:'no dog who chased every cat slept.',
+   tokens:['no','dog','who','chased','every','cat','slept'],
+   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:56, pos:'DET N who ADV IV IV', sentence:'every dog who never barked ran.',
+   tokens:['every','dog','who','never','barked','ran'],
+   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:57, pos:'NAME TV DET N who AUX NEG IV', sentence:'fido chased every cat who did not run.',
+   tokens:['fido','chased','every','cat','who','did','not','run'],
+   steps:[{rule:'Neg',at:6},{rule:'>',at:5},{rule:'>',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:58, pos:'DET N who NAME AUX NEG TV IV', sentence:'every cat who fido did not chase ran.',
+   tokens:['every','cat',{w:'who',cat:'(N\\N)/(S/NP)'},'fido','did','not','chase','ran'],
+   steps:[{rule:'Tf',at:3},{rule:'Neg',at:5},{rule:'Bf',at:4},{rule:'Bf',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:59, pos:'DET N PREP DET N CONJ who IV IV', sentence:'every dog in the park and who ran slept.',
+   tokens:['every','dog','in','the','park','and','who','ran','slept'],
+   steps:[{rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:4},{rule:'Phi',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:60, pos:'DET N who NAME CONJ NAME TV IV', sentence:'every man whom fido and felix chased ran.',
+   tokens:['every','man','whom','fido','and','felix','chased','ran'],
+   steps:[{rule:'Phi',at:3},{rule:'Tf',at:3},{rule:'Bf',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:61, pos:'NAME IV if NAME IV', sentence:'john smiled if mary laughed.',
+   tokens:['john','smiled','if','mary','laughed'],
+   steps:[{rule:'<',at:0},{rule:'<',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:62, pos:'if NAME IV NAME IV', sentence:'if mary laughed john smiled.',
+   tokens:['if','mary','laughed','john','smiled'],
+   steps:[{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:1},{rule:'>',at:0}]},
+  {id:63, pos:'if NAME IV NAME IV', sentence:'whenever fido barks felix runs.',
+   tokens:['whenever','fido','barks','felix','runs'],
+   steps:[{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:1},{rule:'>',at:0}]},
+  {id:64, pos:'DET N IV if DET N IV', sentence:'every dog ran if no cat slept.',
+   tokens:['every','dog','ran','if','no','cat','slept'],
+   steps:[{rule:'>',at:0},{rule:'<',at:0},{rule:'>',at:2},{rule:'<',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:65, pos:'if DET N IV DET N IV', sentence:'if every dog ran some cat slept.',
+   tokens:['if','every','dog','ran','some','cat','slept'],
+   steps:[{rule:'>',at:1},{rule:'<',at:1},{rule:'>',at:0},{rule:'>',at:1},{rule:'<',at:1},{rule:'>',at:0}]},
+  {id:66, pos:'NAME IV if NAME AUX NEG IV', sentence:'john smiled if mary did not laugh.',
+   tokens:['john','smiled','if','mary','did','not','laugh'],
+   steps:[{rule:'<',at:0},{rule:'Neg',at:4},{rule:'>',at:3},{rule:'<',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:67, pos:'DET N who NAME TV COP ADJ', sentence:'every cat who fido chased was black.',
+   tokens:['every','cat',{w:'who',cat:'(N\\N)/(S/NP)'},'fido','chased','was',{w:'black',cat:'S[adj]\\NP'}],
+   steps:[{rule:'Tf',at:3},{rule:'Bf',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:68, pos:'DET N who COP DET N COP ADJ', sentence:'no man who is a doctor is sick.',
+   tokens:['no','man','who',{w:'is',cat:'(S\\NP)/NP'},'a','doctor','is','sick'],
+   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:69, pos:'DET N who COP PASS PREP DET N IV', sentence:'every dog that was chased in the park ran.',
+   tokens:['every','dog','that',{w:'was',cat:'(S\\NP)/(S[pss]\\NP)'},{w:'chased',cat:'S[pss]\\NP'},{w:'in',cat:'((S\\NP)\\(S\\NP))/NP'},'the','park','ran'],
+   steps:[{rule:'>',at:3},{rule:'>',at:5},{rule:'>',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
+  {id:70, pos:'NUMDET N PREP DET N COP PART', sentence:'exactly one dog in the park is sleeping.',
+   tokens:['exactly',{w:'one',cat:'NUM'},'dog','in','the','park','is','sleeping'],
+   steps:[{rule:'>',at:0},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:71, pos:'NAME AUX NEG IV CONJ IV', sentence:'fido did not run or swim.',
+   tokens:['fido','did','not','run','or','swim'],
+   steps:[{rule:'Phi',at:3},{rule:'Neg',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:72, pos:'NAME TV DET N who IV CONJ IV', sentence:'fido chased every cat who ran or swam.',
+   tokens:['fido','chased','every','cat','who','ran','or','swam'],
+   steps:[{rule:'Phi',at:5},{rule:'>',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:73, pos:'NAME IV if NAME IV CONJ NAME IV', sentence:'felix ran if fido swam or tom sang.',
+   tokens:['felix','ran','if','fido','swam','or','tom','sang'],
+   steps:[{rule:'<',at:0},{rule:'<',at:2},{rule:'<',at:4},{rule:'Phi',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:74, pos:'NEG DET N TV DET N', sentence:'not every student likes some teacher.',
+   tokens:['not','every','student','likes','some','teacher'],
+   steps:[{rule:'Neg',at:0},{rule:'>',at:0},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
+  {id:75, pos:'DET N who TV DET N who TV DET N IV', sentence:'every dog who chased a cat which ate some meat ran.',
+   tokens:['every','dog','who','chased','a','cat','which','ate','some','meat','ran'],
    steps:[{rule:'>',at:8},{rule:'>',at:7},{rule:'>',at:6},{rule:'<',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:118, pos:'NAME TV N+ Pn N+ CONJ Pn N+', sentence:'we discuss theorems of geometry and about nature.',
-   tokens:['we','discuss','some','theorems','of','some','geometry','and','about','some','nature'],
-   steps:[{rule:'>',at:9},{rule:'>',at:8},{rule:'>',at:5},{rule:'>',at:4},{rule:'Phi',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:119, pos:'DET N who TV DET N CONJ N TV DET ADJ N', sentence:'everyone who owns a car or motorcycle paid a parking fee.',
-   tokens:['every','one',{w:'who',cat:'(N\\N)/(S\\NP)'},'owns','a','car','or','motorcycle','paid','a','parking','fee'],
-   steps:[{rule:'Phi',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},
-          {rule:'>',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:0}]},
-  {id:120, pos:'NAME TV N+ Pn ADJ N+ PG TV ADJ N+', sentence:'we discuss theorems of algebraic geometry before making new definitions.',
-   tokens:['we','discuss','some','theorems','of','some','algebraic','geometry','before','making','some','new','definitions'],
-   steps:[{rule:'>',at:11},{rule:'>',at:10},{rule:'>',at:9},{rule:'>',at:8},
-          {rule:'>',at:6},{rule:'>',at:5},{rule:'>',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:1},{rule:'<',at:0}]},
-  {id:121, pos:'DET N Pn DET N Pn DET N COP DET DEG ADJ N', sentence:'the debate about the nature of the lexicon is a very old one.',
-   tokens:['the','debate','about','the','nature','of','the','lexicon',{w:'is',cat:'(S\\NP)/NP'},'a','very','old','one'],
-   steps:[{rule:'>',at:10},{rule:'>',at:10},{rule:'>',at:9},{rule:'>',at:8},
-          {rule:'>',at:6},{rule:'>',at:5},{rule:'<',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},{rule:'<',at:0}]},
-  {id:122, pos:'if NAME NEG IV , DET N NEG TV DET ADJ N', sentence:"if you don't like the service, don't leave a large tip.",
-   tokens:[{w:'if',cat:'(S/S)/S'},'you',"don't",'like','the','service','you',"don't",'leave','a','large','tip'],
-   steps:[{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},
-          {rule:'>',at:5},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0}]},
-  {id:123, pos:'if NAME CONJ NAME NEG TV DET N , NAME TV DET N', sentence:'if smith and anderson did not sign the contract, jones signed the contract.',
-   tokens:[{w:'if',cat:'(S/S)/S'},'smith','and','anderson','not','sign','the','contract','jones','signed','the','contract'],
-   steps:[{rule:'Phi',at:1},{rule:'>',at:4},{rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0},
-          {rule:'>',at:3},{rule:'>',at:2},{rule:'<',at:1},{rule:'>',at:0}]},
-  {id:124, pos:'NAME TV N+ Pn ADJ N+ PG TV NUMD PART NAME', sentence:'we state theorems of algebraic geometry before proving two of them.',
-   tokens:['we','state','some','theorems','of','some','algebraic','geometry','before','proving','exactly','two',{w:'of',cat:'N/NP'},'them'],
-   steps:[{rule:'>',at:12},{rule:'>',at:10},{rule:'>',at:10},{rule:'>',at:9},{rule:'>',at:8},
-          {rule:'>',at:6},{rule:'>',at:5},{rule:'>',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:1},{rule:'<',at:0}]},
-  {id:125, pos:'NAME TV DET N Pn DET N PG TV NUMD N P DET ADJ N', sentence:'mary surprised every woman in the room by eating two bananas with a golden fork.',
-   tokens:['mary','surprised','every','woman','in','the','room','by','eating',{w:'exactly',cat:'(NP/N)/NUM'},'two','bananas',{w:'with',cat:'((S\\NP)\\(S\\NP))/NP'},'a','golden','fork'],
-   steps:[{rule:'>',at:14},{rule:'>',at:13},{rule:'>',at:12},{rule:'>',at:9},{rule:'>',at:9},{rule:'>',at:8},{rule:'<',at:8},{rule:'>',at:7},
-          {rule:'>',at:5},{rule:'>',at:4},{rule:'<',at:3},{rule:'>',at:2},{rule:'>',at:1},{rule:'<',at:1},{rule:'<',at:0}]},
 ];
 
 /* example id in URLs and links: P<n> for the paper examples, T<n> for the test set */
@@ -1839,6 +1906,7 @@ function buildForest(ex){
     }
     if(st.rule==='Tf'||st.rule==='Tb'){ f[st.at]=ccgStep(st.rule,[f[st.at]]); continue; }
     if(st.rule==='Phi'){ const out=ccgCoord([f[st.at],f[st.at+1],f[st.at+2]]); f.splice(st.at,3,out); continue; }
+    if(st.rule==='Neg'){ const out=ccgNeg([f[st.at],f[st.at+1]]); f.splice(st.at,2,out); continue; }
     const out=ccgStep(st.rule,[f[st.at],f[st.at+1]]); f.splice(st.at,2,out);
   }
   return f;
@@ -1861,11 +1929,11 @@ function loadExample(ex){
 
 /* the examples shown on the main page: test sentences picked by sentence, so that renumbering the test set does not move them */
 const EXAMPLE_SENTENCES = [
-  'mary loves john.', 'every dog is pretty.', 'no man ran quickly.', "tom didn't have a gun.", 'mary is very pretty.',
-  "john didn't eat every strawberry in 10 minutes.",
-  'she said more than three words.', 'some dog in the room ran.', 'i see a man and a woman.', 'some dog and no cat swam quickly.',
-  'fido and no cat swam.', 'every dog ran if john ran.', 'no man but fido ran.', 'every student who kissed every teacher smiled.',
-  'every student whom mary kissed smiled.', 'john chased and mary saw a cat.',
+  'every man walked.', 'no boy kissed every girl.', 'more than two dogs chased less than three cats.',
+  "fido didn't chase a cat.", 'not every boy sang.', 'no dog barked yesterday.', 'no dog is chasing a cat.',
+  'every red dog barked.', 'a dog in no park ran.', 'no dog and every cat slept.', 'john kissed and mary hugged every girl.',
+  'every cat who fido chased ran.', 'every student whom no teacher kissed smiled.', 'if every dog ran some cat slept.',
+  'fido did not run or swim.', 'no man who is a doctor is sick.',
 ];
 function showExamples(){
   const host=$('examples');
@@ -1878,7 +1946,7 @@ function showExamples(){
 
 /* ---- lexicon panel (read-only) ---- */
 function typeHtml(sem, cat){
-  return colorPol(escapeHtml(cat==='CONJ' ? sem.replace(/->\+/g,'→+') : showType(parseType(sem))));
+  return colorPol(escapeHtml((cat==='CONJ'||cat==='NEG') ? sem.replace(/->\+/g,'→+').replace(/->-/g,'→\u2212') : showType(parseType(sem))));
 }
 function showLexicon(){
   const rows=LEX.map(([cls,cat,sem,words])=>{
@@ -1954,6 +2022,11 @@ function fitTree(pre){
   const avail=pre.clientWidth, need=pre.scrollWidth;
   if(need>avail) pre.style.fontSize=Math.max(4, 13*avail/need*0.98)+'px';
 }
+function showLexiconView(){
+  document.title='Polarity Tagger — lexicon';
+  $('tagger').hidden=true; $('flowstrip').hidden=true; $('lexicon').hidden=false;
+  showLexicon();
+}
 function showTests(){
   document.title='Polarity Tagger — test set';
   $('tagger').hidden=true; $('flowstrip').hidden=true; $('tests').hidden=false;
@@ -1971,8 +2044,8 @@ $('sentence').addEventListener('keydown',e=>{ if(e.key==='Enter')loadWords(); })
 (function init(){
   const params=new URLSearchParams(location.search);
   if(params.get('view')==='tests'){ showTests(); return; }
+  if(params.get('view')==='lexicon'){ showLexiconView(); return; }
   showExamples();
-  showLexicon();
   renderForest();
   const ex=findExample(params.get('ex'));
   if(ex) loadExample(ex);
