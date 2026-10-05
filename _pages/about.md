@@ -64,7 +64,7 @@ I earned my M.Sc. degree from [Koç University](https://science.ku.edu.tr/en/dep
 
 **Projects**
 
-7) KnowTeX: Visualizing Mathematical Dependencies, Available on [Github](https://github.com/ElifUskuplu/KnowTex).
+7) KnowTeX: Visualizing Mathematical Dependencies, Available on [Github](https://github.com/ElifUskuplu/KnowTex). Try it [here](https://elifuskuplu.github.io/KnowTex/).
 
 6) Narya: A proof assistant for higher-dimensional type theory (as a contributor), Avaliable on [Github](https://github.com/gwaithimirdain/narya).
 
