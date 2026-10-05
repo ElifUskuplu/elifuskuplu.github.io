@@ -28,3 +28,6 @@ Final -- Dec 11 (In class)
 [Week 5](https://elifuskuplu.github.io/files/logic-week-05.html)
 
 [Exam 1 Question Pool](https://elifuskuplu.github.io/files/M384-Exam1-QuestionPool.pdf)
+
+[Week 7](https://elifuskuplu.github.io/files/logic-week-07.html)
+
