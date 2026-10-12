@@ -31,3 +31,4 @@ Final -- Dec 11 (In class)
 
 [Week 7](https://elifuskuplu.github.io/files/logic-week-07.html)
 
+[Week 8](https://elifuskuplu.github.io/files/logic-week-08.html)

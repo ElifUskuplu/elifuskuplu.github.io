@@ -30,3 +30,5 @@ Final -- Dec 14 (10:20 am - 12:20 pm)
 [Week 6](https://elifuskuplu.github.io/files/linalg-week-06.html) [Exam 1 Sample Questions](https://elifuskuplu.github.io/files/M301-SampleMidterm1.pdf)
 
 [Week 7](https://elifuskuplu.github.io/files/linalg-week-07.html)
+
+[Week 8](https://elifuskuplu.github.io/files/linalg-week-08.html)
