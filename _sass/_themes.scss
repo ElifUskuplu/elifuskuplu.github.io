@@ -1,5 +1,5 @@
 // Local override of al_folio_core's _sass/_themes.scss (copied from al_folio_core 1.0.15).
-// Only change: the light-mode theme/hover color is midnight blue instead of purple.
+// Only change: the light-mode theme/hover color is indigo instead of purple.
 // Dark mode keeps the theme's cyan so links stay readable on the dark background.
 
 /*******************************************************************************
@@ -14,8 +14,8 @@
   --global-code-bg-color: #{v.$code-bg-color-light};
   --global-text-color: #{v.$black-color};
   --global-text-color-light: #{v.$grey-color};
-  --global-theme-color: #191970; /* midnight blue (site override; the theme default is purple) */
-  --global-hover-color: #191970;
+  --global-theme-color: #303f9f; /* indigo (site override; the theme default is purple) */
+  --global-hover-color: #303f9f;
   --global-hover-text-color: #{v.$white-color};
   --global-footer-bg-color: #{v.$grey-color-dark};
   --global-footer-text-color: #{v.$grey-color-light};
