@@ -77,7 +77,7 @@ max_width: 930px
 # Search
 # -----------------------------------------------------------------------------
 
-search_enabled: true
+search_enabled: false # hides the ctrl+k search box in the navbar
 socials_in_search: true
 posts_in_search: false
 bib_search: false

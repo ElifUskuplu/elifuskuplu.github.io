@@ -31,7 +31,7 @@ latest_posts:
   <div class="contact-icons contact-icons-small">{% social_links %}</div>
 </div>
 
-I am a [Zorn's Postdoctoral Fellow](https://math.indiana.edu/about/zorn-postdoctoral-archive.html) at Indiana University, Bloomington, starting in August 2024, under the supervision of [Prof. Larry Moss](https://iulg.sitehost.iu.edu/moss/). I was a lecturer in the Department of Mathematics at the [University of Southern California](https://dornsife.usc.edu/mathematics/) in the Spring 24 semester. In March–April 2027, I will be a research member of the program [AxIOM: Building the Mathematical Library of the Future](https://www.slmath.org/axiom/412) at SLMath, Berkeley.
+Since August 2024, I have been a [Zorn's Postdoctoral Fellow](https://math.indiana.edu/about/zorn-postdoctoral-archive.html) at Indiana University, Bloomington, under the supervision of [Prof. Larry Moss](https://iulg.sitehost.iu.edu/moss/). I was a lecturer in the Department of Mathematics at the [University of Southern California](https://dornsife.usc.edu/mathematics/) in the Spring 24 semester. In March–April 2027, I will be a research member of the program [AxIOM: Building the Mathematical Library of the Future](https://www.slmath.org/axiom/412) at SLMath, Berkeley.
 
 My research interests span logic, foundations of mathematics, category theory, homotopy type theory, and natural logic. I am also interested in formalization of mathematics and the ethical use of AI in mathematics and education. My secondary research interests include combinatorial design theory and coding theory.
 
