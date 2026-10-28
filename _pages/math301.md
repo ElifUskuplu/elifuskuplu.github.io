@@ -9,7 +9,7 @@ This course is offered by the IUB math department. For the official information 
 ## Exam Dates
 
 - Midterm 1: Oct 2 (in class)
-- Midterm 2: Nov 13 (in class)
+- Midterm 2: Nov 6 (in class)
 - Final: Dec 14, 10:20 am–12:20 pm
 
 ## Lecture Notes
