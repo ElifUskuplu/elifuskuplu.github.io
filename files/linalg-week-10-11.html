@@ -794,7 +794,7 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
     <li>A <b>linear difference equation of order \(n\)</b> is \(y_{k+n}+a_1y_{k+n-1}+\cdots+a_{n-1}y_{k+1}+a_ny_k=z_k\) for all \(k\), with \(a_n\neq 0\); it is <b>homogeneous</b> when \(\{z_k\}\) is the zero signal. A signal that satisfies it for every \(k\) is a <b>solution</b>. The equation describes the LTI filter \(T=S^{-n}+a_1S^{-n+1}+\cdots+a_nS^0\), and the solutions of the homogeneous equation form the kernel of \(T\), a subspace of \(\mathbb S\).</li>
     <li><b>Casorati test:</b> signals are linearly independent if their Casorati matrix \(C(k)\) is invertible for one \(k\). For \(\{2^k\},\{(-1)^k\},\{3^k\}\), \(\det C(0)=-12\neq 0\), so these three signals are linearly independent.</li>
     <li><b>Basis Theorem:</b> in a vector space of dimension \(p\), any \(p\) linearly independent vectors form a basis.</li>
-    <li>A quadratic \(r^2+ar+b=0\) has roots \(r=\frac{-a\pm\sqrt{a^2-4b}}{2}\); when \(a^2-4b&lt;0\) the roots are the complex numbers \(s(\cos\omega\pm i\sin\omega)\) with \(s=\sqrt b\).</li>
+    <li>A quadratic \(r^2+ar+b=0\) has the roots \(r=\frac{-a\pm\sqrt{a^2-4b}}{2}\), two real numbers when \(a^2-4b&gt;0\). When the quadratic factors as \((r-r_1)(r-r_2)\), the roots are \(r_1\) and \(r_2\).</li>
     <li>Two signals are linearly dependent exactly when one is a multiple of the other.</li>
   </ul>
 </div>
@@ -818,16 +818,7 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
   \[y_{k+n}+a_1y_{k+n-1}+\cdots+a_{n-1}y_{k+1}+a_ny_k=0\quad\text{for all } k\]
   <p>if and only if \(r\) is a root of the <b>auxiliary equation</b></p>
   \[r^n+a_1r^{n-1}+\cdots+a_{n-1}r+a_n=0.\]
-  <p>When the auxiliary equation has a <b>complex</b> root \(s(\cos\omega+i\sin\omega)\), the difference equation has the two real solutions \(\{s^k\cos k\omega\}\) and \(\{s^k\sin k\omega\}\). (A repeated root is not treated in this course.)</p>
-</div>
-
-<div class="box example">
-  <span class="box-label">Example 2 (complex roots give oscillating solutions)</span>
-  <p>Find two solutions of \(y_{k+2}+4y_k=0\).</p>
-  <p class="sol-title">Solution</p>
-  <p>The auxiliary equation \(r^2+4=0\) has the roots \(r=\pm 2i=2(\cos\tfrac{\pi}{2}\pm i\sin\tfrac{\pi}{2})\), so \(s=2\) and \(\omega=\pi/2\). Two solutions are</p>
-  \[\{2^k\cos\tfrac{k\pi}{2}\}=(\underline{1},0,-4,0,16,0,-64,\dots),\qquad \{2^k\sin\tfrac{k\pi}{2}\}=(\underline{0},2,0,-8,0,32,0,\dots)\]
-  <p>(entries for \(k=0,1,2,\dots\)). Check the first one: every entry two steps later is \(-4\) times the current entry, so \(y_{k+2}+4y_k=0\). The solutions oscillate with period \(4\) and grow by the factor \(s=2\) every step.</p>
+  <p>In this course the auxiliary equation always has \(n\) <b>distinct real roots</b> \(r_1,\dots,r_n\), and then \(\{r_1^k\},\dots,\{r_n^k\}\) are \(n\) solutions of the difference equation. (Repeated roots and roots that are not real are not treated.)</p>
 </div>
 
 <div class="box thm">
@@ -845,7 +836,7 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
 </div>
 
 <div class="box example">
-  <span class="box-label">Example 3 (a basis for the solution space)</span>
+  <span class="box-label">Example 2 (a basis for the solution space)</span>
   <p>Find a basis for the set of all solutions of equation (4), \(y_{k+3}-4y_{k+2}+y_{k+1}+6y_k=0\).</p>
   <p class="sol-title">Solution</p>
   <p>From Example 1, \(\{2^k\}\), \(\{(-1)^k\}\) and \(\{3^k\}\) are solutions, and by the Casorati test (\(\det C(0)=-12\)) they are linearly independent. The equation has order \(3\), so by Theorem 20 the solution space is \(3\)-dimensional. Three linearly independent vectors in a \(3\)-dimensional space form a basis (the Basis Theorem). So \(\{2^k\},\{(-1)^k\},\{3^k\}\) is a basis, and every solution is</p>
@@ -854,7 +845,7 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
 </div>
 
 <div class="box example">
-  <span class="box-label">Example 4 (fitting the initial values)</span>
+  <span class="box-label">Example 3 (fitting the initial values)</span>
   <p>Find the solution of (4) with \(y_0=1\), \(y_1=6\), \(y_2=12\), and compute \(y_3\) in two ways.</p>
   <p class="sol-title">Solution</p>
   <p>Put \(k=0,1,2\) into the general solution \(y_k=c_1\,2^k+c_2(-1)^k+c_3\,3^k\):</p>
@@ -866,7 +857,7 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
 
 <div class="box tool" id="tool2">
   <span class="box-label">Figure 6 tool: a second-order equation and its solutions</span>
-  <p>Enter the coefficients of \(y_{k+2}+a\,y_{k+1}+b\,y_k=0\) and two initial values. The figure shows the solution for \(k=0,\dots,15\), and the readout gives the roots of the auxiliary equation \(r^2+ar+b=0\) and the general solution. Try \(a=-1,b=-1\) (Fibonacci), \(a=0,b=4\) (Example 2), \(a=-1.4,b=0.98\) (decaying oscillation) and \(a=-0.5,b=-0.5\).</p>
+  <p>Enter the coefficients of \(y_{k+2}+a\,y_{k+1}+b\,y_k=0\) and two initial values. The figure shows the solution for \(k=0,\dots,15\), and the readout gives the roots of the auxiliary equation \(r^2+ar+b=0\) and the general solution. Try \(a=-1,b=-1\) (Fibonacci), \(a=-3,b=2\) (roots \(1\) and \(2\)), \(a=-0.5,b=-0.5\) (roots \(1\) and \(-\tfrac12\)) and \(a=0.3,b=-0.1\) (roots \(0.2\) and \(-0.5\): decay with sign changes).</p>
   <div class="lab-tools">
     <label for="t2-a">\(a=\)</label><input type="text" class="num" id="t2-a" data-nosave="1" value="-1" aria-label="coefficient a">
     <label for="t2-b">\(b=\)</label><input type="text" class="num" id="t2-b" data-nosave="1" value="-1" aria-label="coefficient b">
@@ -875,7 +866,7 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
     <button type="button" class="btn-secondary" id="t2-reset">Reset</button>
   </div>
   <figure class="fig" id="fig6"><svg id="t2-svg" class="frame" viewBox="0 0 560 260" width="560" role="img" aria-label="Stem plot of the solution of the second-order difference equation with the entered coefficients and initial values, for k from 0 to 15." xmlns="http://www.w3.org/2000/svg" font-family="system-ui,sans-serif"></svg>
-  <figcaption>Figure 6. The solution of \(y_{k+2}+ay_{k+1}+by_k=0\) with the given initial values. Real roots of size less than \(1\) give decay, roots of size greater than \(1\) give growth, negative roots give sign changes, and complex roots give oscillation.</figcaption></figure>
+  <figcaption>Figure 6. The solution of \(y_{k+2}+ay_{k+1}+by_k=0\) with the given initial values. Roots of size less than \(1\) give decay, roots of size greater than \(1\) give growth, and negative roots give sign changes.</figcaption></figure>
   <div class="lab-expr" id="t2-out" aria-live="polite"></div>
 </div>
 
@@ -888,7 +879,7 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
 </div>
 
 <div class="box example">
-  <span class="box-label">Example 5 (paying off a loan)</span>
+  <span class="box-label">Example 4 (paying off a loan)</span>
   <p>A loan of \(5000\) has an interest rate of \(2\%\) per month, and \(300\) is paid at the end of every month. Let \(y_k\) be the balance just after the \(k\text{th}\) payment, with \(y_0=5000\). Find a formula for \(y_k\) and decide when the loan is paid off.</p>
   <p class="sol-title">Solution</p>
   <p>Each month, interest of \(2\%\) is added and then \(300\) is paid: \(y_{k+1}=1.02\,y_k-300\), that is,</p>
@@ -920,7 +911,7 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
 <p>A modern way to handle an \(n\text{th}\)-order equation is to replace it by a system of first-order equations, written as \(\mathbf x_{k+1}=A\mathbf x_k\) with vectors \(\mathbf x_k\) in \(\mathbb R^n\) and an \(n\times n\) matrix \(A\). Chapter 5 studies such systems through the eigenvalues of \(A\).</p>
 
 <div class="box example">
-  <span class="box-label">Example 6 (a third-order equation as a first-order system)</span>
+  <span class="box-label">Example 5 (a third-order equation as a first-order system)</span>
   <p>Write equation (4), \(y_{k+3}-4y_{k+2}+y_{k+1}+6y_k=0\), as a first-order system.</p>
   <p class="sol-title">Solution</p>
   <p>For each \(k\), collect three consecutive values into a vector: \(\mathbf x_k=\begin{bmatrix} y_k\\ y_{k+1}\\ y_{k+2}\end{bmatrix}\). The equation says \(y_{k+3}=-6y_k-y_{k+1}+4y_{k+2}\), so</p>
@@ -932,7 +923,7 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
   <span class="box-label">The general form</span>
   <p>The equation \(y_{k+n}+a_1y_{k+n-1}+\cdots+a_{n-1}y_{k+1}+a_ny_k=0\) for all \(k\) is equivalent to \(\mathbf x_{k+1}=A\mathbf x_k\) for all \(k\), where</p>
   \[\mathbf x_k=\begin{bmatrix} y_k\\ y_{k+1}\\ \vdots\\ y_{k+n-1}\end{bmatrix},\qquad A=\begin{bmatrix} 0 & 1 & 0 & \cdots & 0\\ 0 & 0 & 1 & & 0\\ \vdots & & & \ddots & \vdots\\ 0 & 0 & 0 & & 1\\ -a_n & -a_{n-1} & -a_{n-2} & \cdots & -a_1\end{bmatrix}.\]
-  <p>The last row holds the negatives of the coefficients, in reverse order. A preview of Chapter 5: for the matrix of Example 6, \(\det(rI-A)=r^3-4r^2+r+6\), the auxiliary polynomial of the equation. The roots of the auxiliary equation are the eigenvalues of \(A\).</p>
+  <p>The last row holds the negatives of the coefficients, in reverse order. A preview of Chapter 5: for the matrix of Example 5, \(\det(rI-A)=r^3-4r^2+r+6\), the auxiliary polynomial of the equation. The roots of the auxiliary equation are the eigenvalues of \(A\).</p>
 </div>
 
 <div class="box exercise" id="ex10">
@@ -1424,10 +1415,8 @@ function initTool2(){
       parts.push("y_k = c_1(" + tnum(r1) + ")^k + c_2(" + tnum(r2) + ")^k");
       note.textContent = "Two real roots. " + (Math.max(Math.abs(r1), Math.abs(r2)) > 1 ? "A root of size greater than 1 makes the solution grow." : "Both roots have size at most 1, so the solution does not grow.") + (Math.min(r1, r2) < 0 ? " A negative root produces sign changes." : "");
     } else if (disc < -1e-12){
-      var s = Math.sqrt(b), w = Math.atan2(Math.sqrt(-disc) / 2, -a / 2);
-      parts.push(eq + ":\\ r = " + tnum(s) + "(\\cos " + tnum(w) + " \\pm i\\sin " + tnum(w) + ")");
-      parts.push("y_k = c_1\\,(" + tnum(s) + ")^k\\cos(" + tnum(w) + "k) + c_2\\,(" + tnum(s) + ")^k\\sin(" + tnum(w) + "k)");
-      note.textContent = "Complex roots: the solution oscillates. s = " + tnum(s) + (s > 1.000001 ? " > 1, so the swings grow." : (s < 0.999999 ? " < 1, so the swings die out." : " = 1, so the swings keep a constant size.")) + " The period is about " + tnum(2 * Math.PI / (w || 1)) + " steps.";
+      parts.push(eq + ":\\ \\text{no real roots, since } a^2-4b = " + tnum(disc) + " < 0");
+      note.textContent = "The auxiliary equation has no real roots. This case is not treated in the course; the figure still shows the solution computed term by term from the equation.";
     } else {
       parts.push(eq + ":\\ r = " + tnum(-a / 2) + " \\text{ (repeated)}");
       note.textContent = "A repeated root. This case is not covered in the course; the solutions are c1 r^k + c2 k r^k.";
