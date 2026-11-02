@@ -24,3 +24,4 @@ This course is offered by the IUB math department. For the official information 
 - [Week 8](/files/linalg-week-08.html)
 - [Week 9](/files/linalg-week-09.html)
 - [Weeks 10 & 11](/files/linalg-week-10-11.html)
+- [Exam 2 Sample Questions](/files/M301-SampleMidterm2.pdf)
