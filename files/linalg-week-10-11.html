@@ -248,7 +248,7 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
       <li>find the dimension of a subspace, and use the Rank Theorem to relate the rank, the nullity and the number of columns of a matrix;</li>
       <li>work with discrete-time signals, the shift transformation and moving averages, and decide whether a transformation of signals is linear time invariant;</li>
       <li>test signals for linear independence with the Casorati matrix, and solve a homogeneous linear difference equation with its auxiliary equation;</li>
-      <li>write the general solution of a nonhomogeneous difference equation, and convert an \(n\text{th}\)-order equation into a first-order system \(\mathbf x_{k+1}=A\mathbf x_k\).</li>
+      <li>write the general solution of a nonhomogeneous difference equation as a particular solution plus the general solution of the homogeneous equation.</li>
     </ul>
   </div>
   <nav class="daynav" aria-label="Sections of this note">
@@ -786,7 +786,7 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
 </section>
 <section id="day4">
 <h2>Day 4: Solving Linear Difference Equations</h2>
-<p class="day-topic">Today we solve homogeneous linear difference equations with the auxiliary equation, fit a solution to given initial values, handle a nonhomogeneous equation with a particular solution, and turn an \(n\)th-order equation into a first-order system.</p>
+<p class="day-topic">Today we solve homogeneous linear difference equations with the auxiliary equation, fit a solution to given initial values, and handle a nonhomogeneous equation with a particular solution.</p>
 
 <div class="box recall">
   <span class="box-label">Facts used today</span>
@@ -855,38 +855,27 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
   <p>Two ways to get \(y_3\): from the formula, \(8-(-1)+27=36\); from the equation, \(y_3=4y_2-y_1-6y_0=48-6-6=36\). They agree.</p>
 </div>
 
-<div class="box tool" id="tool2">
-  <span class="box-label">Figure 6 tool: a second-order equation and its solutions</span>
-  <p>Enter the coefficients of \(y_{k+2}+a\,y_{k+1}+b\,y_k=0\) and two initial values. The figure shows the solution for \(k=0,\dots,15\), and the readout gives the roots of the auxiliary equation \(r^2+ar+b=0\) and the general solution. Try \(a=-1,b=-1\) (Fibonacci), \(a=-3,b=2\) (roots \(1\) and \(2\)), \(a=-0.5,b=-0.5\) (roots \(1\) and \(-\tfrac12\)) and \(a=0.3,b=-0.1\) (roots \(0.2\) and \(-0.5\): decay with sign changes).</p>
-  <div class="lab-tools">
-    <label for="t2-a">\(a=\)</label><input type="text" class="num" id="t2-a" data-nosave="1" value="-1" aria-label="coefficient a">
-    <label for="t2-b">\(b=\)</label><input type="text" class="num" id="t2-b" data-nosave="1" value="-1" aria-label="coefficient b">
-    <label for="t2-y0">\(y_0=\)</label><input type="text" class="num" id="t2-y0" data-nosave="1" value="0" aria-label="initial value y0">
-    <label for="t2-y1">\(y_1=\)</label><input type="text" class="num" id="t2-y1" data-nosave="1" value="1" aria-label="initial value y1">
-    <button type="button" class="btn-secondary" id="t2-reset">Reset</button>
-  </div>
-  <figure class="fig" id="fig6"><svg id="t2-svg" class="frame" viewBox="0 0 560 260" width="560" role="img" aria-label="Stem plot of the solution of the second-order difference equation with the entered coefficients and initial values, for k from 0 to 15." xmlns="http://www.w3.org/2000/svg" font-family="system-ui,sans-serif"></svg>
-  <figcaption>Figure 6. The solution of \(y_{k+2}+ay_{k+1}+by_k=0\) with the given initial values. Roots of size less than \(1\) give decay, roots of size greater than \(1\) give growth, and negative roots give sign changes.</figcaption></figure>
-  <div class="lab-expr" id="t2-out" aria-live="polite"></div>
-</div>
-
 <h3>4.2 Nonhomogeneous equations</h3>
 <div class="box thm">
   <span class="box-label">General solution of a nonhomogeneous equation</span>
   <p>The general solution of the nonhomogeneous equation (5) is</p>
-  \[\{y_k\}=\{p_k\}+c_1\{u^{(4)}_k\}+\cdots+c_n\{u^{(n)}_k\},\]
+  \[\{y_k\}=\{p_k\}+c_1\{u^{(1)}_k\}+\cdots+c_n\{u^{(n)}_k\},\]
   <p>one <b>particular solution</b> \(\{p_k\}\) of (5) plus an arbitrary combination of a fundamental set of solutions of the corresponding homogeneous equation (6). The reason is the same as for \(A\mathbf x=\mathbf b\) and \(A\mathbf x=\mathbf 0\): the transformation \(T\) is linear, so the difference of two solutions of \(T(\mathbf y)=\mathbf z\) is in the kernel of \(T\). The solution set is the subspace \(H\) of (6) translated by \(\{p_k\}\).</p>
 </div>
 
 <div class="box example">
-  <span class="box-label">Example 4 (paying off a loan)</span>
-  <p>A loan of \(5000\) has an interest rate of \(2\%\) per month, and \(300\) is paid at the end of every month. Let \(y_k\) be the balance just after the \(k\text{th}\) payment, with \(y_0=5000\). Find a formula for \(y_k\) and decide when the loan is paid off.</p>
+  <span class="box-label">Example 4 (general solution of a nonhomogeneous equation)</span>
+  <p>Find the general solution of</p>
+  \[y_{k+2}-7y_{k+1}+10y_k=8\quad\text{for all } k,\]
+  <p>and then the solution with \(y_0=5\), \(y_1=14\).</p>
   <p class="sol-title">Solution</p>
-  <p>Each month, interest of \(2\%\) is added and then \(300\) is paid: \(y_{k+1}=1.02\,y_k-300\), that is,</p>
-  \[y_{k+1}-1.02\,y_k=-300,\]
-  <p>a first-order nonhomogeneous equation. First look for a <b>constant</b> particular solution \(y_k=T\): \(T-1.02T=-300\) gives \(T=15000\). (This is the balance that would stay the same forever: \(2\%\) of \(15000\) is exactly the \(300\) paid.) The homogeneous equation \(y_{k+1}-1.02y_k=0\) has the auxiliary equation \(r-1.02=0\), so its solutions are the multiples of \(\{1.02^k\}\). General solution: \(y_k=15000+c\,(1.02)^k\). The initial value gives \(5000=15000+c\), so \(c=-10000\) and</p>
-  \[y_k=15000-10000\,(1.02)^k.\]
-  <p>Check: \(y_1=15000-10200=4800\), and directly \(1.02\cdot 5000-300=4800\). The balance reaches \(0\) when \((1.02)^k=1.5\), that is \(k=\ln 1.5/\ln 1.02\approx 20.5\). So \(y_{20}=15000-10000(1.02)^{20}\approx 140.53\) is still positive, and the \(21\)st payment, of about \(1.02\cdot 140.53\approx 143.34\), pays off the loan. The borrower makes \(20\) payments of \(300\) and a last payment of \(143.34\).</p>
+  <p><b>A particular solution.</b> The right side is the constant signal \(\{8\}\), so look for a <b>constant</b> particular solution \(y_k=T\). Substituting, \(T-7T+10T=8\), that is \(4T=8\), so \(T=2\): the constant signal \(\{2\}\) is one solution. (A constant particular solution exists because \(1\) is not a root of the auxiliary equation; if it were, every constant signal would solve the homogeneous equation and \(T-7T+10T\) would be \(0\).)</p>
+  <p><b>The homogeneous equation.</b> \(y_{k+2}-7y_{k+1}+10y_k=0\) has the auxiliary equation \(r^2-7r+10=(r-2)(r-5)=0\), so \(\{2^k\}\) and \(\{5^k\}\) are solutions. Neither is a multiple of the other, so they are linearly independent; the solution space is \(2\)-dimensional by Theorem 20, so they form a basis (the Basis Theorem). The general solution of the homogeneous equation is \(c_1\,2^k+c_2\,5^k\).</p>
+  <p><b>General solution.</b> A particular solution plus the general solution of the homogeneous equation:</p>
+  \[y_k=2+c_1\,2^k+c_2\,5^k.\]
+  <p><b>Initial values.</b> Put \(k=0\) and \(k=1\): \(2+c_1+c_2=5\) and \(2+2c_1+5c_2=14\), that is \(c_1+c_2=3\) and \(2c_1+5c_2=12\). Subtract twice the first equation from the second: \(3c_2=6\), so \(c_2=2\) and \(c_1=1\). Hence</p>
+  \[y_k=2+2^k+2\cdot 5^k.\]
+  <p>Check: the formula gives \(y_2=2+4+50=56\), and the equation gives \(y_2=7y_1-10y_0+8=98-50+8=56\). They agree.</p>
 </div>
 
 <div class="box exercise" id="ex9">
@@ -907,37 +896,6 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
   </div>
 </div>
 
-<h3>4.3 Reduction to a first-order system</h3>
-<p>A modern way to handle an \(n\text{th}\)-order equation is to replace it by a system of first-order equations, written as \(\mathbf x_{k+1}=A\mathbf x_k\) with vectors \(\mathbf x_k\) in \(\mathbb R^n\) and an \(n\times n\) matrix \(A\). Chapter 5 studies such systems through the eigenvalues of \(A\).</p>
-
-<div class="box example">
-  <span class="box-label">Example 5 (a third-order equation as a first-order system)</span>
-  <p>Write equation (4), \(y_{k+3}-4y_{k+2}+y_{k+1}+6y_k=0\), as a first-order system.</p>
-  <p class="sol-title">Solution</p>
-  <p>For each \(k\), collect three consecutive values into a vector: \(\mathbf x_k=\begin{bmatrix} y_k\\ y_{k+1}\\ y_{k+2}\end{bmatrix}\). The equation says \(y_{k+3}=-6y_k-y_{k+1}+4y_{k+2}\), so</p>
-  \[\mathbf x_{k+1}=\begin{bmatrix} y_{k+1}\\ y_{k+2}\\ y_{k+3}\end{bmatrix}=\begin{bmatrix} 0\cdot y_k+1\cdot y_{k+1}+0\cdot y_{k+2}\\ 0\cdot y_k+0\cdot y_{k+1}+1\cdot y_{k+2}\\ -6y_k-y_{k+1}+4y_{k+2}\end{bmatrix}=\begin{bmatrix} 0 & 1 & 0\\ 0 & 0 & 1\\ -6 & -1 & 4\end{bmatrix}\begin{bmatrix} y_k\\ y_{k+1}\\ y_{k+2}\end{bmatrix}.\]
-  <p>That is, \(\mathbf x_{k+1}=A\mathbf x_k\) with \(A=\begin{bmatrix} 0 & 1 & 0\\ 0 & 0 & 1\\ -6 & -1 & 4\end{bmatrix}\). The first two rows just move the window one step; the last row is the difference equation. Given \(\mathbf x_0=(y_0,y_1,y_2)\), the whole solution is \(\mathbf x_k=A^k\mathbf x_0\).</p>
-</div>
-
-<div class="box thm">
-  <span class="box-label">The general form</span>
-  <p>The equation \(y_{k+n}+a_1y_{k+n-1}+\cdots+a_{n-1}y_{k+1}+a_ny_k=0\) for all \(k\) is equivalent to \(\mathbf x_{k+1}=A\mathbf x_k\) for all \(k\), where</p>
-  \[\mathbf x_k=\begin{bmatrix} y_k\\ y_{k+1}\\ \vdots\\ y_{k+n-1}\end{bmatrix},\qquad A=\begin{bmatrix} 0 & 1 & 0 & \cdots & 0\\ 0 & 0 & 1 & & 0\\ \vdots & & & \ddots & \vdots\\ 0 & 0 & 0 & & 1\\ -a_n & -a_{n-1} & -a_{n-2} & \cdots & -a_1\end{bmatrix}.\]
-  <p>The last row holds the negatives of the coefficients, in reverse order. A preview of Chapter 5: for the matrix of Example 5, \(\det(rI-A)=r^3-4r^2+r+6\), the auxiliary polynomial of the equation. The roots of the auxiliary equation are the eigenvalues of \(A\).</p>
-</div>
-
-<div class="box exercise" id="ex10">
-  <span class="box-label">Exercise 4.B (write the system)</span>
-  <p class="selfcheck-note">Self-check only.</p>
-  <p>Write \(y_{k+3}+2y_{k+2}-y_{k+1}-2y_k=0\) as \(\mathbf x_{k+1}=A\mathbf x_k\) with \(\mathbf x_k=(y_k,y_{k+1},y_{k+2})\). Enter \(A\).</p>
-  <div class="inline-row"><span class="mlabel">\(A=\)</span><div class="mgrid" data-mg="ex10-m" data-rows="3" data-cols="3"></div></div>
-  <div class="btn-row"><button type="button" data-check="ex10">Check</button><button type="button" class="btn-secondary" data-sol="ex10">Show solution</button></div>
-  <div class="feedback" id="ex10-fb" role="status"></div>
-  <div class="solution" id="ex10-sol">
-    <p>Solve for the newest term: \(y_{k+3}=2y_k+y_{k+1}-2y_{k+2}\). So</p>
-    \[A=\begin{bmatrix} 0 & 1 & 0\\ 0 & 0 & 1\\ 2 & 1 & -2\end{bmatrix}.\]
-  </div>
-</div>
 </section>
 <section id="homework">
 <h2>Homework 10-11</h2>
@@ -961,30 +919,30 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
 
 <!-- Q1 -->
 <div class="hw-q" id="q1">
-  <h3><span>Question 1</span><span class="pts">20 points</span></h3>
-  <div class="hw-part">(a) Let \(\mathcal B=\{(2,-1),\ (1,3)\}\) and \(\mathbf x=(4,-9)\). Find \([\,\mathbf x\,]_{\mathcal B}\) and check your answer by building \(\mathbf x\) from the basis vectors. (10 points)
+  <h3><span>Question 1</span><span class="pts">25 points</span></h3>
+  <div class="hw-part">(a) Let \(\mathcal B=\{(2,-1),\ (1,3)\}\) and \(\mathbf x=(4,-9)\). Find \([\,\mathbf x\,]_{\mathcal B}\) and check your answer by building \(\mathbf x\) from the basis vectors. (12 points)
     <textarea class="hw-input" id="hw-q1a" aria-label="Question 1 part a"></textarea></div>
-  <div class="hw-part">(b) The set \(\mathcal B=\{(1,0,1),\ (0,1,1),\ (1,1,0)\}\) is a basis for \(\mathbb R^3\). Find the coordinate vector of \(\mathbf x=(3,4,5)\) relative to \(\mathcal B\), and check your answer. (10 points)
+  <div class="hw-part">(b) The set \(\mathcal B=\{(1,0,1),\ (0,1,1),\ (1,1,0)\}\) is a basis for \(\mathbb R^3\). Find the coordinate vector of \(\mathbf x=(3,4,5)\) relative to \(\mathcal B\), and check your answer. (13 points)
     <textarea class="hw-input" id="hw-q1b" aria-label="Question 1 part b"></textarea></div>
   <div class="hw-hand" data-hand="hw-q1-hand"></div>
 </div>
 
 <!-- Q2 -->
 <div class="hw-q" id="q2">
-  <h3><span>Question 2</span><span class="pts">20 points</span></h3>
-  <div class="hw-part">(a) Let \(H=\{(a+2c,\ b-c,\ a+b+c,\ 2a+4c): a,b,c \text{ real}\}\), a subspace of \(\mathbb R^4\). Write \(H\) as a span, then find a basis for \(H\) and \(\dim H\). (10 points)
+  <h3><span>Question 2</span><span class="pts">25 points</span></h3>
+  <div class="hw-part">(a) Let \(H=\{(a+2c,\ b-c,\ a+b+c,\ 2a+4c): a,b,c \text{ real}\}\), a subspace of \(\mathbb R^4\). Write \(H\) as a span, then find a basis for \(H\) and \(\dim H\). (12 points)
     <textarea class="hw-input" id="hw-q2a" aria-label="Question 2 part a"></textarea></div>
-  <div class="hw-part">(b) A matrix \(A\) is \(6\times 9\) and \(\operatorname{nullity} A=4\). Find \(\operatorname{rank} A\) and \(\dim\operatorname{Row} A\). Is \(\operatorname{Col} A=\mathbb R^6\)? Explain. (10 points)
+  <div class="hw-part">(b) A matrix \(A\) is \(6\times 9\) and \(\operatorname{nullity} A=4\). Find \(\operatorname{rank} A\) and \(\dim\operatorname{Row} A\). Is \(\operatorname{Col} A=\mathbb R^6\)? Explain. (13 points)
     <textarea class="hw-input" id="hw-q2b" aria-label="Question 2 part b"></textarea></div>
   <div class="hw-hand" data-hand="hw-q2-hand"></div>
 </div>
 
 <!-- Q3 -->
 <div class="hw-q" id="q3">
-  <h3><span>Question 3</span><span class="pts">20 points</span></h3>
-  <div class="hw-part">(a) Using the signals of Table 1, write the entries of \(\upsilon+2\alpha\) for \(k=-2,-1,0,1,2,3\), and give a formal description of the signal (its \(k\text{th}\) entry for \(k\ge 0\) and for \(k&lt;0\)). (8 points)
+  <h3><span>Question 3</span><span class="pts">25 points</span></h3>
+  <div class="hw-part">(a) Using the signals of Table 1, write the entries of \(\upsilon+2\alpha\) for \(k=-2,-1,0,1,2,3\), and give a formal description of the signal (its \(k\text{th}\) entry for \(k\ge 0\) and for \(k&lt;0\)). (10 points)
     <textarea class="hw-input short" id="hw-q3a" aria-label="Question 3 part a"></textarea></div>
-  <div class="hw-part">(b) Show that \(T(\{x_k\})=\{x_k+2x_{k-1}\}\) is a linear time invariant transformation, and find a nonzero signal in its kernel. (12 points)
+  <div class="hw-part">(b) Show that \(T(\{x_k\})=\{x_k+2x_{k-1}\}\) is a linear time invariant transformation, and find a nonzero signal in its kernel. (15 points)
     <textarea class="hw-input" id="hw-q3b" aria-label="Question 3 part b"></textarea></div>
   <div class="hw-hand" data-hand="hw-q3-hand"></div>
 </div>
@@ -994,24 +952,11 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
   <h3><span>Question 4</span><span class="pts">25 points</span></h3>
   <p>Consider the difference equation</p>
   \[y_{k+2}-y_{k+1}-6y_k=0\quad\text{for all } k.\]
-  <div class="hw-part">(a) Find two solutions of the form \(\{r^k\}\), and explain why they form a basis for the solution space. Write the general solution. (10 points)
+  <div class="hw-part">(a) Find two solutions of the form \(\{r^k\}\), and explain why they form a basis for the solution space. Write the general solution. (12 points)
     <textarea class="hw-input" id="hw-q4a" aria-label="Question 4 part a"></textarea></div>
-  <div class="hw-part">(b) Find the solution with \(y_0=1\), \(y_1=8\). Then compute \(y_2\) both from your formula and from the equation. (10 points)
+  <div class="hw-part">(b) Find the solution with \(y_0=1\), \(y_1=8\). Then compute \(y_2\) both from your formula and from the equation. (13 points)
     <textarea class="hw-input" id="hw-q4b" aria-label="Question 4 part b"></textarea></div>
-  <div class="hw-part">(c) Write the equation as a first-order system \(\mathbf x_{k+1}=A\mathbf x_k\) with \(\mathbf x_k=(y_k,y_{k+1})\). Enter \(A\). (5 points)
-    <div class="inline-row"><span class="mlabel">\(A=\)</span><div class="mgrid" data-mg="hw-q4c" data-rows="2" data-cols="2" data-hw="1"></div></div></div>
   <div class="hw-hand" data-hand="hw-q4-hand"></div>
-</div>
-
-<!-- Q5 -->
-<div class="hw-q" id="q5">
-  <h3><span>Question 5</span><span class="pts">15 points</span></h3>
-  <p>A loan of \(6000\) has an interest rate of \(1\%\) per month. At the end of every month, interest is added and a payment of \(200\) is made. Let \(y_k\) be the balance just after the \(k\text{th}\) payment, with \(y_0=6000\).</p>
-  <div class="hw-part">(a) Write the difference equation satisfied by \(\{y_k\}\). Find its constant solution and its general solution, and then the solution with \(y_0=6000\). (10 points)
-    <textarea class="hw-input" id="hw-q5a" aria-label="Question 5 part a"></textarea></div>
-  <div class="hw-part">(b) Find the balance after \(6\) payments. (5 points)
-    <textarea class="hw-input short" id="hw-q5b" aria-label="Question 5 part b"></textarea></div>
-  <div class="hw-hand" data-hand="hw-q5-hand"></div>
 </div>
 
 <div class="hw-actions">
@@ -1289,7 +1234,6 @@ function inColSpace(A, v){ var Ar = toRatM(A); return rankRat(Ar.map(function(r,
 
 /* ---------------- Week 10: self-check exercises ---------------- */
 var EX2_W = [[1, 3, 9, -7], [0, 1, 4, -3], [2, 1, -2, 1]];   // columns span W in Exercise 1.B
-var EX10_A = [[0, 1, 0], [0, 0, 1], [2, 1, -2]];
 
 var CUSTOM_CHECKS = {
   ex2: function(){
@@ -1366,68 +1310,8 @@ var CUSTOM_CHECKS = {
     else if (req(y, R(665))) lines.push("(c) Correct. y_5 = 665.");
     else { lines.push("(c) Not correct yet. Either solve c1 + c2 = 1, 2 c1 + 3 c2 = 5 and use y_k = c1 2^k + c2 3^k, or compute y_2, y_3, y_4, y_5 from y_{k+2} = 5 y_{k+1} - 6 y_k."); ok = false; }
     report(fb, ok, lines);
-  },
-  ex10: function(){
-    var g = gridCols("ex10-m", 3, 3), fb = "ex10-fb";
-    if (g.err) return setFb(fb, false, inputErr("", g.err));
-    for (var i = 0; i < 3; i++) for (var j = 0; j < 3; j++){
-      if (!req(g.M[i][j], R(EX10_A[i][j]))){
-        if (i < 2) return setFb(fb, false, "Row " + (i + 1) + " is not right. Rows 1 and 2 only move the window: the new first entry is y_{k+1}, the new second entry is y_{k+2}.");
-        return setFb(fb, false, "Row 3 is not right. Solve the equation for y_{k+3}: y_{k+3} = 2 y_k + y_{k+1} - 2 y_{k+2}. The entries are the coefficients of y_k, y_{k+1}, y_{k+2} in this order.");
-      }
-    }
-    setFb(fb, true, "Correct. The last row (2, 1, -2) holds the coefficients of y_k, y_{k+1}, y_{k+2} in y_{k+3} = 2 y_k + y_{k+1} - 2 y_{k+2}.");
   }
 };
-
-/* ---------------- Figure 7 tool: second-order difference equation ---------------- */
-function initTool2(){
-  var svg = $("t2-svg"); if (!svg) return;
-  var ids = ["t2-a", "t2-b", "t2-y0", "t2-y1"], DEF = ["-1", "-1", "0", "1"];
-  var out = $("t2-out"), N = 16;
-  function draw(){
-    clearNode(svg);
-    var e = ids.map(function(id){ return parseNum($(id).value); });
-    if (e.some(isNaN)){ out.textContent = "Enter four numbers: the coefficients a, b and the initial values y0, y1."; return; }
-    var a = e[0], b = e[1], y = [e[2], e[3]];
-    for (var k = 2; k < N; k++) y.push(-a * y[k - 1] - b * y[k - 2]);
-    var ymax = 0; for (k = 0; k < N; k++) ymax = Math.max(ymax, Math.abs(y[k]));
-    if (!isFinite(ymax) || ymax === 0) ymax = 1;
-    // independent scales: k runs across the width, y_k is scaled to the height
-    var vb = svg.getAttribute("viewBox").split(/\s+/).map(Number), W = vb[2], H = vb[3], pad = 24;
-    var view = { W: W, H: H, X: function(k){ return pad + (k + 0.5) / N * (W - 2 * pad); }, Y: function(v){ return H / 2 - v / ymax * (H / 2 - pad); } };
-    var g = sv("g", null, svg);
-    // horizontal axis and faint vertical ticks
-    sv("line", { x1: 0, y1: view.Y(0), x2: view.W, y2: view.Y(0), stroke: COL.axis }, g);
-    for (k = 0; k < N; k++){
-      sv("line", { x1: view.X(k), y1: view.Y(0), x2: view.X(k), y2: view.Y(y[k]), stroke: COL.accent, "stroke-width": 1.6 }, g);
-      sv("circle", { cx: view.X(k), cy: view.Y(y[k]), r: 3.2, fill: COL.accent }, g);
-      if (k % 5 === 0) svText(g, view.X(k), view.Y(0) + (y[k] >= 0 ? 14 : -6), String(k), { fill: COL.muted, "font-size": "11", "text-anchor": "middle" });
-    }
-    svText(g, view.W - 8, view.Y(0) - 6, "k", { fill: COL.muted, "font-size": "12", "text-anchor": "end" });
-    svText(g, 8, 16, "largest |y_k| = " + tnum(ymax), { fill: COL.muted, "font-size": "12" });
-    // roots of r^2 + a r + b
-    var disc = a * a - 4 * b, parts = [], note = mk("span", "expr-note");
-    var eq = "r^2 " + (a < 0 ? "- " + tnum(-a) : "+ " + tnum(a)) + "\\,r " + (b < 0 ? "- " + tnum(-b) : "+ " + tnum(b)) + " = 0";
-    if (disc > 1e-12){
-      var r1 = (-a + Math.sqrt(disc)) / 2, r2 = (-a - Math.sqrt(disc)) / 2;
-      parts.push(eq + ":\\ r_1 = " + tnum(r1) + ",\\ r_2 = " + tnum(r2));
-      parts.push("y_k = c_1(" + tnum(r1) + ")^k + c_2(" + tnum(r2) + ")^k");
-      note.textContent = "Two real roots. " + (Math.max(Math.abs(r1), Math.abs(r2)) > 1 ? "A root of size greater than 1 makes the solution grow." : "Both roots have size at most 1, so the solution does not grow.") + (Math.min(r1, r2) < 0 ? " A negative root produces sign changes." : "");
-    } else if (disc < -1e-12){
-      parts.push(eq + ":\\ \\text{no real roots, since } a^2-4b = " + tnum(disc) + " < 0");
-      note.textContent = "The auxiliary equation has no real roots. This case is not treated in the course; the figure still shows the solution computed term by term from the equation.";
-    } else {
-      parts.push(eq + ":\\ r = " + tnum(-a / 2) + " \\text{ (repeated)}");
-      note.textContent = "A repeated root. This case is not covered in the course; the solutions are c1 r^k + c2 k r^k.";
-    }
-    setTex(out, parts);
-    out.appendChild(note);
-  }
-  ids.forEach(function(id){ $(id).addEventListener("input", draw); });
-  $("t2-reset").addEventListener("click", function(){ ids.forEach(function(id, i){ $(id).value = DEF[i]; }); draw(); });
-  draw();
-}
 
 function initExercises(){
   var checks = document.querySelectorAll("[data-check]");
@@ -1920,7 +1804,6 @@ function init(){
     for (var i = 0; i < rrs.length; i++) buildRowReduce(rrs[i]);
   }, "rowreduce");
   safe(initExercises, "exercises");
-  safe(initTool2, "figure 7");
   safe(function(){ bindAutosave(document.querySelector("main")); }, "autosave");
   safe(restoreAll, "restore");
   safe(buildAllHand, "handwriting");
