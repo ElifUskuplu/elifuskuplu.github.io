@@ -25,4 +25,5 @@ This course is offered by the IUB math department. For the official information 
 - [Week 9](/files/logic-week-09.html)
 - [Week 10](/files/logic-week-10.html)
 - [Exam 2 Question Pool](/files/M384-Exam2-QuestionPool.pdf)
+- [Week 12](/files/logic-week-12.html)
 
