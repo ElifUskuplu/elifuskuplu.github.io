@@ -252,7 +252,6 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
 .trow .claim{overflow-x:auto;overflow-y:hidden;padding-bottom:2px}
 .katex .katex-mathml{max-width:1px}
 
-
 /* ---------- week 9 additions ---------- */
 table.axgrid td{font-size:.93rem;white-space:nowrap}
 table.axgrid td:nth-child(odd){color:var(--muted)}
@@ -298,25 +297,6 @@ table.data.mchain tr:last-child td{border-bottom:none}
   <h2 class="dayhead">Day 1: The small system is enough</h2>
   <p class="daysub">Today we show that the axioms (L1), (L2), (L3) and modus ponens deduce everything that the
   nine axioms (L1) to (L9) deduce.</p>
-
-  <div class="box recall">
-    <span class="lbl">What we are using from before</span>
-    <ul>
-      <li>The nine axiom schemes:
-        <div class="tablewrap"><table class="data axioms"><thead><tr><th>Connective</th><th>Name</th><th>Axiom scheme</th></tr></thead><tbody><tr class="grpstart"><td>Implication</td><td>(L1)</td><td>\(\varphi \to (\psi \to \varphi)\)</td></tr><tr><td></td><td>(L2)</td><td>\((\varphi \to (\psi \to \chi)) \to ((\varphi \to \psi) \to (\varphi \to \chi))\)</td></tr><tr class="grpstart"><td>Negation</td><td>(L3)</td><td>\((\neg \psi \to \neg \varphi) \to (\varphi \to \psi)\)</td></tr><tr class="grpstart"><td>Conjunction</td><td>(L4)</td><td>\((\varphi \wedge \psi) \to \varphi\)</td></tr><tr><td></td><td>(L5)</td><td>\((\varphi \wedge \psi) \to \psi\)</td></tr><tr><td></td><td>(L6)</td><td>\(\varphi \to (\psi \to (\varphi \wedge \psi))\)</td></tr><tr class="grpstart"><td>Disjunction</td><td>(L7)</td><td>\(\varphi \to (\varphi \vee \psi)\)</td></tr><tr><td></td><td>(L8)</td><td>\(\psi \to (\varphi \vee \psi)\)</td></tr><tr><td></td><td>(L9)</td><td>\((\varphi \to \chi) \to ((\psi \to \chi) \to ((\varphi \vee \psi) \to \chi))\)</td></tr></tbody></table></div></li>
-      <li>A deduction from \(\Gamma\) is a finite sequence of formulas in which every line is an axiom, a member of
-          \(\Gamma\), or follows from two earlier lines by MP (from \(\alpha\) and \(\alpha\to\beta\), infer
-          \(\beta\)). \(\Gamma\vdash\varphi\) means that there is a deduction from \(\Gamma\) whose last line is
-          \(\varphi\).</li>
-      <li>Example 8.27: \(\vdash\varphi\to\varphi\). Proposition 8.35: (a) if \(\varphi\in\Gamma\) then
-          \(\Gamma\vdash\varphi\); (b) if \(\Gamma\subseteq\Delta\) and \(\Gamma\vdash\varphi\) then
-          \(\Delta\vdash\varphi\); (c) if \(\Gamma\vdash\varphi\) and \(\Gamma\vdash\varphi\to\psi\) then
-          \(\Gamma\vdash\psi\). Proposition 8.36, the rule called <em>hypothetical syllogism</em> (HS), chains two implications: if \(\Gamma\vdash\varphi\to\psi\) and
-          \(\Gamma\vdash\psi\to\chi\) then \(\Gamma\vdash\varphi\to\chi\).</li>
-      <li>The deductions in Example 8.27 and in the proofs of Propositions 8.35 and 8.36 use only (L1), (L2) and MP.</li>
-    </ul>
-  </div>
-
 
   <h2>1. Two deduction systems</h2>
 
@@ -375,7 +355,6 @@ table.data.mchain tr:last-child td{border-bottom:none}
     </div>
   </div>
 
-
   <div class="box def">
     <span class="lbl">Definition 9.3: the small and the large system</span>
     <p>Let \(\Gamma\) be a set of formulas and \(\varphi\) a formula.</p>
@@ -391,7 +370,6 @@ table.data.mchain tr:last-child td{border-bottom:none}
   <p>For example, \(\vdash_9(p\wedge q)\to p\) by one line (L4). For \(\vdash_3\), a one-line deduction does not
   work: \((p\wedge q)\to p\), that is \(\neg(p\to\neg q)\to p\), is not an instance of (L1), (L2) or (L3). Section 3
   shows that \(\vdash_3(p\wedge q)\to p\) still holds, with a longer argument.</p>
-
 
   <h2>2. Tools for the small system</h2>
 
@@ -422,9 +400,6 @@ table.data.mchain tr:last-child td{border-bottom:none}
       \(\Gamma\vdash\varphi\to\varphi\). MP gives \(\Gamma\vdash\varphi\to\psi\). <span class="qed">&#9633;</span></p>
     </div>
   </div>
-
-
-
 
   <p>From now on we write such proofs as numbered lists of formulas \(\theta\) with \(\vdash_3\theta\). Each line
   gives its reason: an axiom, MP or HS with two earlier lines, a tool from Lemma 9.4 applied to an earlier line, or
@@ -500,7 +475,6 @@ table.data.mchain tr:last-child td{border-bottom:none}
     </div>
   </div>
 
-
   <h2>4. The main theorem</h2>
 
   <div class="box thm">
@@ -508,7 +482,6 @@ table.data.mchain tr:last-child td{border-bottom:none}
     <p>For every set of formulas \(\Gamma\) and every formula \(\varphi\):
     \[\Gamma\vdash_3\varphi\quad\text{if and only if}\quad\Gamma\vdash_9\varphi.\]</p>
   </div>
-
 
   <div class="box thm">
     <span class="lbl">Proof of Theorem 9.7</span>
@@ -579,21 +552,6 @@ table.data.mchain tr:last-child td{border-bottom:none}
   <p class="daysub">Today we prove that \(\Gamma\cup\{\varphi\}\vdash\psi\) holds exactly when
   \(\Gamma\vdash\varphi\to\psi\), and we use this to find deductions much faster.</p>
 
-  <div class="box recall">
-    <span class="lbl">What we are using from before</span>
-    <ul>
-      <li>(L1) \(\varphi\to(\psi\to\varphi)\) and (L2) \((\varphi\to(\psi\to\chi))\to((\varphi\to\psi)\to(\varphi\to\chi))\),
-          and the other axioms (L3) to (L9) as in the table of Week 8.</li>
-      <li>Example 8.27: \(\vdash\varphi\to\varphi\), by a five-line deduction that uses (L1), (L2) and MP.</li>
-      <li>Proposition 8.35: if \(\varphi\in\Gamma\) then \(\Gamma\vdash\varphi\); if \(\Gamma\subseteq\Delta\) and
-          \(\Gamma\vdash\varphi\) then \(\Delta\vdash\varphi\); if \(\Gamma\vdash\varphi\) and
-          \(\Gamma\vdash\varphi\to\psi\) then \(\Gamma\vdash\psi\). Proposition 8.36, the rule called <em>hypothetical syllogism</em> (HS), chains two implications: if
-          \(\Gamma\vdash\varphi\to\psi\) and \(\Gamma\vdash\psi\to\chi\) then \(\Gamma\vdash\varphi\to\chi\).</li>
-      <li>Theorem 9.7: \(\Gamma\vdash_3\varphi\) if and only if \(\Gamma\vdash_9\varphi\), where \(\vdash_3\) allows
-          only (L1) to (L3) as axioms and \(\vdash_9\) allows (L1) to (L9).</li>
-    </ul>
-  </div>
-
   <p>In Example 8.32 we showed \(\neg\varphi\vdash\varphi\to\psi\). Can we move \(\neg\varphi\) to the right and
   conclude \(\vdash\neg\varphi\to(\varphi\to\psi)\)? For \(\models\) this kind of move is Proposition 8.7(d):
   \(\Gamma\cup\{\varphi\}\models\psi\) if and only if \(\Gamma\models\varphi\to\psi\). The Deduction Theorem is
@@ -661,7 +619,6 @@ table.data.mchain tr:last-child td{border-bottom:none}
     </div>
   </div>
 
-
   <div class="box thm">
     <span class="lbl">Corollary 9.10: the Deduction Theorem for (L1) to (L9)</span>
     <p>\(\Gamma,\varphi\vdash_9\psi\) if and only if \(\Gamma\vdash_9\varphi\to\psi\).</p>
@@ -674,10 +631,6 @@ table.data.mchain tr:last-child td{border-bottom:none}
 
   <p>From now on \(\vdash\) means \(\vdash_9\) again: we use all nine axioms and the Deduction Theorem
   together.</p>
-
-
-
-
 
   <h2>6. Using the Deduction Theorem</h2>
 
@@ -736,7 +689,6 @@ table.data.mchain tr:last-child td{border-bottom:none}
     <p>and so \(\psi\vdash\varphi\to(\varphi\wedge\psi)\) and \(\vdash\psi\to(\varphi\to(\varphi\wedge\psi))\).</p>
   </div>
 
-
   <div class="box ex">
     <span class="lbl">Example 9.14: a disjunction on both sides</span>
     <p>Claim: \(\vdash(\varphi\to\psi)\to((\varphi\vee\chi)\to(\psi\vee\chi))\). It is enough to show
@@ -747,8 +699,6 @@ table.data.mchain tr:last-child td{border-bottom:none}
     <p>Line 4 uses the derived rule HS: it joins \(\varphi\to\psi\) and \(\psi\to(\psi\vee\chi)\). Line 6 is (L9) with
     \(\psi:=\chi\) and \(\chi:=\psi\vee\chi\).</p>
   </div>
-
-
 
   <div class="iact" id="ie4">
     <span class="lbl">Exercise 3: deductions with the Deduction Theorem</span>
@@ -784,25 +734,6 @@ table.data.mchain tr:last-child td{border-bottom:none}
   <h2 class="dayhead">Day 3: The Soundness Theorem</h2>
   <p class="daysub">Today we prove that everything we can deduce from \(\Gamma\) is a semantic consequence of
   \(\Gamma\), and we use this to show that some deductions do not exist.</p>
-
-  <div class="box recall">
-    <span class="lbl">What we are using from before</span>
-    <ul>
-      <li>A valuation \(v\) gives each primitive proposition a value \(\mathrm T\) or \(\mathrm F\);
-          \([\![\varphi]\!]_v\) is the value of \(\varphi\). \([\![\neg\varphi]\!]_v=\mathrm T\) iff
-          \([\![\varphi]\!]_v=\mathrm F\), and \([\![\varphi\to\psi]\!]_v=\mathrm F\) iff
-          \([\![\varphi]\!]_v=\mathrm T\) and \([\![\psi]\!]_v=\mathrm F\). The abbreviations \(\wedge\) and \(\vee\) get their usual truth tables.</li>
-      <li>\(v\) satisfies \(\Gamma\) if it makes every member of \(\Gamma\) true. \(\Gamma\models\varphi\) means:
-          every valuation that satisfies \(\Gamma\) makes \(\varphi\) true. \(\models\varphi\) (\(\varphi\) is a
-          tautology) means \(\varnothing\models\varphi\).</li>
-      <li>A deduction from \(\Gamma\): every line is an instance of (L1) to (L9), a member of \(\Gamma\), or
-          follows from two earlier lines by MP. If \(\psi_1,\dots,\psi_n\) is a deduction, so is
-          \(\psi_1,\dots,\psi_m\) for \(m\le n\) (Lemma 9.8).</li>
-      <li>In deductions we also use the derived rule <em>hypothetical syllogism</em> (HS): from lines
-          \(\alpha\to\beta\) and \(\beta\to\gamma\) we get \(\alpha\to\gamma\) (Proposition 8.36).</li>
-    </ul>
-  </div>
-
 
   <h2>7. Axioms are tautologies, MP preserves truth</h2>
 
@@ -878,7 +809,6 @@ table.data.mchain tr:last-child td{border-bottom:none}
 
   <p>Figure 2 shows what Corollary 9.18 says about theorems and tautologies.</p>
 
-
   <figure><svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three nested regions. The outer rectangle is all formulas. Inside it an ellipse holds the tautologies, and inside that a smaller ellipse holds the theorems, with the examples p implies p and (p and q) implies p. Outside the tautologies are p, p implies (p implies q), and not (p implies p). The ring between theorems and tautologies is labelled Completeness: nothing here."><style>.ft{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;fill:#1C2733}.fi{font-style:italic}.fs{font-size:13px;fill:#1B4877}.fm{font-size:12.5px;fill:#556473}.sb{font-size:10.5px}.vl{stroke:#1C2733;stroke-width:2}.ar{stroke:#556473;stroke-width:1.4;fill:none}.hl{fill:#DCEFE7;stroke:#0E7C61;stroke-width:1.2}.bx{fill:#EEF3F9;stroke:#C9D4E0;stroke-width:1.2}</style><rect x="10" y="10" width="620" height="280" rx="12" fill="#FFFFFF" stroke="#C9D4E0" stroke-width="1.4"/><text class="ft fs" x="28" y="36">all formulas</text><ellipse cx="380" cy="160" rx="230" ry="118" fill="#EEF3F9" stroke="#26619C" stroke-width="1.4"/><text class="ft fs" x="380" y="66" text-anchor="middle">tautologies: ⊨ φ</text><ellipse cx="380" cy="175" rx="150" ry="78" class="hl"/><text class="ft fs" x="380" y="128" text-anchor="middle">theorems: ⊢ φ</text><text class="ft fi" x="330" y="176" text-anchor="middle">p → p</text><text class="ft fi" x="420" y="206" text-anchor="middle">(p ∧ q) → p</text><text class="ft fm" x="380" y="262" text-anchor="middle">Completeness: nothing here</text><text class="ft fi" x="60" y="120" text-anchor="middle">p</text><text class="ft fi" x="76" y="200" text-anchor="middle">p → (p → q)</text><text class="ft fi" x="76" y="250" text-anchor="middle">¬(p → p)</text></svg><figcaption><strong>Figure 2.</strong> Corollary 9.18 says that the theorems lie inside the tautologies. So every formula outside the tautologies, such as \(p\to(p\to q)\), is not a theorem. The ring between the two regions is empty; this is the Completeness Theorem, which we prove later.</figcaption></figure>
 
   <h2>9. Showing that a deduction does not exist</h2>
@@ -907,7 +837,6 @@ table.data.mchain tr:last-child td{border-bottom:none}
     \(v(q)=\mathrm T\): \(p\to q\) is true and \(q\to p\) is false. By the Deduction Theorem this also gives
     \(p\to q,\ q\nvdash p\): if \(p\to q,\ q\vdash p\) held, then \(p\to q\vdash q\to p\) would hold.</div>
   </div>
-
 
   <div class="box ex">
     <span class="lbl">Example 9.20: one direction yes, the other no</span>
@@ -1021,12 +950,6 @@ table.data.mchain tr:last-child td{border-bottom:none}
     </div>
   </div>
 
-  <div class="box recall">
-    <span class="lbl">Looking ahead</span>
-    <p>Soundness says \(\Gamma\vdash\varphi\Rightarrow\Gamma\models\varphi\). The converse,
-    \(\Gamma\models\varphi\Rightarrow\Gamma\vdash\varphi\), is the <strong>Completeness Theorem</strong>. It is harder,
-    and we prove it later. Together they say that \(\vdash\) and \(\models\) describe the same relation.</p>
-  </div>
 </section>
 
 <!-- ==================== HOMEWORK ==================== -->

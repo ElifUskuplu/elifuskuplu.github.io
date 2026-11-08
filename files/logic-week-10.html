@@ -252,7 +252,6 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
 .trow .claim{overflow-x:auto;overflow-y:hidden;padding-bottom:2px}
 .katex .katex-mathml{max-width:1px}
 
-
 /* ---------- week 10 additions ---------- */
 .steps li{margin:.45em 0}
 /* homework tables with input cells: the formula column stays visible in Write by hand mode */
@@ -303,26 +302,6 @@ table.hwt input.hw-input{width:100%;min-width:6em}
   <p class="daysub">Today we set up the plan of the proof of the Completeness Theorem and carry out its first
   step: from a formula that cannot be deduced we build a consistent set, and we study the largest consistent
   sets.</p>
-
-  <div class="box recall">
-    <span class="lbl">What we are using from before</span>
-    <ul>
-      <li>Since Week 9, the only connectives are \(\neg\) and \(\to\); \(\varphi\wedge\psi\) abbreviates
-          \(\neg(\varphi\to\neg\psi)\) and \(\varphi\vee\psi\) abbreviates \(\neg\varphi\to\psi\) (Definition 9.1).
-          A deduction from \(\Gamma\) uses the axioms (L1) to (L9), members of \(\Gamma\) and MP. In proofs that a
-          deduction exists we also use the derived rule HS and theorems proved earlier, cited by their number.</li>
-      <li>Definition 9.21: \(\Gamma\) is <strong>inconsistent</strong> if \(\Gamma\vdash\varphi\) and
-          \(\Gamma\vdash\neg\varphi\) for some formula \(\varphi\); otherwise \(\Gamma\) is <strong>consistent</strong>.</li>
-      <li>Theorem 9.17 (Soundness): if \(\Gamma\vdash\varphi\) then \(\Gamma\models\varphi\). Corollary 9.22: a
-          satisfiable set is consistent; in particular \(\varnothing\) is consistent.</li>
-      <li>The Deduction Theorem (Corollary 9.10): \(\Gamma,\varphi\vdash\psi\) if and only if
-          \(\Gamma\vdash\varphi\to\psi\).</li>
-      <li>Proposition 8.35: (a) if \(\varphi\in\Gamma\) then \(\Gamma\vdash\varphi\); (b) if \(\Gamma\subseteq\Delta\)
-          and \(\Gamma\vdash\varphi\) then \(\Delta\vdash\varphi\); (c) if \(\Gamma\vdash\varphi\) and
-          \(\Gamma\vdash\varphi\to\psi\) then \(\Gamma\vdash\psi\).</li>
-      <li>Lemma 9.5: (a) \(\vdash\neg\varphi\to(\varphi\to\psi)\); (f) \(\vdash(\neg\varphi\to\varphi)\to\varphi\).</li>
-    </ul>
-  </div>
 
   <h2>1. The plan</h2>
 
@@ -614,26 +593,6 @@ table.hwt input.hw-input{width:100%;min-width:6em}
   <p class="daysub">Today we extend any consistent set to a maximally consistent one, read the result as a
   valuation, and prove that every tautology has a deduction.</p>
 
-  <div class="box recall">
-    <span class="lbl">What we are using from before</span>
-    <ul>
-      <li>\(\Gamma\) is <strong>consistent</strong> if there is no \(\varphi\) with \(\Gamma\vdash\varphi\) and
-          \(\Gamma\vdash\neg\varphi\). A subset of a consistent set is consistent (Proposition 10.1(b)). A satisfiable
-          set is consistent (Corollary 9.22).</li>
-      <li>Proposition 10.4: if \(\Gamma\nvdash\varphi\), then \(\Gamma\cup\{\neg\varphi\}\) is consistent.</li>
-      <li>\(\Gamma\) is <strong>maximally consistent</strong> if it is consistent and \(\Gamma\cup\{\varphi\}\) is
-          inconsistent for every \(\varphi\notin\Gamma\) (Definition 10.6). Then for every \(\varphi\) exactly one of
-          \(\varphi\in\Gamma\), \(\neg\varphi\in\Gamma\) holds (Proposition 10.8), and
-          \(\varphi\to\psi\in\Gamma\) iff \(\varphi\notin\Gamma\) or \(\psi\in\Gamma\) (Proposition 10.10).</li>
-      <li>A valuation \(v\) gives each primitive proposition a value; \([\![\varphi]\!]_v\) is computed by
-          \([\![\neg\varphi]\!]_v=\mathrm T\) iff \([\![\varphi]\!]_v=\mathrm F\), and
-          \([\![\varphi\to\psi]\!]_v=\mathrm T\) iff \([\![\varphi]\!]_v=\mathrm F\) or \([\![\psi]\!]_v=\mathrm T\).
-          Since \(\wedge\) and \(\vee\) are abbreviations (Definition 9.1), these two clauses cover every formula.</li>
-      <li>A deduction is a <em>finite</em> sequence of formulas, so it uses only finitely many members of \(\Gamma\)
-          as assumptions.</li>
-    </ul>
-  </div>
-
   <h2>4. Listing all formulas</h2>
 
   <p>The construction of today adds formulas to a set one at a time, and it must consider every formula. So we
@@ -910,20 +869,6 @@ table.hwt input.hw-input{width:100%;min-width:6em}
   <h2 class="dayhead">Day 3: Strong completeness and its consequences</h2>
   <p class="daysub">Today we prove that \(\Gamma\vdash\varphi\) and \(\Gamma\models\varphi\) are the same
   relation, and we derive the Compactness Theorem.</p>
-
-  <div class="box recall">
-    <span class="lbl">What we are using from before</span>
-    <ul>
-      <li>\(v\) <strong>satisfies</strong> \(\Gamma\) if it makes every member of \(\Gamma\) true; \(\Gamma\) is
-          <strong>satisfiable</strong> if some valuation satisfies it (Definition 8.1). \(\Gamma\models\varphi\) means
-          that every valuation that satisfies \(\Gamma\) makes \(\varphi\) true (Definition 8.3).</li>
-      <li>Theorem 9.17 (Soundness): \(\Gamma\vdash\varphi\) implies \(\Gamma\models\varphi\). Corollary 9.22: a
-          satisfiable set is consistent.</li>
-      <li>Proposition 10.4: if \(\Gamma\nvdash\varphi\), then \(\Gamma\cup\{\neg\varphi\}\) is consistent.
-          Theorem 10.18: every consistent set is satisfiable.</li>
-      <li>A deduction has finitely many lines, so it uses finitely many assumptions.</li>
-    </ul>
-  </div>
 
   <h2>8. Strong soundness and completeness</h2>
 

@@ -252,16 +252,6 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
 <h2>Day 1: Vector Spaces and Subspaces</h2>
 <p class="day-topic">Today we see that matrices and functions can be added and scaled just like vectors in \(\mathbb R^n\), and we learn a quick test for deciding whether a set is a subspace.</p>
 
-<div class="box recall">
-  <span class="box-label">Facts used today</span>
-  <ul>
-    <li>Vectors in \(\mathbb R^n\) are added and scaled entry by entry: \((1,2,3)+(4,0,-1)=(5,2,2)\) and \(3(1,2,3)=(3,6,9)\).</li>
-    <li>A <b>linear combination</b> of \(\mathbf v_1,\dots,\mathbf v_p\) is a vector \(c_1\mathbf v_1+\cdots+c_p\mathbf v_p\) with scalars \(c_1,\dots,c_p\).</li>
-    <li>\(\operatorname{Span}\{\mathbf v_1,\dots,\mathbf v_p\}\) is the set of all linear combinations of \(\mathbf v_1,\dots,\mathbf v_p\).</li>
-    <li>A vector \(\mathbf y\) is in \(\operatorname{Span}\{\mathbf v_1,\dots,\mathbf v_p\}\) exactly when the system with augmented matrix \([\,\mathbf v_1\ \cdots\ \mathbf v_p \mid \mathbf y\,]\) is consistent, that is, when an echelon form has no row \([\,0\ \cdots\ 0 \mid b\,]\) with \(b\neq 0\).</li>
-  </ul>
-</div>
-
 <h3>1.1 Vector spaces</h3>
 <p>Everything we did with vectors in \(\mathbb R^n\) used only a few rules for addition and scalar multiplication. Many other sets of objects follow the same rules. Such a set is called a vector space, and its elements are called vectors, even when they are matrices or functions.</p>
 
@@ -466,16 +456,6 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
 <section id="day2">
 <h2>Day 2: Null Spaces, Column Spaces, Row Spaces, and Linear Transformations</h2>
 <p class="day-topic">Today we meet the subspaces that come with every matrix, \(\operatorname{Nul} A\), \(\operatorname{Col} A\) and \(\operatorname{Row} A\), and the kernel and range of a linear transformation.</p>
-
-<div class="box recall">
-  <span class="box-label">Facts used today</span>
-  <ul>
-    <li>A <b>subspace</b> of \(V\) is a subset that contains \(\mathbf 0\) and is closed under addition and scalar multiplication. A span \(\operatorname{Span}\{\mathbf v_1,\dots,\mathbf v_p\}\) is always a subspace.</li>
-    <li>If \(A=[\,\mathbf a_1\ \cdots\ \mathbf a_n\,]\) and \(\mathbf x=(x_1,\dots,x_n)\), then \(A\mathbf x=x_1\mathbf a_1+\cdots+x_n\mathbf a_n\), a linear combination of the columns of \(A\).</li>
-    <li>To solve \(A\mathbf x=\mathbf 0\), row reduce \([\,A\mid\mathbf 0\,]\) to reduced echelon form and write the basic variables in terms of the free variables.</li>
-    <li>\(A\mathbf x=\mathbf b\) is consistent exactly when an echelon form of \([\,A\mid\mathbf b\,]\) has no row \([\,0\ \cdots\ 0\mid c\,]\) with \(c\neq 0\).</li>
-  </ul>
-</div>
 
 <h3>2.1 The null space of a matrix</h3>
 <div class="box def">
@@ -691,16 +671,6 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
 <section id="day3">
 <h2>Day 3: Linearly Independent Sets; Bases</h2>
 <p class="day-topic">Today we find the smallest sets that still span a subspace, called bases, and we compute bases for \(\operatorname{Nul} A\), \(\operatorname{Col} A\) and \(\operatorname{Row} A\).</p>
-
-<div class="box recall">
-  <span class="box-label">Facts used today</span>
-  <ul>
-    <li>Vectors \(\mathbf v_1,\dots,\mathbf v_p\) in \(\mathbb R^n\) are linearly independent exactly when \([\,\mathbf v_1\ \cdots\ \mathbf v_p\,]\mathbf x=\mathbf 0\) has only the trivial solution, that is, when every column of \([\,\mathbf v_1\ \cdots\ \mathbf v_p\,]\) is a pivot column.</li>
-    <li>Two vectors are linearly dependent exactly when one is a multiple of the other. A set that contains \(\mathbf 0\) is linearly dependent. More than \(n\) vectors in \(\mathbb R^n\) are always linearly dependent.</li>
-    <li>For an \(n\times n\) matrix \(A\), the following are equivalent: \(A\) is invertible; \(A\) has \(n\) pivots; \(\det A\neq 0\); the columns of \(A\) are linearly independent; the columns of \(A\) span \(\mathbb R^n\).</li>
-    <li>\(\operatorname{Nul} A\) is the solution set of \(A\mathbf x=\mathbf 0\); \(\operatorname{Col} A\) is the span of the columns of \(A\); \(\operatorname{Row} A\) is the span of the rows of \(A\).</li>
-  </ul>
-</div>
 
 <h3>3.1 Linear independence in a vector space</h3>
 <div class="box def">

@@ -259,17 +259,6 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
 <h2>Day 1: Coordinate Systems; Dimension and Rank</h2>
 <p class="day-topic">Today a basis gives every vector a list of numbers, its coordinates, and we see that the number of vectors in a basis does not depend on which basis we choose. This number, the dimension, leads to the Rank Theorem.</p>
 
-<div class="box recall">
-  <span class="box-label">Facts used today</span>
-  <ul>
-    <li>A <b>basis</b> for a vector space \(V\) (or for a subspace \(H\)) is a linearly independent set that spans \(V\) (or \(H\)).</li>
-    <li>A set of \(n\) vectors in \(\mathbb R^n\) is a basis for \(\mathbb R^n\) exactly when the \(n\times n\) matrix with these columns is invertible, that is, when it has \(n\) pivot positions (equivalently, nonzero determinant).</li>
-    <li>The pivot columns of \(A\) form a basis for \(\operatorname{Col} A\); the nonzero rows of an echelon form of \(A\) form a basis for \(\operatorname{Row} A\).</li>
-    <li>Writing the general solution of \(A\mathbf x=\mathbf 0\) with the free variables as weights produces a linearly independent spanning set for \(\operatorname{Nul} A\), one vector for each free variable.</li>
-    <li>A system with augmented matrix \([\,\mathbf v_1\ \cdots\ \mathbf v_p\mid\mathbf y\,]\) is solved by row reduction; the solution gives the weights that express \(\mathbf y\) as a combination of \(\mathbf v_1,\dots,\mathbf v_p\).</li>
-  </ul>
-</div>
-
 <h3>1.1 Coordinates relative to a basis</h3>
 <p>A basis is a spanning set that is linearly independent. The independence has a practical consequence: every vector can be built from the basis in exactly one way, so the weights can serve as the "address" of the vector.</p>
 
@@ -449,16 +438,6 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
 <h2>Day 2: Digital Signal Processing</h2>
 <p class="day-topic">Today a sequence of measurements is a vector. We create new signals from one signal with the shift transformation, and we smooth data with moving averages.</p>
 
-<div class="box recall">
-  <span class="box-label">Facts used today</span>
-  <ul>
-    <li>The space \(\mathbb S\) of <b>signals</b> consists of all doubly infinite sequences \(\{y_k\}=(\dots,y_{-1},y_0,y_1,\dots)\), with term-by-term addition and scaling: \(\{y_k\}+\{z_k\}=\{y_k+z_k\}\), \(c\{y_k\}=\{cy_k\}\). The zero signal has every entry \(0\).</li>
-    <li>A transformation \(T:\mathbb S\to\mathbb S\) is <b>linear</b> when \(T(\mathbf x+\mathbf y)=T(\mathbf x)+T(\mathbf y)\) and \(T(c\mathbf x)=cT(\mathbf x)\) for all signals \(\mathbf x,\mathbf y\) and scalars \(c\). Its <b>kernel</b> is the set of signals sent to the zero signal; the kernel is a subspace of \(\mathbb S\).</li>
-    <li>The two-day moving average \(M_2(\{p_k\})=\{(p_k+p_{k-1})/2\}\) is linear, and its kernel consists of the multiples of the alternating signal \(\{(-1)^k\}\).</li>
-    <li>A basis for a vector space is a linearly independent set that spans it; the dimension is the number of vectors in a basis.</li>
-  </ul>
-</div>
-
 <h3>2.1 Discrete-time signals</h3>
 <p>A signal records a quantity at equally spaced times: a sound pressure \(44\,100\) times per second, a stock price once a day, a temperature once an hour. The index \(k\) is the time step, and \(y_k\) is the value recorded at step \(k\). We allow all integers \(k\), negative ones included, so that a signal has no beginning and no end; a measurement that starts at time \(0\) is a signal with \(y_k=0\) for \(k&lt;0\). Table 1 lists the signals we will use most, and Figure 2 plots four of them.</p>
 
@@ -626,17 +605,6 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
 <h2>Day 3: Finite Signals, Independence of Signals, and Filters</h2>
 <p class="day-topic">Today we find bases for the signals of finite length, test signals for linear independence with the Casorati matrix, and see that a linear difference equation is the same thing as an LTI filter.</p>
 
-<div class="box recall">
-  <span class="box-label">Facts used today</span>
-  <ul>
-    <li>The shift \(S(\{x_k\})=\{x_{k-1}\}\) moves a signal one step to the right; \(S^j(\delta)\) has a single entry \(1\), at position \(k=j\). The shift and its combinations are linear time invariant.</li>
-    <li>A basis for a vector space is a linearly independent spanning set; the dimension is the number of vectors in a basis. A one-to-one linear transformation of \(V\) onto \(\mathbb R^n\) is an isomorphism: \(V\) behaves exactly like \(\mathbb R^n\).</li>
-    <li>Signals \(\mathbf u,\mathbf v,\mathbf w\) are <b>linearly independent</b> when \(c_1\mathbf u+c_2\mathbf v+c_3\mathbf w=\mathbf 0\) (the zero signal) forces \(c_1=c_2=c_3=0\). Two signals are dependent exactly when one is a multiple of the other.</li>
-    <li>For a \(3\times 3\) matrix, \(\det\begin{bmatrix} a & b & c\\ d & e & f\\ g & h & i\end{bmatrix}=a(ei-fh)-b(di-fg)+c(dh-eg)\). A square matrix is invertible exactly when its determinant is not \(0\), and then \(A\mathbf c=\mathbf 0\) has only the solution \(\mathbf c=\mathbf 0\).</li>
-    <li>The kernel of a linear transformation \(T:\mathbb S\to\mathbb S\) is a subspace of \(\mathbb S\).</li>
-  </ul>
-</div>
-
 <h3>3.1 Bases for subspaces of \(\mathbb S\)</h3>
 <p>Data recorded over a fixed number of time steps lives in a small subspace of \(\mathbb S\), and the shift of \(\delta\) provides a basis for it.</p>
 
@@ -787,17 +755,6 @@ table.contrast th{background:var(--box-bg);color:var(--accent-dark)}
 <section id="day4">
 <h2>Day 4: Solving Linear Difference Equations</h2>
 <p class="day-topic">Today we solve homogeneous linear difference equations with the auxiliary equation, fit a solution to given initial values, and handle a nonhomogeneous equation with a particular solution.</p>
-
-<div class="box recall">
-  <span class="box-label">Facts used today</span>
-  <ul>
-    <li>A <b>linear difference equation of order \(n\)</b> is \(y_{k+n}+a_1y_{k+n-1}+\cdots+a_{n-1}y_{k+1}+a_ny_k=z_k\) for all \(k\), with \(a_n\neq 0\); it is <b>homogeneous</b> when \(\{z_k\}\) is the zero signal. A signal that satisfies it for every \(k\) is a <b>solution</b>. The equation describes the LTI filter \(T=S^{-n}+a_1S^{-n+1}+\cdots+a_nS^0\), and the solutions of the homogeneous equation form the kernel of \(T\), a subspace of \(\mathbb S\).</li>
-    <li><b>Casorati test:</b> signals are linearly independent if their Casorati matrix \(C(k)\) is invertible for one \(k\). For \(\{2^k\},\{(-1)^k\},\{3^k\}\), \(\det C(0)=-12\neq 0\), so these three signals are linearly independent.</li>
-    <li><b>Basis Theorem:</b> in a vector space of dimension \(p\), any \(p\) linearly independent vectors form a basis.</li>
-    <li>A quadratic \(r^2+ar+b=0\) has the roots \(r=\frac{-a\pm\sqrt{a^2-4b}}{2}\), two real numbers when \(a^2-4b&gt;0\). When the quadratic factors as \((r-r_1)(r-r_2)\), the roots are \(r_1\) and \(r_2\).</li>
-    <li>Two signals are linearly dependent exactly when one is a multiple of the other.</li>
-  </ul>
-</div>
 
 <h3>4.1 Solving homogeneous difference equations</h3>
 <p>Solutions of a homogeneous equation often have the form \(\{r^k\}\) for some number \(r\). Substituting this form turns the difference equation into a polynomial equation.</p>
