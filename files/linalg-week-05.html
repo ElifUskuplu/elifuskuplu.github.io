@@ -490,15 +490,6 @@ button:disabled{opacity:0.45;cursor:default}
 <h2>Day 2: The Inverse of a Matrix</h2>
 <p class="day-topic">Today we define the inverse of a square matrix, learn a formula for the \(2\times 2\) case and a row reduction algorithm for the general case.</p>
 
-<div class="box recall">
-  <span class="box-label">Facts used today</span>
-  <ul>
-    <li>The \((i,j)\)-entry of \(AB\) is row \(i\) of \(A\) times column \(j\) of \(B\).</li>
-    <li>\(I_n\) is the \(n\times n\) identity matrix: \(I_nA=A\) and \(AI_n=A\) whenever the products are defined. We write \(I\) when the size is clear. The columns of \(I_n\) are \(\mathbf e_1,\dots,\mathbf e_n\).</li>
-    <li>In general \(AB\neq BA\), so in a matrix equation we must say on which side we multiply.</li>
-  </ul>
-</div>
-
 <h3>2.1 Invertible matrices</h3>
 <p>For a nonzero number such as 5, the multiplicative inverse \(5^{-1}=1/5\) satisfies \(5^{-1}\cdot 5=1\) and \(5\cdot 5^{-1}=1\). For matrices we ask for both equations, because matrix multiplication is not commutative. We also avoid the notation \(1/A\). The idea works fully only for square matrices.</p>
 
@@ -740,17 +731,6 @@ button:disabled{opacity:0.45;cursor:default}
 <section id="day3">
 <h2>Day 3: Characterizations of Invertible Matrices</h2>
 <p class="day-topic">Today we connect invertibility with the ideas of the earlier weeks: pivots, solutions of \(A\mathbf x=\mathbf b\), linear independence, span, and linear transformations.</p>
-
-<div class="box recall">
-  <span class="box-label">Facts used today</span>
-  <ul>
-    <li>\(A\) is invertible if there is a matrix \(C\) with \(CA=I\) and \(AC=I\). For \(A=\begin{bmatrix}a&b\\c&d\end{bmatrix}\) with \(ad-bc\neq0\): \(A^{-1}=\dfrac{1}{ad-bc}\begin{bmatrix}d&-b\\-c&a\end{bmatrix}\). If \(ad-bc=0\), \(A\) is not invertible.</li>
-    <li>If \(A\) is invertible, \(A\mathbf x=\mathbf b\) has the unique solution \(\mathbf x=A^{-1}\mathbf b\). \(A\) is invertible exactly when \(A\) is row equivalent to \(I_n\).</li>
-    <li>The columns of \(A\) are linearly independent exactly when \(A\mathbf x=\mathbf 0\) has only the trivial solution, that is, when every column of \(A\) is a pivot column.</li>
-    <li>The columns of an \(m\times n\) matrix \(A\) span \(\mathbb R^m\) exactly when \(A\mathbf x=\mathbf b\) has a solution for every \(\mathbf b\), that is, when \(A\) has a pivot position in every row.</li>
-    <li>The transformation \(\mathbf x\mapsto A\mathbf x\) is one-to-one exactly when the columns of \(A\) are linearly independent, and it maps \(\mathbb R^n\) onto \(\mathbb R^m\) exactly when the columns of \(A\) span \(\mathbb R^m\).</li>
-  </ul>
-</div>
 
 <h3>3.1 The Invertible Matrix Theorem</h3>
 <div class="box thm">

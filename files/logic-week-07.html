@@ -241,19 +241,6 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
   English and formulas, and use the recursive structure of formulas to define functions and to prove facts
   about all formulas.</p>
 
-  <div class="box recall">
-    <span class="lbl">What we are using from before</span>
-    <ul>
-      <li>In the languages \(\mathcal A\), \(\mathcal S\) and \(\mathcal S^{\dagger}\) every sentence had one
-          fixed shape, such as All \(p\) are \(q\). There was no way to join two sentences with "and", "or"
-          or "if ... then", and no way to negate a sentence.</li>
-      <li>A proof by induction on proof trees shows a property for every tree: it holds for the leaves, and
-          every rule turns trees with the property into a tree with the property.</li>
-      <li>Induction on \(\mathbb N=\{0,1,2,\dots\}\): if \(P(0)\) holds, and \(P(n)\) implies \(P(n+1)\) for
-          every \(n\), then \(P(n)\) holds for every \(n\).</li>
-    </ul>
-  </div>
-
   <h2>1. Formulas</h2>
 
   <p>In arithmetic, \(2+2=4\) and \(3\cdot5>20\) are well-formed expressions: the first is true, the second is
@@ -850,23 +837,6 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
   <p class="daysub">Today we give formulas a meaning: a valuation assigns a truth value to every primitive
   proposition, and recursion extends it to all formulas. We compute truth values by hand, build truth tables,
   and sort formulas into tautologies, contradictions and the rest.</p>
-
-  <div class="box recall">
-    <span class="lbl">What we are using from before</span>
-    <ul>
-      <li>Formulas: \(\varphi::=p\mid\neg\varphi\mid(\varphi\wedge\varphi)\mid(\varphi\vee\varphi)\mid
-          (\varphi\to\varphi)\) with \(p\in\mathrm{PROP}\). We drop the outermost parentheses, and \(\neg\)
-          has narrow scope: \(\neg p\vee q\) means \((\neg p)\vee q\).</li>
-      <li>\(\varphi\leftrightarrow\psi\) abbreviates \((\varphi\to\psi)\wedge(\psi\to\varphi)\).</li>
-      <li>Every formula has a unique parse tree. The connective at its root is the main connective.</li>
-      <li>Functions on formulas are defined by recursion: a value for each \(p\), and a rule for \(\neg\) and
-          for each binary connective \(\bullet\). Statements about all formulas are proved by structural
-          induction: a base case for \(p\), and one step for each connective.</li>
-      <li>\(\mathit{occ}(\varphi)\) is the set of primitive propositions that occur in \(\varphi\):
-          \(\mathit{occ}(p)=\{p\}\), \(\mathit{occ}(\neg\varphi)=\mathit{occ}(\varphi)\),
-          \(\mathit{occ}(\varphi\bullet\psi)=\mathit{occ}(\varphi)\cup\mathit{occ}(\psi)\).</li>
-    </ul>
-  </div>
 
   <h2>4. Valuations and the truth value of a formula</h2>
 

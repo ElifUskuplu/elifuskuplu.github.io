@@ -242,16 +242,6 @@ button:disabled { opacity: 0.5; cursor: default; }
 <h2>Day 1 (Wednesday, September 9): Syntax and semantics of \(\mathcal{A}\)</h2>
 <p class="day-intro">Today we define our first real logical system: its sentences, its models, and what it means for a sentence to follow from a set of sentences.</p>
 
-<div class="box recall">
-  <span class="label">Facts used today</span>
-  <ul>
-    <li>A model interprets each noun as a subset of a universe. A sentence is true or false only inside a model.</li>
-    <li>\(\Gamma \models \varphi\) means: every model of all sentences in \(\Gamma\) is also a model of \(\varphi\) (Definition 0.3 from Week 2).</li>
-    <li>The empty set is a subset of every set: \(\emptyset \subseteq X\) for all \(X\).</li>
-    <li>Inclusion is reflexive and transitive: \(X \subseteq X\), and if \(X \subseteq Y\) and \(Y \subseteq Z\) then \(X \subseteq Z\).</li>
-  </ul>
-</div>
-
 <h3>The language \(\mathcal{A}\)</h3>
 <p>Every logical system in this course has a <strong>syntax</strong> and a <strong>semantics</strong>. Syntax is about the form of sentences; semantics is about their meaning. We begin with the syntax of the smallest system in the book. It has one kind of sentence and nothing else: no <em>if</em>, no <em>and</em>, no <em>not</em>.</p>
 <p>We start with a collection \(\mathbf{P}\) of <strong>nouns</strong>. The nouns can be real words (usually plural animal names) or just letters \(p, q, n, \ldots\). The set \(\mathbf{P}\) may be finite or infinite.</p>
@@ -476,15 +466,6 @@ button:disabled { opacity: 0.5; cursor: default; }
 <section id="day2" class="no-print">
 <h2>Day 2 (Friday, September 11): The proof system and induction on proof trees</h2>
 <p class="day-intro">Today we turn from meaning to form: a proof system with two rules, the trees it builds, and the induction principle that lets us prove something about every proof tree at once.</p>
-
-<div class="box recall">
-  <span class="label">Facts used today</span>
-  <ul>
-    <li>\(\mathbf{M} \models \All{p}{q}\) iff \(\sem{p} \subseteq \sem{q}\); and \(\Gamma \models \varphi\) iff every model of \(\Gamma\) satisfies \(\varphi\).</li>
-    <li>Every sentence \(\All{x}{x}\) is true in every model, and \(\subseteq\) is transitive.</li>
-    <li>A definition that builds objects step by step (an inductive definition) comes with a matching proof principle (proof by induction). You have seen this for the natural numbers.</li>
-  </ul>
-</div>
 
 <h3>Two rules</h3>
 <p>So far everything was semantic: defined in terms of models. A <strong>proof system</strong> is purely syntactic. It tells us which sentences may be written below which other sentences, without any reference to models or meaning. The proof system for \(\mathcal{A}\) is called \(\mathsf{A}\) (same letter, different font, because a language does not automatically come with a proof system).</p>

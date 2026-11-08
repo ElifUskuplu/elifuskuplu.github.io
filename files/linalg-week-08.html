@@ -249,16 +249,6 @@ button.btn-secondary:disabled:hover{background:#fff}
 <h2>Day 1: Properties of Determinants</h2>
 <p class="day-topic">Today we see how row operations change a determinant, and we use this to compute determinants quickly and to test whether a matrix is invertible.</p>
 
-<div class="box recall">
-  <span class="box-label">Facts used today</span>
-  <ul>
-    <li>For a \(2\times 2\) matrix, \(\det\begin{bmatrix} a & b\\ c & d\end{bmatrix} = ad-bc\).</li>
-    <li>A determinant can be computed by a cofactor expansion across any row or down any column.</li>
-    <li>If \(A\) is triangular, \(\det A\) is the product of the entries on the main diagonal.</li>
-    <li>The three elementary row operations are: <b>replacement</b> (add a multiple of one row to another row), <b>interchange</b> (swap two rows) and <b>scaling</b> (multiply a row by a nonzero number).</li>
-  </ul>
-</div>
-
 <h3>1.1 Row operations and the determinant</h3>
 <p>Cofactor expansion is easy only when a matrix has many zeros. For a general matrix we first create zeros with row operations. To do this safely, we must know how each row operation changes the determinant.</p>
 
@@ -504,16 +494,6 @@ button.btn-secondary:disabled:hover{background:#fff}
 <h2>Day 2: Cramer's Rule and a Formula for \(A^{-1}\)</h2>
 <p class="day-topic">Today we write the solution of \(A\mathbf x=\mathbf b\) and the inverse \(A^{-1}\) directly with determinants.</p>
 
-<div class="box recall">
-  <span class="box-label">Facts used today</span>
-  <ul>
-    <li>\(\det\begin{bmatrix} a & b\\ c & d\end{bmatrix} = ad-bc\).</li>
-    <li>\(A_{ij}\) is the matrix obtained from \(A\) by deleting row \(i\) and column \(j\). The \((i,j)\)-<b>cofactor</b> of \(A\) is \(C_{ij} = (-1)^{i+j}\det A_{ij}\). The signs \((-1)^{i+j}\) follow the pattern \(\begin{bmatrix} + & - & +\\ - & + & -\\ + & - & +\end{bmatrix}\).</li>
-    <li>Cofactor expansion across row \(i\): \(\det A = a_{i1}C_{i1} + a_{i2}C_{i2} + \cdots + a_{in}C_{in}\). The same works down any column.</li>
-    <li>If \(\det A\neq 0\), then \(A\) is invertible and \(A\mathbf x=\mathbf b\) has exactly one solution for each \(\mathbf b\).</li>
-  </ul>
-</div>
-
 <h3>2.1 Cramer's rule</h3>
 <div class="box def">
   <span class="box-label">Notation \(A_i(\mathbf b)\)</span>
@@ -687,16 +667,6 @@ button.btn-secondary:disabled:hover{background:#fff}
 <section id="day3">
 <h2>Day 3: Determinants as Area and Volume</h2>
 <p class="day-topic">Today we see that \(|\det A|\) is an area (in \(\mathbb R^2\)) or a volume (in \(\mathbb R^3\)), and that a linear transformation multiplies every area or volume by \(|\det A|\).</p>
-
-<div class="box recall">
-  <span class="box-label">Facts used today</span>
-  <ul>
-    <li>\(\det\begin{bmatrix} a & 0\\ 0 & d\end{bmatrix} = ad\) and \(\det\begin{bmatrix} a & 0 & 0\\ 0 & b & 0\\ 0 & 0 & c\end{bmatrix} = abc\).</li>
-    <li>Interchanging two columns changes only the sign of \(\det A\). Adding a multiple of one column to another column does not change \(\det A\). So neither operation changes \(|\det A|\).</li>
-    <li>\(\det(AB) = (\det A)(\det B)\).</li>
-    <li>Area of a parallelogram = base \(\times\) height. Volume of a parallelepiped = (area of the base) \(\times\) height.</li>
-  </ul>
-</div>
 
 <h3>3.1 Area and volume</h3>
 <div class="box thm">

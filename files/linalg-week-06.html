@@ -172,15 +172,6 @@ button:disabled{opacity:0.45;cursor:default}
 <h2>Part 1: The Leontief Input-Output Model</h2>
 <p class="day-topic">An economy with several sectors is described by one matrix. The question "how much must each sector produce?" becomes a matrix equation.</p>
 
-<div class="box recall">
-  <span class="box-label">Facts used today</span>
-  <ul>
-    <li>For a matrix \(C=[\,\mathbf c_1\ \cdots\ \mathbf c_n\,]\) and a vector \(\mathbf x\): \(C\mathbf x=x_1\mathbf c_1+\cdots+x_n\mathbf c_n\).</li>
-    <li>\(I\mathbf x=\mathbf x\), and \(A\mathbf x-B\mathbf x=(A-B)\mathbf x\).</li>
-    <li>If \(A\) is invertible, \(A\mathbf x=\mathbf b\) has the unique solution \(\mathbf x=A^{-1}\mathbf b\). For \(A=\begin{bmatrix}a&b\\c&d\end{bmatrix}\) with \(ad-bc\neq0\): \(A^{-1}=\dfrac{1}{ad-bc}\begin{bmatrix}d&-b\\-c&a\end{bmatrix}\).</li>
-  </ul>
-</div>
-
 <h3>1.1 Sectors, production and demand</h3>
 <p>Suppose a nation's economy is divided into \(n\) sectors that produce goods or services. Let \(\mathbf x\) in \(\mathbb R^n\) be the <strong>production vector</strong>: it lists the output of each sector for one year. Another part of the economy, the <strong>open sector</strong>, does not produce anything; it only consumes. Let \(\mathbf d\) be the <strong>final demand vector</strong>: it lists the values demanded from each sector by the open sector (consumers, government, exports, and so on).</p>
 <p>The producing sectors also demand goods from each other, because they need inputs to produce. This is called <strong>intermediate demand</strong>. Leontief asked: is there a production level \(\mathbf x\) such that the amount produced exactly balances the total demand?</p>
@@ -372,16 +363,6 @@ button:disabled{opacity:0.45;cursor:default}
 <section id="part2">
 <h2>Part 2: Applications to Computer Graphics</h2>
 <p class="day-topic">A picture on a screen is a list of points. Moving the picture is matrix multiplication, once we choose the right coordinates.</p>
-
-<div class="box recall">
-  <span class="box-label">Facts used today</span>
-  <ul>
-    <li>The columns of a product \(AD=[\,A\mathbf d_1\ \cdots\ A\mathbf d_k\,]\) are \(A\) times the columns of \(D\).</li>
-    <li>Matrix multiplication is composition: applying \(B\) first and then \(A\) is multiplication by \(AB\). In general \(AB\neq BA\).</li>
-    <li>Standard matrices of some linear transformations of \(\mathbb R^2\): rotation through angle \(\varphi\) about the origin \(\begin{bmatrix}\cos\varphi&-\sin\varphi\\ \sin\varphi&\cos\varphi\end{bmatrix}\); reflection through the \(x\)-axis \(\begin{bmatrix}1&0\\0&-1\end{bmatrix}\); reflection through the \(y\)-axis \(\begin{bmatrix}-1&0\\0&1\end{bmatrix}\); scaling \(x\) by \(s\) and \(y\) by \(t\): \(\begin{bmatrix}s&0\\0&t\end{bmatrix}\).</li>
-    <li>\(\cos 30^\circ=\sin 60^\circ=\sqrt3/2\), \(\ \sin30^\circ=\cos60^\circ=1/2\), \(\ \cos45^\circ=\sin45^\circ=\sqrt2/2\), \(\ \cos90^\circ=0\), \(\ \sin90^\circ=1\).</li>
-  </ul>
-</div>
 
 <h3>2.1 Points, data matrices and transformations</h3>
 <p>A graphical image on a screen (for example a wire-frame model of an airplane, or a letter) consists of a number of points, the lines that connect them, and information about how to fill the regions between the lines. Curved lines are usually approximated by short straight segments, so a figure is defined mathematically by a list of points.</p>

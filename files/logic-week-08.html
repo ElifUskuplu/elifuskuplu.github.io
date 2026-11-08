@@ -284,22 +284,6 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
   <p class="daysub">Today we define when a formula follows from a set of formulas by truth alone. We learn how to
   decide this, and how to prove general facts about it from the definition.</p>
 
-  <div class="box recall">
-    <span class="lbl">What we are using from before</span>
-    <ul>
-      <li>A valuation is a function \(v:\mathrm{PROP}\to\{\mathrm T,\mathrm F\}\). The truth value
-          \([\![\varphi]\!]_v\) is computed from the values of the primitive propositions with the truth tables of
-          the connectives:
-        <div class="tablewrap"><table class="tt"><caption>Truth tables of the connectives.</caption><thead><tr><th class="at">\(p\)</th><th class="at">\(q\)</th><th>\(\neg p\)</th><th>\(p \wedge q\)</th><th>\(p \vee q\)</th><th>\(p \to q\)</th></tr></thead><tbody><tr><td class="at">T</td><td class="at">T</td><td>F</td><td>T</td><td>T</td><td>T</td></tr><tr><td class="at">T</td><td class="at">F</td><td>F</td><td>F</td><td>T</td><td>F</td></tr><tr><td class="at">F</td><td class="at">T</td><td>T</td><td>F</td><td>T</td><td>T</td></tr><tr><td class="at">F</td><td class="at">F</td><td>T</td><td>F</td><td>F</td><td>T</td></tr></tbody></table></div></li>
-      <li>We write \(\models\varphi\), and say that \(\varphi\) is a <strong>tautology</strong>, if
-          \([\![\varphi]\!]_v=\mathrm T\) for every valuation \(v\). A formula \(\varphi\) is
-          <strong>satisfiable</strong> if \([\![\varphi]\!]_v=\mathrm T\) for some valuation \(v\).</li>
-      <li>\([\![\varphi]\!]_v\) depends only on the values that \(v\) gives to the primitive propositions occurring
-          in \(\varphi\). So if \(n\) primitive propositions occur in \(\varphi\), the \(2^n\) rows of its truth
-          table describe all valuations.</li>
-    </ul>
-  </div>
-
   <h2>1. Satisfying a set of formulas</h2>
 
   <p>Last week we asked whether one formula is true under a valuation. In mathematics, and in everyday reasoning,
@@ -538,30 +522,6 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
   <h2 class="dayhead">Day 2: Logical equivalence and adequacy</h2>
   <p class="daysub">Today we compare formulas by their truth values, and we ask which sets of connectives are
   enough to express every formula.</p>
-
-  <div class="box recall">
-    <span class="lbl">What we are using from before</span>
-    <ul>
-      <li>\(\models\chi\) means that \([\![\chi]\!]_v=\mathrm T\) for every valuation \(v\) (\(\chi\) is a
-          tautology). The formula \(\varphi\leftrightarrow\psi\) abbreviates
-          \((\varphi\to\psi)\wedge(\psi\to\varphi)\); it is true under \(v\) exactly when \(\varphi\) and \(\psi\)
-          have the same value under \(v\).</li>
-      <li>We also use two more binary connectives: the Sheffer stroke \(\varphi\mid\psi\),
-          read "not both \(\varphi\) and \(\psi\)" (nand), and \(\varphi\downarrow\psi\), read "neither \(\varphi\)
-          nor \(\psi\)" (nor). Their truth tables:
-        <div class="tablewrap"><table class="tt"><caption>\(p\leftrightarrow q\) is true when \(p\) and \(q\) have the same value; \(p\mid q\) is false only when both are true; \(p\downarrow q\) is true only when both are false.</caption><thead><tr><th class="at">\(p\)</th><th class="at">\(q\)</th><th>\(p \leftrightarrow q\)</th><th>\(p \mid q\)</th><th>\(p \downarrow q\)</th></tr></thead><tbody><tr><td class="at">T</td><td class="at">T</td><td>T</td><td>F</td><td>F</td></tr><tr><td class="at">T</td><td class="at">F</td><td>F</td><td>T</td><td>F</td></tr><tr><td class="at">F</td><td class="at">T</td><td>F</td><td>T</td><td>F</td></tr><tr><td class="at">F</td><td class="at">F</td><td>T</td><td>T</td><td>T</td></tr></tbody></table></div></li>
-      <li>For a set \(A\) of connectives, \(\mathcal L(A)\) is the set of formulas built from the primitive
-          propositions using only connectives in \(A\). For example, \(\mathcal L(\neg,\wedge)\) is given by
-          \(\varphi::=p\mid\neg\varphi\mid\varphi\wedge\psi\). <strong>Structural induction</strong> on
-          \(\mathcal L(A)\): to show that every formula of \(\mathcal L(A)\) has a property, show that every
-          primitive proposition has it, and that each connective of \(A\) turns formulas with the property into a
-          formula with the property.</li>
-      <li>A <strong>formula scheme</strong> such as \(\neg(\varphi\wedge\psi)\to(\neg\varphi\vee\neg\psi)\) stands
-          for all formulas obtained by replacing \(\varphi,\psi\) by formulas. Its truth value depends only on the
-          values of \(\varphi\) and \(\psi\), so a truth table that treats \(\varphi\) and \(\psi\) like primitive
-          propositions decides it for all instances at once.</li>
-    </ul>
-  </div>
 
   <h2>4. Logical equivalence</h2>
 
@@ -936,20 +896,6 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
   <p class="daysub">Today we define deductions from a set of assumptions, list the axioms for each connective, and
   write our first deductions in Fitch notation.</p>
 
-  <div class="box recall">
-    <span class="lbl">What we are using from before</span>
-    <ul>
-      <li>Formulas of \(\mathcal L(\neg,\wedge,\vee,\to)\) are built from primitive propositions; outermost
-          parentheses may be dropped, and \(\neg\) applies to the smallest formula after it.</li>
-      <li>A <strong>formula scheme</strong> such as \(\varphi\to(\psi\to\varphi)\) uses Greek letters for
-          arbitrary formulas. An <strong>instance</strong> replaces each Greek letter by a formula, the same
-          formula at every place where the letter occurs. For example, \(p\to((q\vee r)\to p)\) is an instance of
-          \(\varphi\to(\psi\to\varphi)\), with \(\varphi:=p\) and \(\psi:=q\vee r\).</li>
-      <li>\(\varphi\to\psi\) has the main connective \(\to\), the antecedent \(\varphi\) and the consequent
-          \(\psi\).</li>
-    </ul>
-  </div>
-
   <p>On Day 1, \(\Gamma\models\varphi\) was defined through valuations: it talks about all possible assignments of
   truth values. Now we take a different approach. We fix some basic formulas and one rule of reasoning, and we
   say that \(\varphi\) can be deduced from \(\Gamma\) if there is a finite list of steps from \(\Gamma\) to
@@ -1261,15 +1207,6 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
     </div>
   </div>
 
-  <div class="box recall">
-    <span class="lbl">Next week</span>
-    <p>In Example 8.32 we showed \(\neg\varphi\vdash\varphi\to\psi\). Can we conclude
-    \(\vdash\neg\varphi\to(\varphi\to\psi)\), with no assumptions? For \(\models\), Proposition 8.7(d) moves a
-    formula from the left side into an antecedent. The corresponding statement for \(\vdash\) is the
-    <strong>Deduction Theorem</strong>: \(\Gamma\cup\{\varphi\}\vdash\psi\) if and only if
-    \(\Gamma\vdash\varphi\to\psi\). We prove it next week. Until then, show a claim \(\Gamma\vdash\varphi\) only by
-    writing a deduction, or with Propositions 8.35 and 8.36.</p>
-  </div>
 </section>
 
 <!-- ==================== HOMEWORK ==================== -->

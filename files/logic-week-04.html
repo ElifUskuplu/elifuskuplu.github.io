@@ -234,28 +234,6 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
   <h2 class="dayhead">Day 1 (Monday, September 14): Canonical models and completeness for \(\mathcal A\)</h2>
   <p class="daysub">Today we build a model out of the syntax of \(\mathcal A\), use it to prove completeness, and turn that proof into an algorithm that returns either a proof tree or a counter-model.</p>
 
-  <div class="box recall">
-    <span class="lbl">What we are using from before</span>
-    <ul>
-      <li>The language \(\mathcal A\) has exactly one kind of sentence: All <em>p</em> are <em>q</em>,
-          for nouns \(p,q\) from a set \(\mathsf P\).</li>
-      <li>A model is a pair \(\mathcal M=(M,[\![\ ]\!])\): a set \(M\) together with a subset
-          \([\![p]\!]\subseteq M\) for each noun \(p\).</li>
-      <li>\(\mathcal M\vDash\) All \(p\) are \(q\) &nbsp;iff&nbsp; \([\![p]\!]\subseteq[\![q]\!]\).</li>
-      <li>\(\Gamma\vDash\varphi\) means every model of \(\Gamma\) is a model of \(\varphi\).</li>
-      <li>The proof system \(\mathbf A\) (same letter, different font) has two rules, and \(\Gamma\vdash\varphi\) means there is a
-          proof tree with root \(\varphi\) whose non-axiom leaves belong to \(\Gamma\).</li>
-    </ul>
-    <div class="rulebox" style="margin-top:12px">
-      <div class="rule1"><div class="node r-axiom"><div class="prem"></div>
-        <div class="bar"><span class="rname">axiom</span></div><div class="concl">All \(p\) are \(p\)</div></div></div>
-      <div class="rule1"><div class="node r-barbara"><div class="prem"><span class="leaf">All \(p\) are \(n\)</span><span class="leaf">All \(n\) are \(q\)</span></div>
-        <div class="bar"><span class="rname">barbara</span></div><div class="concl">All \(p\) are \(q\)</div></div></div>
-    </div>
-    <p style="margin-top:12px">We proved <strong>soundness</strong>: if \(\Gamma\vdash\varphi\) then
-    \(\Gamma\vDash\varphi\). The open question is the other direction.</p>
-  </div>
-
   <h2>1. From proofs to a preorder</h2>
 
   <p>The completeness proof starts from a simple idea. The proof system tells us, for each pair of nouns,

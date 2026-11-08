@@ -253,24 +253,6 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
   <p class="daysub">Today we add a complement operation on nouns, check that the larger language can express
   No and "Some ... are not ...", and set up a proof system whose new rule is proof by contradiction.</p>
 
-  <div class="box recall">
-    <span class="lbl">What we are using from before</span>
-    <ul>
-      <li>The language \(\mathcal S\) has the sentences All \(p\) are \(q\), Some \(p\) are \(q\) and
-          No \(p\) are \(q\), for nouns \(p,q\) from a set \(\mathsf P\).</li>
-      <li>A model is a pair \(\mathcal M=(M,[\![\ ]\!])\): a set \(M\) together with a subset
-          \([\![p]\!]\subseteq M\) for each noun \(p\).</li>
-      <li>All \(p\) are \(q\) is true iff \([\![p]\!]\subseteq[\![q]\!]\). Some \(p\) are \(q\) is true iff
-          \([\![p]\!]\cap[\![q]\!]\neq\varnothing\). No \(p\) are \(q\) is true iff
-          \([\![p]\!]\cap[\![q]\!]=\varnothing\).</li>
-      <li>\(\Gamma\vDash\varphi\) means that every model of \(\Gamma\) is a model of \(\varphi\).
-          \(\Gamma\vdash\varphi\) means that there is a proof tree with root \(\varphi\) whose leaves are
-          sentences of \(\Gamma\) or instances of (axiom).</li>
-      <li>One thing was left open last week: the form Some \(p\) are not \(q\) is not a sentence of
-          \(\mathcal S\).</li>
-    </ul>
-  </div>
-
   <h2>1. Literals and the language \(\mathcal S^{\dagger}\)</h2>
 
   <p>English lets us negate a noun: farmer, non-farmer; artist, non-artist. We add this operation to the
@@ -841,28 +823,6 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
   <h2 class="dayhead">Day 2 (Wednesday, September 23): Orthoposets and states</h2>
   <p class="daysub">Today we turn the provable All sentences of a set \(\Gamma\) into an ordered structure
   with a complement, and we study the subsets of this structure that behave like the points of a model.</p>
-
-  <div class="box recall">
-    <span class="lbl">What we are using from before</span>
-    <ul>
-      <li>A <strong>preorder</strong> is a set with a relation \(\le\) that is reflexive and transitive.</li>
-      <li>For a set \(\Gamma\) of sentences of \(\mathcal S^{\dagger}\) and literals \(u,v\) we write
-          \(u\le_\Gamma v\) iff \(\Gamma\vdash\) All \(u\) are \(v\). This is a preorder on the literals:
-          it is reflexive by (axiom) and transitive by (barbara). We write \(u\le v\) when \(\Gamma\) is
-          clear.</li>
-      <li>Three derived rules, stated for this relation:
-        <ul>
-          <li>(antitone): if \(u\le v\), then \(\overline v\le\overline u\);</li>
-          <li>(zero): if \(u\le\overline u\), then \(u\le v\) for every literal \(v\);</li>
-          <li>(one): if \(\overline u\le u\), then \(v\le u\) for every literal \(v\).</li>
-        </ul></li>
-      <li>Soundness: if \(\Gamma\vdash\varphi\) then \(\Gamma\vDash\varphi\). So to show
-          \(u\not\le_\Gamma v\) it is enough to give one model of \(\Gamma\) in which All \(u\) are \(v\) is
-          false.</li>
-      <li>In a Hasse diagram, \(a\le b\) holds iff you can go from \(a\) to \(b\) by moving upwards along
-          lines, in zero or more steps.</li>
-    </ul>
-  </div>
 
   <h2>5. Posets and orthoposets</h2>
 
@@ -1533,32 +1493,6 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
   satisfies every consistent \(\Gamma\), and conclude that \(\mathbf S^{\dagger}\) proves every sentence
   that follows semantically from \(\Gamma\).</p>
 
-  <div class="box recall">
-    <span class="lbl">What we are using from before</span>
-    <ul>
-      <li>\(\bot\) stands for any sentence Some \(p\) are \(\overline p\). A set \(\Gamma\) is
-          <strong>inconsistent</strong> if \(\Gamma\vdash\bot\), and <strong>consistent</strong> otherwise.</li>
-      <li>The semantic negation: \(\overline{\text{All }x\text{ are }y}\) is Some \(x\) are \(\overline y\),
-          and \(\overline{\text{Some }x\text{ are }y}\) is All \(x\) are \(\overline y\). Always
-          \(\overline{\overline\varphi}=\varphi\), and \(\mathcal M\vDash\overline\varphi\) iff
-          \(\mathcal M\nvDash\varphi\).</li>
-      <li>Lemma 5.16: if \(\Gamma\cup\{\varphi\}\vdash\bot\), then \(\Gamma\vdash\overline\varphi\).</li>
-      <li>\(P_\Gamma\): its elements are the classes \([u]\) of literals, with \([u]\le[v]\) iff
-          \(\Gamma\vdash\) All \(u\) are \(v\), and \(\overline{[u]}=[\overline u]\).</li>
-      <li>A <strong>state</strong> of \(P_\Gamma\) is a non-empty set \(S\) of elements that is up-closed,
-          complete (it contains \([u]\) or \([\overline u]\)) and consistent (never both).</li>
-      <li>Proposition 5.32: \(\{[u],[v]\}\) is not extendible iff \([u]\le[\overline v]\).
-          Lemma 5.34: every extendible set is included in some state.</li>
-      <li>The example of Wednesday: for
-          \(\Gamma=\{\text{All }y\text{ are }x,\ \text{All }\overline y\text{ are }x,\
-          \text{All }z\text{ are }\overline y,\ \text{All }\overline z\text{ are }y,\
-          \text{All }z\text{ are }w\}\), the orthoposet \(P_\Gamma\) has the six elements
-          \(0=[\overline x]\), \([\overline w]\), \([y]=[\overline z]\), \([\overline y]=[z]\), \([w]\),
-          \(1=[x]\), and exactly three states:
-          \(S_1=\{[\overline w],[y],[x]\}\), \(S_2=\{[y],[w],[x]\}\), \(S_3=\{[z],[w],[x]\}\).</li>
-    </ul>
-  </div>
-
   <h2>9. The canonical model built from states</h2>
 
   <div class="box def">
@@ -1580,7 +1514,7 @@ canvas.handpad{width:100%;display:block;border:1px solid var(--line);border-radi
 
   <div class="box ex">
     <span class="lbl">Example 5.39: the canonical model of the hexagon</span>
-    <p>Take \(\Gamma\) from the box above. Then \(M_\Gamma=\{S_1,S_2,S_3\}\). We read off, for each noun, which
+    <p>Take the set \(\Gamma\) of Example 5.25, whose states \(S_1,S_2,S_3\) we found in Example 5.30. Then \(M_\Gamma=\{S_1,S_2,S_3\}\). We read off, for each noun, which
     states contain its class:</p>
     <p style="text-align:center">
       \([\![x]\!]=\{S_1,S_2,S_3\}\),&nbsp;&nbsp; \([\![y]\!]=\{S_1,S_2\}\),&nbsp;&nbsp;
