@@ -1182,7 +1182,20 @@ p.vlab{font-size:.88rem;color:var(--muted);margin:.5em 0 0}
       <p>(d) Suppose \(\mathcal A\models\exists x\,\forall y\,\varphi\): there is \(a\in A\) with
       \(\mathcal A\models\varphi[\bar a/x][\bar b/y]\) for every \(b\in A\). Now let \(b\in A\) be arbitrary. The
       same \(a\) gives \(\mathcal A\models\varphi[\bar b/y][\bar a/x]\), so \(\mathcal A\models\exists x\,\varphi[\bar b/y]\).
-      As \(b\) was arbitrary, \(\mathcal A\models\forall y\,\exists x\,\varphi\). <span class="qed">&#9633;</span></p>
+      As \(b\) was arbitrary, \(\mathcal A\models\forall y\,\exists x\,\varphi\).</p>
+      <p>(e) Second half. Since \(x\) is not free in \(\psi\), we have \(\psi[\bar a/x]=\psi\) for every \(a\in A\).</p>
+      \[\begin{aligned}
+      \mathcal A\models\forall x\,(\psi\to\varphi)
+      &\iff \text{for every } a\in A,\ \ \mathcal A\models(\psi\to\varphi)[\bar a/x]\\
+      &\iff \text{for every } a\in A,\ \ \mathcal A\models\psi\to\varphi[\bar a/x]
+        &&(\psi[\bar a/x]=\psi)\\
+      &\iff \text{for every } a\in A,\ \ \bigl(\mathcal A\not\models\psi \ \text{ or } \ \mathcal A\models\varphi[\bar a/x]\bigr)\\
+      &\iff \mathcal A\not\models\psi \ \text{ or } \ \bigl(\text{for every } a\in A,\ \ \mathcal A\models\varphi[\bar a/x]\bigr)
+        &&(\mathcal A\not\models\psi \text{ does not depend on } a)\\
+      &\iff \mathcal A\not\models\psi \ \text{ or } \ \mathcal A\models\forall x\,\varphi\\
+      &\iff \mathcal A\models\psi\to\forall x\,\varphi.
+      \end{aligned}\]
+      <p style="text-align:right"><span class="qed">&#9633;</span></p>
     </div>
   </div>
 
