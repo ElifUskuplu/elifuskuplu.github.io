@@ -87,6 +87,9 @@ I earned my M.Sc. degree from [Koç University](https://science.ku.edu.tr/en/dep
 
 ## Talks
 
+12) "Two-level type theory and its models" - [FGC Higher Structures Seminar, Feza Gürsey Center
+for Physics and Mathematics](https://fezagursey.bogazici.edu.tr/tr/pages/yuksek-yapilar-seminerleri-higher-structures-/6229) - Nov 17 2026
+
 11) "Enhancing Dependency Graphs for Research and Alignment in Math" - [The Workshop on Math Datasets: Alignments and Comparisons (Align 2025)](https://sites.google.com/view/align2025/welcome) - Oct 10 2025
 
 10) "Monotonicity and Natural Logic: Tracking Meaning with Arrows" - [AWM Research Symposium, Logic Across Mathematics Session](https://awm-math.org/abstract/monotonicity-and-natural-logic-tracking-meaning-with-arrows/) - May 17 2025
